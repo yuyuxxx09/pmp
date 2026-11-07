@@ -390,6 +390,7 @@
 
       <hr style="border:0; border-top:1px solid var(--border); margin:1.5rem 0;">
       <h4>💾 Sao Lưu Toàn Bộ (Backup)</h4>
+      <p class="insight-meta" style="margin-top:.35rem;">Dùng file JSON đã tạo bằng nút Export JSON bên dưới. Nếu chỉ nhập danh sách câu hỏi, hãy dùng Import Question Bank.</p>
       <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:.75rem;">
         <button class="btn btn-outline" onclick="app.exportData()">📥 Export JSON</button>
         <button class="btn btn-outline" onclick="document.getElementById('import-file-input').click()">📤 Import Backup (Overwrite All)</button>
@@ -2761,21 +2762,53 @@ class PMPApp {
     const reader = new FileReader();
     reader.onload = (ev) => {
       try {
-        const data = JSON.parse(ev.target.result);
-        if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('bad');
-        let count = 0;
-        Object.keys(data).forEach(k => {
-          if (k.startsWith(this.PREFIX) && typeof data[k] === 'string') { JSON.parse(data[k]); localStorage.setItem(k, data[k]); count++; }
+        const data = JSON.parse(String(ev.target.result || '').replace(/^\uFEFF/, ''));
+        if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('File không có cấu trúc backup JSON hợp lệ.');
+        const entries = Object.entries(data).filter(([key]) => key.startsWith(this.PREFIX));
+        if (!entries.length) throw new Error('File không chứa dữ liệu backup do ứng dụng này xuất ra. Nếu đây là file câu hỏi, hãy dùng Import Question Bank.');
+        entries.forEach(([key, value]) => {
+          if (typeof value !== 'string') throw new Error(`Dữ liệu "${key}" không đúng định dạng backup.`);
+          try { JSON.parse(value); }
+          catch (_) { throw new Error(`Dữ liệu "${key}" bị lỗi JSON bên trong backup.`); }
         });
-        if (!count) throw new Error('empty');
-        this.showModal('Import thành công', `<p>Đã khôi phục ${count} key. Tải lại trang để áp dụng.</p>`, [
+        const questionsEntry = entries.find(([key]) => key === this.PREFIX + 'questions');
+        const importedQuestions = questionsEntry && JSON.parse(questionsEntry[1]);
+        if (!Array.isArray(importedQuestions) || !importedQuestions.length) {
+          throw new Error('Backup thiếu danh sách câu hỏi hợp lệ hoặc danh sách đang trống.');
+        }
+
+        const previous = {};
+        for (let i = 0; i < localStorage.length; i++) {
+          const key = localStorage.key(i);
+          if (key && key.startsWith(this.PREFIX)) previous[key] = localStorage.getItem(key);
+        }
+        try {
+          Object.keys(previous).forEach(key => localStorage.removeItem(key));
+          entries.forEach(([key, value]) => localStorage.setItem(key, value));
+        } catch (storageError) {
+          try {
+            Object.keys(localStorage).filter(key => key.startsWith(this.PREFIX)).forEach(key => localStorage.removeItem(key));
+            Object.entries(previous).forEach(([key, value]) => localStorage.setItem(key, value));
+          } catch (restoreError) {
+            console.error('Không thể khôi phục dữ liệu sau khi import thất bại:', restoreError);
+          }
+          throw new Error(`Trình duyệt không lưu được backup (có thể hết dung lượng). Dữ liệu cũ đã được giữ lại nếu có thể khôi phục. ${storageError.message}`);
+        }
+
+        this.showModal('Import thành công', `<p>Đã khôi phục ${entries.length} mục dữ liệu, gồm ${importedQuestions.length} câu hỏi. Tải lại trang để áp dụng.</p>`, [
           { text: 'Tải lại', class: '', onClick: () => location.reload() },
           { text: 'Đóng', class: 'btn-secondary', onClick: () => this.closeModal() }
         ]);
       } catch (err) {
-        this.showModal('Lỗi Import', '<p>File JSON không đúng định dạng backup.</p>', [{text:'OK', class:'', onClick:()=>this.closeModal()}]);
+        this.showModal('Lỗi Import', `<p>${escapeHtml(err.message || 'Không thể đọc file backup.')}</p>`, [{text:'OK', class:'', onClick:()=>this.closeModal()}]);
       }
       e.target.value = '';
+    };
+    reader.onerror = () => {
+      e.target.value = '';
+      this.showModal('Lỗi đọc file', '<p>Trình duyệt không đọc được file. Hãy thử chọn lại file JSON.</p>', [
+        { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+      ]);
     };
     reader.readAsText(file);
   }
@@ -2936,7 +2969,12 @@ class PMPApp {
       });
     }
 
-    this.setStorage('questions', Array.from(byId.values()));
+    if (!this.setStorage('questions', Array.from(byId.values()))) {
+      this.showModal('❌ Không lưu được ngân hàng', '<p>Trình duyệt không lưu được dữ liệu (có thể hết dung lượng). Ngân hàng hiện tại chưa được thay đổi; hãy giải phóng dung lượng hoặc xuất backup trước khi thử lại.</p>', [
+        { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+      ]);
+      return;
+    }
 
     let summaryHtml = `
       <p>Chế độ: <strong>${mode === 'APPEND' ? '🚀 Thêm mới' : '📝 Ghi đè'}</strong></p>
