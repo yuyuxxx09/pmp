@@ -1590,10 +1590,24 @@ class PMPApp {
     if (!force && saved && run && run.status === 'IN_PROGRESS' &&
         saved.domain === domain && saved.mode === mode) {
       const bank = new Map(this.getQuestions().map(question => [question.id, question]));
-      const questions = saved.qIds.map(id => bank.get(id)).filter(Boolean);
+      const savedQuestionIds = Array.isArray(saved.qIds) ? saved.qIds : [];
+      const questions = savedQuestionIds.map(id => bank.get(id)).filter(Boolean);
+      if (saved.mode === 'all') {
+        const existingIds = new Set(questions.map(question => question.id));
+        const additions = Array.from(bank.values()).filter(question =>
+          (saved.domain === 'ALL' || question.domain === saved.domain) && !existingIds.has(question.id)
+        );
+        questions.push(...additions);
+      }
       if (questions.length) {
           const savedAnswers = saved.answers || {};
           Object.keys(savedAnswers).forEach(id => { if (!questions.some(question => question.id === id)) delete savedAnswers[id]; });
+          const currentQuestionIds = questions.map(question => question.id);
+          if (currentQuestionIds.length !== savedQuestionIds.length ||
+              currentQuestionIds.some((id, index) => id !== savedQuestionIds[index])) {
+            saved.qIds = currentQuestionIds;
+            this.setStorage('current_practice', saved);
+          }
           if (run.planned !== questions.length) {
             run.planned = questions.length;
             this.setStorage('practice_runs', (this.getStorage('practice_runs') || []).map(item => item.id === run.id ? run : item));
@@ -1673,6 +1687,17 @@ class PMPApp {
       this.updateExamTimerUI();
       this.resumeExamTimer();
       this.renderQuestionCard('exam-card-container');
+      const examBankIds = Array.isArray(saved.bankQuestionIds) ? saved.bankQuestionIds : null;
+      const examBankIdSet = examBankIds ? new Set(examBankIds) : null;
+      const newQuestionCount = examBankIdSet
+        ? this.getQuestions().filter(question => !examBankIdSet.has(question.id)).length
+        : 0;
+      if (newQuestionCount) {
+        document.getElementById('exam-card-container').insertAdjacentHTML('afterbegin', `
+          <div class="insight-card" style="border-color:var(--info); background:var(--info-bg);">
+            Ngân hàng có thêm ${newQuestionCount} câu mới. Bài thi đang làm được giữ nguyên; hãy nộp bài này để bắt đầu bài thi mới có các câu vừa nhập.
+          </div>`);
+      }
     } else {
       // Nếu không có bài thi hợp lệ, xóa dữ liệu lỗi và hiển thị form setup
       this.setStorage('current_exam', null);
@@ -1747,7 +1772,7 @@ class PMPApp {
     this.currentExam = {
       id: this.createId('exam'), mode: 'EXAM', status: 'IN_PROGRESS',
       startTime: startedAt, currentQuestionStartedAt: startedAt, durationMs,
-      questions: qs, currentIndex: 0,
+      questions: qs, bankQuestionIds: this.getQuestions().map(question => question.id), currentIndex: 0,
       answers: {}, responseTimes: {}, flags: Object.fromEntries(qs
         .filter(question => (this.getStorage('flagged_questions') || []).includes(question.id))
         .map(question => [question.id, true])), usedTranslate: {}, isPaused: false
@@ -3010,10 +3035,16 @@ class PMPApp {
         if (!Array.isArray(incoming)) throw new Error('File phải là mảng câu hỏi.');
 
         const errors = [];
+        const importedIds = new Set();
         incoming.forEach((q, i) => {
           if (!q || typeof q !== 'object') { errors.push(`[${i}] không phải object`); return; }
           if (!q.id) errors.push(`[${i}] thiếu id`);
-          else if (!/^[A-Za-z0-9_-]+$/.test(String(q.id))) errors.push(`[${i}] id "${q.id}" chỉ được chứa chữ, số, _ và -`);
+          else {
+            const id = String(q.id);
+            if (!/^[A-Za-z0-9_-]+$/.test(id)) errors.push(`[${i}] id "${q.id}" chỉ được chứa chữ, số, _ và -`);
+            if (importedIds.has(id)) errors.push(`[${i}] id "${id}" bị trùng trong file import`);
+            importedIds.add(id);
+          }
           if (!q.question) errors.push(`[${i}] ${q.id||'?'}: thiếu question`);
           if (!q.question_vi) errors.push(`[${i}] ${q.id||'?'}: thiếu question_vi`);
           if (!q.explanation || !q.explanation.correct_vi)
@@ -3144,17 +3175,21 @@ class PMPApp {
         if (m) maxNum = Math.max(maxNum, parseInt(m[1]));
       });
 
-      const existingIds = new Set(existing.map(q => q.id));
+      const usedIds = new Set(existing.map(q => q.id));
       incoming.forEach(q => {
-        if (existingIds.has(q.id)) {
-          maxNum++;
-          const newId = 'Q' + String(maxNum).padStart(3, '0');
+        if (usedIds.has(q.id)) {
+          let newId;
+          do {
+            maxNum++;
+            newId = 'Q' + String(maxNum).padStart(3, '0');
+          } while (usedIds.has(newId));
           renamed.push({ old: q.id, new: newId });
           q.id = newId;
           addedCount++;
         } else {
           addedCount++;
         }
+        usedIds.add(q.id);
         byId.set(q.id, q);
       });
     } else {
@@ -3170,12 +3205,18 @@ class PMPApp {
       ]);
       return;
     }
+    const activeExam = this.currentExam || this.getStorage('current_exam');
+    if (activeExam && activeExam.status === 'IN_PROGRESS' && !Array.isArray(activeExam.bankQuestionIds)) {
+      activeExam.bankQuestionIds = existing.map(question => question.id);
+      this.setStorage('current_exam', activeExam);
+    }
 
     let summaryHtml = `
       <p>Chế độ: <strong>${mode === 'APPEND' ? '🚀 Thêm mới' : '📝 Ghi đè'}</strong></p>
       <p>Thêm mới: <strong>${addedCount}</strong> câu</p>
       ${mode === 'OVERWRITE' ? `<p>Cập nhật: <strong>${updatedCount}</strong> câu</p>` : ''}
       <p>Tổng bank hiện tại: <strong>${byId.size}</strong> câu</p>
+      <p class="insight-meta" style="margin-top:.5rem;">Sau khi tải lại, chế độ “Toàn bộ ngân hàng” trong Practice sẽ có câu mới. Bài Exam đang làm được giữ nguyên; câu mới sẽ có trong bài thi tiếp theo.</p>
     `;
 
     if (renamed.length > 0) {
