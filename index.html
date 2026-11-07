@@ -1,0 +1,2190 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PMP Luyện Thi Song Ngữ 14 Ngày (PMP ECO)</title>
+  <style>
+    :root {
+      --primary: #2563eb; --primary-hover: #1d4ed8;
+      --bg: #f8fafc; --card-bg: #fff; --text: #0f172a; --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #16a34a; --success-bg: #f0fdf4;
+      --danger: #dc2626; --danger-bg: #fef2f2;
+      --warning: #d97706; --warning-bg: #fffbeb;
+      --info: #0284c7; --info-bg: #f0f9ff;
+      --kw-bg: #fef08a;
+      --radius: 10px;
+      --shadow: 0 4px 6px -1px rgba(0,0,0,.1), 0 2px 4px -2px rgba(0,0,0,.1);
+      --font: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: var(--font); background: var(--bg); color: var(--text); line-height: 1.5; font-size: 15px; }
+    header { background: #1e293b; color: #fff; padding: .75rem 1rem; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow); }
+    .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
+    .brand { font-size: 1.25rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: .5rem; }
+    .nav-links { display: flex; gap: .25rem; flex-wrap: wrap; }
+    .nav-btn { background: transparent; border: none; color: #94a3b8; padding: .5rem .75rem; border-radius: 6px; cursor: pointer; font-size: .9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; }
+    .nav-btn:hover, .nav-btn.active { color: #fff; background: #334155; }
+    main { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
+    .page { display: none; }
+    .page.active { display: block; }
+    .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow); }
+    .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    .grid-3 { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
+    @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; background: var(--primary); color: #fff; border: none; padding: .6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: .95rem; min-height: 44px; min-width: 44px; text-decoration: none; transition: background .2s; }
+    .btn:hover { background: var(--primary-hover); }
+    .btn:disabled { opacity: .5; cursor: not-allowed; }
+    .btn-secondary { background: #64748b; } .btn-secondary:hover { background: #475569; }
+    .btn-outline { background: transparent; border: 1px solid var(--border); color: var(--text); }
+    .btn-outline:hover { background: #f1f5f9; }
+    .btn-sm { padding: .3rem .6rem; font-size: .85rem; min-height: 36px; }
+    .btn-danger { background: var(--danger); } .btn-danger:hover { background: #b91c1c; }
+    .btn-warning { background: var(--warning); color: #fff; }
+    .btn-success { background: var(--success); color: #fff; }
+    .tag { display: inline-block; padding: .2rem .5rem; border-radius: 4px; font-size: .75rem; font-weight: 600; text-transform: uppercase; background: #e2e8f0; color: #475569; }
+    .tag-people { background: #dbeafe; color: #1e40af; }
+    .tag-process { background: #fef3c7; color: #92400e; }
+    .tag-businessenvironment { background: #dcfce7; color: #166534; }
+    .tag-predictive { background: #e0f2fe; color: #075985; }
+    .metric-box { text-align: center; padding: 1rem; background: #f8fafc; border-radius: var(--radius); border: 1px solid var(--border); }
+    .metric-val { font-size: 2rem; font-weight: 700; color: var(--primary); margin: .2rem 0; }
+    .metric-lbl { font-size: .85rem; color: var(--text-muted); font-weight: 500; }
+    .q-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; padding-bottom: .75rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
+    .q-text { font-size: 1.1rem; font-weight: 500; line-height: 1.6; margin-bottom: 1rem; color: #0f172a; }
+    .q-text-vi { font-size: 1rem; line-height: 1.6; color: #334155; background: #f1f5f9; padding: .75rem; border-radius: 6px; margin-bottom: 1rem; border-left: 4px solid var(--primary); }
+    .options-list { display: flex; flex-direction: column; gap: .75rem; margin-bottom: 1rem; }
+    .option-item { display: flex; align-items: flex-start; gap: .75rem; padding: .8rem 1rem; border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; transition: all .2s; min-height: 48px; }
+    .option-item:hover { border-color: var(--primary); background: #f0f6ff; }
+    .option-item.selected { border-color: var(--primary); background: #eff6ff; font-weight: 500; }
+    .option-item.correct { border-color: var(--success); background: var(--success-bg); }
+    .option-item.wrong { border-color: var(--danger); background: var(--danger-bg); }
+    .option-key { font-weight: 700; width: 24px; height: 24px; border-radius: 50%; background: #e2e8f0; display: flex; align-items: center; justify-content: center; font-size: .85rem; flex-shrink: 0; }
+    .option-item.selected .option-key { background: var(--primary); color: #fff; }
+    .option-item.correct .option-key { background: var(--success); color: #fff; }
+    .option-item.wrong .option-key { background: var(--danger); color: #fff; }
+    .option-content { flex-grow: 1; }
+    
+    /* ===== Bố cục 2 cột (Câu hỏi + Sidebar) ===== */
+    .question-layout { display: flex; gap: 1.5rem; align-items: flex-start; }
+    .question-main { flex: 1; min-width: 0; }
+    .question-sidebar {
+      width: 280px; flex-shrink: 0; position: sticky; top: 80px;
+      background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 1rem; box-shadow: var(--shadow); max-height: calc(100vh - 100px);
+      display: flex; flex-direction: column;
+    }
+    @media (max-width: 900px) {
+      .question-layout { flex-direction: column; }
+      .question-sidebar { width: 100%; position: static; max-height: 300px; order: -1; }
+    }
+
+    .palette-header { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
+    .palette-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.25rem; font-size: 0.8rem; }
+    .legend-color { width: 14px; height: 14px; border-radius: 3px; border: 1px solid var(--border); flex-shrink: 0; }
+    
+    .palette-grid-sidebar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.5rem; padding-right: 0.25rem; margin-bottom: 1rem; }
+    
+    .palette-pagination { display: flex; justify-content: space-between; align-items: center; border-top: 1px solid var(--border); padding-top: 0.75rem; margin-top: auto; }
+    .palette-pagination button { background: #fff; border: 1px solid var(--border); padding: 0.3rem 0.6rem; border-radius: 4px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .palette-pagination button:hover:not(:disabled) { background: #eff6ff; border-color: var(--primary); color: var(--primary); }
+    .palette-pagination button:disabled { opacity: 0.3; cursor: not-allowed; }
+    .palette-pagination span { font-size: 0.85rem; font-weight: 600; color: var(--text-muted); }
+
+    .palette-btn { width: 100%; aspect-ratio: 1; border: 1px solid var(--border); background: #fff; border-radius: 6px; font-weight: 600; font-size: 0.85rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.2s; }
+    .palette-btn:hover { border-color: var(--primary); background: #eff6ff; }
+    .palette-btn.active { outline: 2px solid var(--primary); outline-offset: 1px; font-weight: 700; background: #eff6ff; z-index: 10; }
+    .palette-btn.answered { background: #cbd5e1; color: #1e293b; }
+    .palette-btn.flagged { background: #fef08a; border-color: var(--warning); }
+    
+    .exp-panel { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-top: 1rem; }
+    .exp-toggle { display: flex; gap: .25rem; margin-bottom: .75rem; }
+    .exp-toggle button { padding: .25rem .5rem; font-size: .8rem; border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer; }
+    .exp-toggle button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .kw { background: var(--kw-bg); padding: .1rem .3rem; border-radius: 3px; font-weight: 600; cursor: pointer; border-bottom: 1.5px dotted #ca8a04; display: inline-block; }
+    .kw:hover { background: #fde047; }
+    .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+    .modal-overlay.active { display: flex; }
+    .modal-content { background: #fff; border-radius: var(--radius); max-width: 500px; width: 100%; padding: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,.2); max-height: 90vh; overflow-y: auto; }
+    .modal-header { font-size: 1.2rem; font-weight: 700; margin-bottom: .75rem; display: flex; justify-content: space-between; align-items: center; }
+    .modal-close-x { border: none; background: none; font-size: 1.5rem; cursor: pointer; }
+    .confidence-group { display: flex; gap: .5rem; margin-top: .75rem; }
+    .conf-btn { flex: 1; padding: .4rem; font-size: .85rem; border: 1px solid var(--border); background: #fff; border-radius: 6px; cursor: pointer; text-align: center; }
+    .conf-btn.selected { background: #e2e8f0; font-weight: 700; border-color: #94a3b8; }
+    .chart-container { width: 100%; overflow-x: auto; margin: 1rem 0; }
+    svg { display: block; max-width: 100%; height: auto; }
+    .timer-badge { font-weight: 700; font-family: monospace; font-size: 1.1rem; padding: .3rem .6rem; border-radius: 6px; background: #e2e8f0; min-width: 80px; text-align: center; }
+    .timer-badge.warning { background: var(--danger-bg); color: var(--danger); animation: pulse 1s infinite; }
+    @keyframes pulse { 0% { opacity: 1; } 50% { opacity: .5; } 100% { opacity: 1; } }
+    .data-table { width: 100%; border-collapse: collapse; margin-top: .5rem; font-size: .9rem; }
+    .data-table th, .data-table td { padding: .6rem .8rem; border-bottom: 1px solid var(--border); text-align: left; }
+    .data-table th { background: #f1f5f9; font-weight: 600; }
+    .flashcard { width: 100%; min-height: 200px; display: flex; align-items: center; justify-content: center; padding: 2rem 1rem; background: linear-gradient(135deg, #dbeafe, #bfdbfe); border-radius: var(--radius); cursor: pointer; text-align: center; font-size: 1.5rem; font-weight: 700; color: #1e40af; }
+    .flashcard.flipped { background: linear-gradient(135deg, #fef3c7, #fde68a); color: #92400e; font-size: 1.2rem; font-weight: 500; }
+  
+    /* ===== Case Study Scenario Panel ===== */
+    .scenario-panel { background: linear-gradient(135deg, #fffbeb, #fef3c7); border: 1px solid #fde68a; border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem; }
+    .scenario-toggle { background: #f59e0b; color: #fff; border: none; padding: 0.4rem 0.75rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: 0.85rem; }
+    .scenario-toggle:hover { background: #d97706; }
+    .scenario-text { margin-top: 0.75rem; line-height: 1.7; color: #1f2937; font-style: italic; font-size: 0.95rem; padding: 0.75rem; background: #fff; border-radius: 6px; border-left: 4px solid #f59e0b; }
+    .scenario-vi { margin-top: 0.5rem; padding: 0.75rem; background: #fef9c3; border-radius: 6px; color: #713f12; font-size: 0.9rem; line-height: 1.6; }
+    
+    /* CSS cho các dạng câu hỏi mới */
+    .dropdown-select { padding: 0.3rem 0.6rem; border: 1.5px solid var(--primary); border-radius: 4px; background: #eff6ff; font-weight: 600; color: var(--primary); cursor: pointer; margin: 0 0.2rem; }
+    .matching-container { display: flex; gap: 2rem; margin-bottom: 1rem; }
+    .matching-col { flex: 1; display: flex; flex-direction: column; gap: 0.5rem; }
+    .match-item { padding: 0.75rem; border: 1.5px solid var(--border); border-radius: 6px; cursor: pointer; background: #fff; transition: all 0.2s; }
+    .match-item.selected { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
+    .match-item.matched { border-color: var(--success); background: var(--success-bg); cursor: pointer; }
+    .q-image { max-width: 100%; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border); }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="nav-container">
+    <div class="brand">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+      PMP Accelerator 14D
+    </div>
+    <nav class="nav-links">
+      <a href="#dashboard" class="nav-btn" id="nav-dashboard">📊 Dashboard</a>
+      <a href="#practice" class="nav-btn" id="nav-practice">📝 Practice</a>
+      <a href="#exam" class="nav-btn" id="nav-exam">⏱️ Exam</a>
+      <a href="#review" class="nav-btn" id="nav-review">📑 Review</a>
+      <a href="#gap" class="nav-btn" id="nav-gap">🎯 Gap Analysis</a>
+      <a href="#plan" class="nav-btn" id="nav-plan">📅 14 Days</a>
+      <a href="#glossary" class="nav-btn" id="nav-glossary">📚 Glossary</a>
+      <a href="#settings" class="nav-btn" id="nav-settings">⚙️ Settings</a>
+    </nav>
+  </div>
+</header>
+
+<main>
+  <!-- DASHBOARD -->
+  <section id="dashboard" class="page">
+    <div class="card" style="background: linear-gradient(to right,#1e293b,#0f172a); color:#fff;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
+        <div>
+          <h2 style="font-size:1.5rem; margin-bottom:.3rem;">Tiến độ Luyện thi PMP (ECO 2021)</h2>
+          <p style="color:#94a3b8; font-size:.95rem;" id="dash-streak">Streak: 0 ngày | Ngày hiện tại: Day 1</p>
+        </div>
+        <button class="btn btn-warning" id="btn-resume-exam" style="display:none;" onclick="location.hash='#exam'">▶️ Tiếp tục bài thi dở</button>
+      </div>
+    </div>
+    <div class="grid-3">
+      <div class="metric-box"><div class="metric-lbl">Tỷ lệ đúng tổng thể</div><div class="metric-val" id="m-accuracy">0%</div><div class="metric-lbl" id="m-total-q">0 câu đã làm</div></div>
+      <div class="metric-box"><div class="metric-lbl">English Comprehension %</div><div class="metric-val" id="m-comprehension">0%</div><div class="metric-lbl">Mục tiêu: Tuần 1 ≥40%, Tuần 2 ≥70%</div></div>
+      <div class="metric-box"><div class="metric-lbl">Hôm nay cần ôn (SRS)</div><div class="metric-val" id="m-srs-count">0</div><div class="metric-lbl" id="m-srs-sub">0 câu</div><button class="btn btn-sm" id="btn-srs-practice" style="margin-top:.5rem; display:none;" onclick="app.startSrsPractice()">▶ Ôn ngay</button></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><h3>📊 Độ chính xác theo Domain</h3><div class="chart-container" id="chart-domain"></div></div>
+      <div class="card"><h3>⚠️ Top 3 Topics Cần Cải Thiện</h3><div id="top-weak-topics" style="margin-top:.5rem;">Chưa đủ dữ liệu.</div></div>
+    </div>
+    <div class="grid-2">
+      <div class="card"><h3>🔤 Widget: Từ Vựng Cần Học</h3><div id="widget-vocab-list">Chưa có dữ liệu.</div></div>
+      <div class="card"><h3>📈 English Comprehension Trend</h3><div id="widget-trend-desc" style="font-size:.9rem; color:var(--text-muted); margin-bottom:.5rem;">Tỷ lệ đúng KHÔNG bấm dịch.</div><div class="chart-container" id="chart-comprehension"></div></div>
+    </div>
+  </section>
+
+    <!-- PRACTICE -->
+  <section id="practice" class="page">
+    <div class="card" style="margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+        <h3>📝 Luyện Tập Theo Chủ Đề</h3>
+        <select id="practice-filter-domain" style="padding:.4rem; border-radius:6px; border:1px solid var(--border);">
+          <option value="ALL">Tất cả Domain</option>
+          <option value="People">People</option>
+          <option value="Process">Process</option>
+          <option value="BusinessEnvironment">Business Environment</option>
+        </select>
+      </div>
+    </div>
+    <!-- Layout 2 cột -->
+    <div class="question-layout">
+      <div class="card question-main" id="practice-card-container"></div>
+      <div class="question-sidebar" id="practice-sidebar"></div>
+    </div>
+  </section>
+
+  <!-- EXAM -->
+  <section id="exam" class="page">
+    <div class="card" style="margin-bottom:1rem;">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
+        <div>
+          <h3 id="exam-header-title">⏱️ Thi Thử PMP Mock Exam</h3>
+        </div>
+        <div style="display:flex; align-items:center; gap:1rem;">
+          <button class="btn btn-warning btn-sm" id="btn-pause-exam" onclick="app.togglePauseExam()" style="display:none;">⏸ Tạm dừng</button>
+          <div class="timer-badge" id="exam-timer">--:--</div>
+          <button class="btn btn-danger btn-sm" id="btn-submit-exam" onclick="app.confirmSubmitExam()" style="display:none;">Nộp bài</button>
+        </div>
+      </div>
+    </div>
+    <!-- Layout 2 cột -->
+    <div class="question-layout">
+      <div class="card question-main" id="exam-card-container"></div>
+      <div class="question-sidebar" id="exam-sidebar"></div>
+    </div>
+  </section>
+
+  <!-- REVIEW -->
+  <section id="review" class="page">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem;">
+        <h2>📑 Kết Quả & Xem Lại</h2>
+        <div class="exp-toggle">
+          <button data-action="review-lang" data-val="VI" class="rev-lang-btn">VI</button>
+          <button data-action="review-lang" data-val="EN" class="rev-lang-btn">EN</button>
+          <button data-action="review-lang" data-val="VI_EN" class="rev-lang-btn">VI+EN</button>
+        </div>
+      </div>
+      <div id="review-summary" style="margin:1rem 0;"></div>
+      <div class="grid-2">
+        <div class="card"><h4>Domain</h4><div id="chart-review-domain"></div></div>
+        <div class="card"><h4>EN Level</h4><div id="chart-review-level"></div></div>
+      </div>
+      <h3>Danh Sách Câu Hỏi</h3>
+      <div id="review-list"></div>
+    </div>
+  </section>
+
+  <!-- GAP -->
+  <section id="gap" class="page">
+    <div class="card">
+      <h2>🎯 Phân Tích Lỗ Hổng 2 Chiều</h2>
+      <p style="color:var(--text-muted); margin-bottom:1rem; font-size:.9rem;">Phân tách lỗi do chưa thuộc quy trình PMP vs rào cản từ vựng tiếng Anh.</p>
+      <div class="grid-2" style="margin-bottom:1.5rem;">
+        <div class="card" style="border-top:4px solid var(--danger);">
+          <h3 style="color:var(--danger);">🔴 Knowledge Gap</h3>
+          <p style="font-size:.85rem; color:var(--text-muted);">Sai dù không bấm dịch.</p>
+          <div id="gap-knowledge-list" style="margin-top:.75rem;">—</div>
+        </div>
+        <div class="card" style="border-top:4px solid var(--info);">
+          <h3 style="color:var(--info);">🔵 Language Gap</h3>
+          <p style="font-size:.85rem; color:var(--text-muted);">Sai khi đã dùng dịch / đoán mò.</p>
+          <div id="gap-language-list" style="margin-top:.75rem;">—</div>
+        </div>
+      </div>
+      <div class="card"><h3>🔑 Top Keywords Sai Nhiều Nhất</h3><div id="gap-keywords-list" style="margin-top:.75rem;">—</div></div>
+      <div class="card"><h3>🔥 Heatmap Tasks</h3><div class="chart-container" id="chart-gap-heatmap"></div></div>
+    </div>
+  </section>
+
+  <!-- PLAN -->
+  <section id="plan" class="page">
+    <div class="card">
+      <h2>📅 Lộ Trình 14 Ngày</h2>
+      <p style="color:var(--text-muted); font-size:.9rem; margin-bottom:.75rem;">Balancing knowledge intake & progressive translation unlock.</p>
+      <button class="btn btn-outline btn-sm" style="margin-bottom:1rem;" onclick="app.resetStartDate()">🔄 Đặt hôm nay là Ngày 1</button>
+      <div id="plan-checklist"></div>
+    </div>
+  </section>
+
+  <!-- GLOSSARY -->
+  <section id="glossary" class="page">
+    <div class="card">
+      <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem;">
+        <h2>📚 Ngân Hàng Thuật Ngữ</h2>
+        <button class="btn btn-warning btn-sm" onclick="app.startVocabularyQuiz()">🎴 Quiz 20 Từ</button>
+      </div>
+      <div style="display:flex; gap:.5rem; margin-bottom:1rem; flex-wrap:wrap;">
+        <input type="text" id="glossary-search" placeholder="🔍 Tìm EN hoặc VI..." style="padding:.5rem; border:1px solid var(--border); border-radius:6px; flex-grow:1;">
+        <select id="glossary-filter-status" style="padding:.5rem; border:1px solid var(--border); border-radius:6px;">
+          <option value="ALL">Tất cả</option>
+          <option value="LEARNING">Cần học</option>
+          <option value="MASTERED">Đã thuộc</option>
+        </select>
+      </div>
+      <div style="overflow-x:auto;">
+        <table class="data-table">
+          <thead><tr><th>EN</th><th>VI</th><th>Ví dụ</th><th>Sai</th><th>Đọc</th><th>Trạng thái</th></tr></thead>
+          <tbody id="glossary-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- SETTINGS -->
+  <section id="settings" class="page">
+    <div class="card">
+      <h2>⚙️ Cấu Hình & Dữ Liệu</h2>
+      <div style="margin:1.5rem 0;">
+        <h4>Easy Mode (Override Progressive Lock)</h4>
+        <p style="font-size:.85rem; color:var(--text-muted); margin-bottom:.5rem;">Cho phép dịch ngay cả trong Exam mode ngày 12-14.</p>
+        <label style="display:flex; align-items:center; gap:.5rem; cursor:pointer;">
+          <input type="checkbox" id="set-easy-mode" style="width:20px; height:20px;">
+          <span style="font-weight:600;">Tôi muốn giữ chế độ dễ</span>
+        </label>
+      </div>
+      <hr style="border:0; border-top:1px solid var(--border); margin:1.5rem 0;">
+      <h4>📚 Import Question Bank (Merge — khuyên dùng)</h4>
+      <p style="font-size:.85rem; color:var(--text-muted); margin-bottom:.75rem;">
+        Nạp câu hỏi mới từ Gemini Notebook. CÂU TRÙNG ID sẽ được cập nhật, KHÔNG xóa tiến độ học.
+      </p>
+      <button class="btn btn-outline" onclick="document.getElementById('qbank-file-input').click()">
+        📚 Import Question Bank (Merge)
+      </button>
+      <input type="file" id="qbank-file-input" style="display:none;" accept=".json">
+
+      <hr style="border:0; border-top:1px solid var(--border); margin:1.5rem 0;">
+      <h4>💾 Sao Lưu Toàn Bộ (Backup)</h4>
+      <div style="display:flex; gap:1rem; flex-wrap:wrap; margin-top:.75rem;">
+        <button class="btn btn-outline" onclick="app.exportData()">📥 Export JSON</button>
+        <button class="btn btn-outline" onclick="document.getElementById('import-file-input').click()">📤 Import Backup (Overwrite All)</button>
+        <input type="file" id="import-file-input" style="display:none;" accept=".json">
+        <button class="btn btn-danger" onclick="app.resetAllData()">⚠️ Xóa Tất Cả</button>
+      </div>
+    </div> 
+  </section>
+</main>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="app-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span id="modal-title">Thông báo</span>
+      <button class="modal-close-x" onclick="app.closeModal()" aria-label="Đóng">&times;</button>
+    </div>
+    <div id="modal-body" style="margin-bottom:1.25rem;"></div>
+    <div id="modal-footer" style="display:flex; justify-content:flex-end; gap:.5rem; flex-wrap:wrap;"></div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="kw-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span id="kw-modal-term" style="color:var(--primary);">Term</span>
+      <button class="modal-close-x" onclick="document.getElementById('kw-modal').classList.remove('active')" aria-label="Đóng">&times;</button>
+    </div>
+    <div>
+      <p><strong>Nghĩa tiếng Việt:</strong> <span id="kw-modal-vi"></span></p>
+      <p style="margin-top:.5rem;"><strong>Ví dụ:</strong> <em id="kw-modal-ex"></em></p>
+      <p style="margin-top:.5rem; font-size:.85rem; color:var(--text-muted);"><strong>Nguồn:</strong> <span id="kw-modal-src"></span></p>
+    </div>
+    <div style="margin-top:1rem; display:flex; justify-content:space-between;">
+      <button class="btn btn-sm btn-outline" onclick="app.speakCurrentKw()">🔊 Đọc</button>
+      <button class="btn btn-sm btn-secondary" onclick="document.getElementById('kw-modal').classList.remove('active')">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-overlay" id="flashcard-modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <span>🎴 Flashcard Quiz</span>
+      <button class="modal-close-x" onclick="app.closeFlashcard()" aria-label="Đóng">&times;</button>
+    </div>
+    <div style="margin-bottom:.75rem; font-size:.9rem; color:var(--text-muted);" id="flashcard-progress">1/20</div>
+    <div id="flashcard-content"></div>
+    <div style="margin-top:1rem; display:flex; gap:.5rem;">
+      <button class="btn btn-outline" style="flex:1;" onclick="app.flashcardMark(false)">📖 Chưa thuộc</button>
+      <button class="btn" style="flex:1;" onclick="app.flashcardMark(true)">✓ Đã thuộc</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ===================== HELPERS ===================== */
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]); }
+function escapeAttr(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#39;'); }
+function todayISO(d) { d = d || new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); }
+function shuffle(a) { a = a.slice(); for (let i = a.length-1; i > 0; i--) { const j = Math.floor(Math.random()*(i+1)); [a[i],a[j]] = [a[j],a[i]]; } return a; }
+// Chỉ cho phép <span class="kw" data-kw="..."> trong phần giải thích; mọi thẻ khác bị loại bỏ (chống XSS từ file import)
+function sanitizeRich(html) {
+  const t = document.createElement('template'); t.innerHTML = String(html == null ? '' : html);
+  const walk = (node) => {
+    let out = '';
+    node.childNodes.forEach(n => {
+      if (n.nodeType === 3) out += escapeHtml(n.textContent);
+      else if (n.nodeType === 1) {
+        const inner = walk(n);
+        if (n.tagName === 'SPAN' && n.classList.contains('kw')) out += `<span class="kw" data-kw="${escapeAttr(n.getAttribute('data-kw') || n.textContent)}">${inner}</span>`;
+        else if (n.tagName === 'BR') out += '<br>'; else out += inner;
+      }
+    });
+    return out;
+  };
+  return walk(t.content);
+}
+function isAnswerCorrect(q, sel) {
+  if (sel === undefined || sel === null || sel === '' ) return false;
+  const type = q.type || 'MCQ';
+  try {
+    if (type === 'Matching') {
+      const a = JSON.parse(sel), b = JSON.parse(q.correctAnswer);
+      const ka = Object.keys(b);
+      return ka.length === Object.keys(a).length && ka.every(k => a[k] === b[k]);
+    }
+    if (type === 'Dropdown') return String(sel).replace(/\s/g,'') === String(q.correctAnswer).replace(/\s/g,'');
+    if (type === 'MultipleResponse') {
+      const selArr = String(sel).split(',').map(s=>s.trim()).filter(Boolean).sort();
+      const ansArr = String(q.correctAnswer).split(',').map(s=>s.trim()).filter(Boolean).sort();
+      return selArr.length === ansArr.length && selArr.every((v,i) => v === ansArr[i]);
+    }
+  } catch (e) { return false; }
+  return sel === q.correctAnswer;
+}
+function normalizeQuestion(q) {
+  q.id = String(q.id); q.type = q.type || 'MCQ';
+  q.domain = String(q.domain || 'Process').replace(/\s+/g,'');
+  if (!['People','Process','BusinessEnvironment'].includes(q.domain)) q.domain = 'Process';
+  q.task = q.task || 'Imported'; q.methodology = q.methodology || 'Predictive';
+  q.difficulty = q.difficulty || 'medium'; q.english_level = q.english_level || 'B1';
+  q.keywords = Array.isArray(q.keywords) ? q.keywords : [];
+  q.glossary = Array.isArray(q.glossary) ? q.glossary.filter(g => g && g.en) .map(g => ({en:String(g.en), vi:String(g.vi||''), example:String(g.example||''), source:String(g.source||'')})) : [];
+  q.reference = q.reference || '';
+  q.explanation.correct_en = q.explanation.correct_en || '';
+  q.explanation.whyWrong_vi = q.explanation.whyWrong_vi || {};
+  return q;
+}
+
+/* ===================== EMBEDDED QUESTIONS ===================== */
+// Giữ nguyên dữ liệu mẫu
+const EMBEDDED_QUESTIONS = [
+  {
+    id:"Q001", domain:"People", task:"Task 1: Manage conflict",
+    enabler:"Analyze the context for the conflict",
+    methodology:"Predictive", keywords:["Conflict Resolution","Collaborate/Problem Solve","Team Performance"],
+    difficulty:"medium", english_level:"B1",
+    question:"Two key project team members are disagreeing over technical specifications for a critical deliverable, causing delays in schedule. What should the project manager do FIRST?",
+    question_vi:"Hai thành viên nòng cốt trong team đang bất đồng về thông số kỹ thuật của một phần việc quan trọng, gây trễ tiến độ. PM nên làm gì ĐẦU TIÊN?",
+    options:{A:"Escalate the issue to the functional manager of both team members.",B:"Facilitate a direct meeting with both team members to collaborate on a solution.",C:"Reassign the deliverable to a senior engineer to prevent further delays.",D:"Choose the technical option supported by the lead architect."},
+    options_vi:{A:"Leo thang lên Trưởng phòng chuyên môn của hai thành viên.",B:"Tổ chức cuộc họp trực tiếp với cả hai để cùng hợp tác tìm giải pháp.",C:"Giao lại công việc cho một kỹ sư cấp cao để tránh trễ hạn.",D:"Chọn phương án kỹ thuật do kiến trúc sư trưởng hỗ trợ."},
+    correctAnswer:"B",
+    explanation:{
+      correct_vi:"Theo PMBOK 7 & ECO People Task 1, khi xảy ra xung đột kỹ thuật giữa các thành viên, PM phải ưu tiên phương pháp <span class='kw' data-kw='Collaborate/Problem Solve'>Collaborate/Problem Solve</span> (Hợp tác / Giải quyết vấn đề) bằng cách tạo điều kiện họp trực tiếp để các bên đưa ra giải pháp win-win.",
+      correct_en:"Direct collaboration is the preferred conflict resolution technique to achieve a consensus-based solution.",
+      whyWrong_vi:{A:"Escalate quá sớm khi chưa thử giải quyết nội bộ team.",C:"Tăng rủi ro bất mãn cho team và chưa giải quyết tận gốc bất đồng.",D:"Áp đặt quyết định (Forcing) làm giảm tinh thần đồng đội."}
+    },
+    glossary:[
+      {en:"Collaborate/Problem Solve",vi:"Hợp tác / Giải quyết vấn đề",example:"Collaborate reaches consensus through open dialogue.",source:"PMBOK 7 §2.2"},
+      {en:"Conflict Resolution",vi:"Giải quyết xung đột",example:"Effective conflict resolution improves team cohesion.",source:"PMBOK 7 §2.2"},
+      {en:"Team Performance",vi:"Hiệu suất nhóm",example:"Resolving disputes restores optimal team performance.",source:"PMBOK 7 §2.2"}
+    ],
+    reference:"PMBOK 7 §2.2 / Agile Practice Guide Ch.4"
+  }
+];
+
+const GLOSS = {
+  "Critical Path":["Đường găng","The critical path is the longest sequence of activities and sets the minimum project duration.","PMBOK Guide"],
+  "Schedule Compression":["Nén tiến độ (crashing / fast-tracking)","Crashing adds resources; fast-tracking performs activities in parallel.","PMBOK Guide"],
+  "Integrated Change Control":["Kiểm soát thay đổi tích hợp","All change requests go through integrated change control before approval.","PMBOK Guide"],
+  "Servant Leadership":["Lãnh đạo phục vụ","A servant leader removes impediments and supports the team.","Agile Practice Guide"],
+  "Self-Organizing Team":["Nhóm tự tổ chức","A self-organizing team decides how to do its own work.","Agile Practice Guide"],
+  "Risk Response Plan":["Kế hoạch ứng phó rủi ro","When an identified risk occurs, execute the agreed response plan.","PMBOK Guide"],
+  "Stakeholder Engagement":["Gắn kết bên liên quan","Understand stakeholder concerns before choosing an engagement approach.","PMBOK Guide"],
+  "Regulatory Compliance":["Tuân thủ quy định","The PM must assess how new regulations affect scope and risk.","PMI ECO 2021"],
+  "Tuckman Ladder":["Thang phát triển nhóm Tuckman","Forming, storming, norming, performing, adjourning.","PMBOK Guide"],
+  "CPI":["Chỉ số hiệu quả chi phí (CPI = EV/AC)","A CPI below 1.0 means the project is over budget.","PMBOK Guide"],
+  "SPI":["Chỉ số hiệu quả tiến độ (SPI = EV/PV)","An SPI above 1.0 means the project is ahead of schedule.","PMBOK Guide"],
+  "Control Chart":["Biểu đồ kiểm soát","A control chart shows whether a process is stable and predictable.","PMBOK Guide"],
+  "Rule of Seven":["Quy tắc bảy điểm","Seven consecutive points on one side of the mean signal a non-random pattern.","PMBOK Guide"],
+  "Product Backlog":["Danh mục tồn đọng sản phẩm","The product owner orders the product backlog by value.","Agile Practice Guide"],
+  "Root Cause Analysis":["Phân tích nguyên nhân gốc","Find the underlying cause before applying a corrective action.","PMBOK Guide"],
+  "Contract":["Hợp đồng","The contract defines obligations and remedies for buyer and seller.","PMBOK Guide"]
+};
+function _mk(id,dom,task,meth,diff,lvl,kws,q,qv,opts,optsv,ans,ev,ee,ww,ref){
+  const L=['A','B','C','D'], wv={};
+  L.filter(x=>x!==ans).forEach((x,i)=>wv[x]=ww[i]);
+  return { id, domain:dom, task, enabler:"PMI ECO 2021", methodology:meth, keywords:kws, difficulty:diff, english_level:lvl,
+    question:q, question_vi:qv,
+    options:Object.fromEntries(L.map((k,i)=>[k,opts[i]])), options_vi:Object.fromEntries(L.map((k,i)=>[k,optsv[i]])),
+    correctAnswer:ans,
+    explanation:{ correct_vi: ev.replace(/\{([^}]+)\}/g,(m,t)=>"<span class='kw' data-kw='"+t+"'>"+t+"</span>"), correct_en:ee, whyWrong_vi:wv },
+    glossary:kws.map(k=>({en:k,vi:GLOSS[k][0],example:GLOSS[k][1],source:GLOSS[k][2]})), reference:ref };
+}
+[
+ _mk("Q002","Process","Task 6: Plan and manage schedule","Predictive","medium","B1",["Critical Path","Schedule Compression"],
+  "An activity on the critical path is running three days late. What should the project manager do FIRST?","Một hoạt động trên đường găng đang trễ 3 ngày. PM nên làm gì ĐẦU TIÊN?",
+  ["Add more resources to the activity immediately.","Inform the customer that the end date will slip.","Analyze the schedule to assess the impact and evaluate compression options.","Re-baseline the schedule to include the delay."],
+  ["Bổ sung ngay nhân lực cho hoạt động.","Thông báo cho khách hàng rằng ngày kết thúc sẽ trễ.","Phân tích tiến độ để đánh giá tác động và cân nhắc các phương án nén tiến độ.","Lập lại baseline tiến độ để gộp phần trễ."],"C",
+  "Trễ trên {Critical Path} ảnh hưởng trực tiếp ngày kết thúc. Trước khi hành động, PM phải phân tích tác động rồi mới chọn phương án {Schedule Compression} phù hợp.",
+  "Analyze the impact first, then choose crashing or fast-tracking based on the analysis.",
+  ["Thêm nguồn lực khi chưa phân tích có thể tăng chi phí mà không giải quyết được vấn đề.","Thông báo là cần thiết nhưng chưa đưa được phương án khi chưa phân tích.","Re-baseline chỉ làm khi thay đổi được phê duyệt, không phải phản ứng đầu tiên."],"PMBOK Guide – Schedule Management"),
+ _mk("Q003","Process","Task 10: Manage project changes","Predictive","easy","B1",["Integrated Change Control"],
+  "After the baseline is approved, a stakeholder asks for a new feature. What should the project manager do FIRST?","Sau khi baseline được duyệt, một stakeholder yêu cầu thêm tính năng mới. PM nên làm gì ĐẦU TIÊN?",
+  ["Assess the impact of the change on scope, schedule, cost and risk.","Implement the feature because the stakeholder is senior.","Reject the request because the scope is baselined.","Update the scope baseline and then inform the change control board."],
+  ["Đánh giá tác động của thay đổi lên phạm vi, tiến độ, chi phí và rủi ro.","Thực hiện tính năng vì stakeholder là người cấp cao.","Từ chối vì phạm vi đã có baseline.","Cập nhật baseline phạm vi rồi mới báo cho CCB."],"A",
+  "Mọi yêu cầu thay đổi phải đi qua {Integrated Change Control}. Bước đầu là đánh giá tác động; chỉ sau khi được phê duyệt mới cập nhật baseline.",
+  "Evaluate the impact of every change request before submitting it for approval.",
+  ["Làm trước khi được duyệt là bỏ qua quy trình kiểm soát thay đổi.","Từ chối ngay mà không đánh giá có thể bỏ lỡ thay đổi có giá trị.","Baseline chỉ được cập nhật sau khi thay đổi đã được phê duyệt."],"PMBOK Guide – Integrated Change Control"),
+ _mk("Q004","People","Task 1: Manage conflict","Agile","medium","B2",["Servant Leadership","Self-Organizing Team"],
+  "Two developers on an agile team disagree about the technical approach for the current sprint. What should the project manager do?","Hai developer trong nhóm agile bất đồng về cách tiếp cận kỹ thuật trong sprint hiện tại. PM nên làm gì?",
+  ["Make the technical decision for the team.","Escalate the disagreement to the product owner.","Replace one of the developers to restore harmony.","Coach the team to resolve it themselves, facilitating if needed."],
+  ["Tự quyết định phương án kỹ thuật thay cho nhóm.","Leo thang bất đồng lên product owner.","Thay một developer để lập lại hòa khí.","Hướng dẫn nhóm tự giải quyết, hỗ trợ điều phối khi cần."],"D",
+  "Theo {Servant Leadership}, PM hỗ trợ và gỡ vướng, còn một {Self-Organizing Team} tự quyết cách làm việc. PM chỉ điều phối khi nhóm chưa tự giải quyết được.",
+  "A servant leader coaches a self-organizing team to resolve its own conflicts.",
+  ["Áp đặt quyết định làm mất tính tự tổ chức của nhóm.","Product owner quản lý giá trị sản phẩm, không phải xung đột kỹ thuật nội bộ.","Thay người là biện pháp cực đoan, không phải bước đầu."],"Agile Practice Guide – Servant Leadership"),
+ _mk("Q005","Process","Task 3: Assess and manage risks","Predictive","easy","B1",["Risk Response Plan"],
+  "A risk listed in the risk register has just occurred, and a response plan was already approved. What should the project manager do?","Một rủi ro đã có trong risk register vừa xảy ra và đã có kế hoạch ứng phó được duyệt. PM nên làm gì?",
+  ["Update the risk register and wait for further instructions.","Execute the approved risk response plan.","Call a meeting to re-identify all project risks.","Ask the sponsor to release management reserve first."],
+  ["Cập nhật risk register rồi chờ chỉ đạo thêm.","Thực hiện kế hoạch ứng phó rủi ro đã được duyệt.","Họp để nhận diện lại toàn bộ rủi ro của dự án.","Xin sponsor giải ngân dự phòng quản lý trước."],"B",
+  "Rủi ro đã được nhận diện và có {Risk Response Plan} thì PM thực hiện kế hoạch đó ngay; việc cập nhật tài liệu diễn ra song song hoặc sau đó.",
+  "When an identified risk occurs, execute the planned response.",
+  ["Chờ chỉ đạo làm mất thời gian dù đã có kế hoạch.","Nhận diện lại toàn bộ rủi ro không cần thiết lúc này.","Dự phòng quản lý chỉ dùng cho rủi ro chưa lường trước."],"PMBOK Guide – Risk Management"),
+ _mk("Q006","Process","Task 4: Engage stakeholders","Predictive","medium","B1",["Stakeholder Engagement"],
+  "A key stakeholder is openly resisting the project. What should the project manager do FIRST?","Một stakeholder chủ chốt công khai phản đối dự án. PM nên làm gì ĐẦU TIÊN?",
+  ["Mark the stakeholder as resistant in the stakeholder register.","Escalate the resistance to the sponsor.","Meet the stakeholder to understand the underlying concerns.","Reduce communication to avoid further conflict."],
+  ["Đánh dấu stakeholder là phản đối trong stakeholder register.","Báo sự phản đối lên sponsor.","Gặp stakeholder để hiểu mối quan ngại thực sự.","Giảm giao tiếp để tránh thêm xung đột."],"C",
+  "Hiệu quả của {Stakeholder Engagement} bắt đầu bằng việc lắng nghe để hiểu nguyên nhân phản đối, sau đó mới điều chỉnh chiến lược gắn kết.",
+  "Understand the stakeholder's concerns first, then adapt the engagement approach.",
+  ["Ghi nhận không giải quyết được nguyên nhân.","Leo thang khi chưa trao đổi trực tiếp là quá sớm.","Giảm giao tiếp làm tăng rủi ro hiểu lầm."],"PMBOK Guide – Stakeholder Performance Domain"),
+ _mk("Q007","BusinessEnvironment","Task 1: Plan and manage project compliance","Predictive","medium","B2",["Regulatory Compliance"],
+  "A new regulation is announced that may affect a deliverable already in progress. What should the project manager do FIRST?","Một quy định mới được ban hành có thể ảnh hưởng đến sản phẩm đang thực hiện. PM nên làm gì ĐẦU TIÊN?",
+  ["Assess how the regulation affects scope, risks and compliance requirements.","Continue as planned until the regulator contacts the project.","Stop all work on the deliverable until the sponsor decides.","Ask the team to redesign the deliverable immediately."],
+  ["Đánh giá quy định ảnh hưởng thế nào đến phạm vi, rủi ro và yêu cầu tuân thủ.","Tiếp tục theo kế hoạch cho đến khi cơ quan quản lý liên hệ.","Dừng mọi việc cho đến khi sponsor quyết định.","Yêu cầu nhóm thiết kế lại sản phẩm ngay."],"A",
+  "{Regulatory Compliance} là trách nhiệm của PM. Cần hiểu tác động trước, sau đó mới đề xuất thay đổi qua quy trình phù hợp.",
+  "Assess the impact of the regulation before deciding on any action.",
+  ["Chờ cơ quan quản lý liên hệ là rủi ro vi phạm.","Dừng toàn bộ công việc là phản ứng thái quá.","Thiết kế lại khi chưa đánh giá có thể lãng phí."],"PMI ECO 2021 – Business Environment"),
+ _mk("Q008","People","Task 6: Build a team","Predictive","easy","B1",["Tuckman Ladder"],
+  "A newly formed team is unsure about roles and goals. According to the Tuckman ladder, which approach is MOST appropriate?","Một nhóm mới thành lập chưa rõ vai trò và mục tiêu. Theo thang Tuckman, cách tiếp cận nào PHÙ HỢP NHẤT?",
+  ["Delegate most decisions to the team.","Focus on mediating conflicts between members.","Step back and let the team self-manage.","Provide clear direction and define roles, goals and ground rules."],
+  ["Giao phần lớn quyết định cho nhóm.","Tập trung hòa giải xung đột giữa các thành viên.","Lùi lại để nhóm tự quản lý.","Định hướng rõ ràng và xác định vai trò, mục tiêu, quy tắc làm việc."],"D",
+  "Ở giai đoạn Forming của {Tuckman Ladder}, thành viên còn lạ lẫm nên cần sự chỉ dẫn rõ ràng từ PM.",
+  "In the forming stage, the team needs clear direction.",
+  ["Giao quyết định quá sớm khi nhóm chưa rõ vai trò.","Hòa giải xung đột phù hợp hơn ở giai đoạn Storming.","Lùi lại phù hợp với giai đoạn Performing."],"PMBOK Guide – Team Development"),
+ _mk("Q009","Process","Task 5: Plan and manage budget and resources","Predictive","medium","B2",["CPI","SPI"],
+  "A project has a CPI of 0.85 and an SPI of 1.05. What does this indicate?","Dự án có CPI = 0,85 và SPI = 1,05. Điều này cho biết gì?",
+  ["Under budget and ahead of schedule.","Over budget and ahead of schedule.","Under budget and behind schedule.","Over budget and behind schedule."],
+  ["Dưới ngân sách và vượt tiến độ.","Vượt ngân sách và vượt tiến độ.","Dưới ngân sách và chậm tiến độ.","Vượt ngân sách và chậm tiến độ."],"B",
+  "{CPI} < 1 nghĩa là chi phí thực tế cao hơn giá trị thu được (vượt ngân sách). {SPI} > 1 nghĩa là tiến độ nhanh hơn kế hoạch.",
+  "CPI below 1 means over budget; SPI above 1 means ahead of schedule.",
+  ["CPI < 1 không phải dưới ngân sách.","SPI > 1 không phải chậm tiến độ.","Cả hai chỉ số đều bị hiểu ngược."],"PMBOK Guide – Earned Value"),
+ _mk("Q010","Process","Task 7: Plan and manage quality of products/deliverables","Predictive","hard","B2",["Control Chart","Rule of Seven"],
+  "A control chart shows seven consecutive data points on one side of the mean, all within the control limits. What should the project manager do?","Biểu đồ kiểm soát có bảy điểm liên tiếp nằm cùng một phía đường trung bình, tất cả trong giới hạn kiểm soát. PM nên làm gì?",
+  ["Take no action because all points are within the limits.","Widen the control limits to match the data.","Investigate the cause because the pattern is not random.","Stop production and reject the whole batch."],
+  ["Không làm gì vì tất cả điểm nằm trong giới hạn.","Mở rộng giới hạn kiểm soát cho phù hợp dữ liệu.","Điều tra nguyên nhân vì mẫu hình này không ngẫu nhiên.","Dừng sản xuất và loại bỏ cả lô."],"C",
+  "Theo {Rule of Seven} trên {Control Chart}, bảy điểm liên tiếp cùng phía cho thấy quy trình có nguyên nhân đặc biệt dù chưa vượt giới hạn.",
+  "Seven points on one side of the mean indicate an assignable cause that should be investigated.",
+  ["Nằm trong giới hạn vẫn có thể là quy trình mất kiểm soát.","Điều chỉnh giới hạn che giấu vấn đề.","Loại bỏ cả lô là phản ứng quá mức khi chưa điều tra."],"PMBOK Guide – Quality Management"),
+ _mk("Q011","Process","Task 8: Plan and manage scope","Agile","easy","B1",["Product Backlog"],
+  "In the middle of a sprint, the product owner asks for a new item. What should the team do?","Giữa sprint, product owner yêu cầu thêm một hạng mục mới. Nhóm nên làm gì?",
+  ["Add it to the current sprint immediately.","Reject it because the product owner cannot change requirements.","Extend the sprint so the item can be completed.","Add it to the product backlog for prioritization in a later iteration."],
+  ["Thêm ngay vào sprint hiện tại.","Từ chối vì product owner không được đổi yêu cầu.","Kéo dài sprint để hoàn thành hạng mục.","Đưa vào product backlog để ưu tiên ở vòng lặp sau."],"D",
+  "Phạm vi sprint được giữ ổn định. Hạng mục mới được đưa vào {Product Backlog} và ưu tiên cho các sprint sau.",
+  "New work goes to the product backlog and is prioritized for a future iteration.",
+  ["Thêm giữa sprint phá vỡ cam kết sprint.","Product owner có quyền thay đổi backlog.","Sprint có độ dài cố định (time-box)."],"Agile Practice Guide – Backlog"),
+ _mk("Q012","Process","Task 11: Plan and manage procurement","Predictive","medium","B2",["Contract"],
+  "A seller has failed to deliver a component on the date stated in the contract. What should the project manager do FIRST?","Nhà cung cấp không giao một hạng mục đúng ngày ghi trong hợp đồng. PM nên làm gì ĐẦU TIÊN?",
+  ["Review the contract terms to confirm obligations and available remedies.","Terminate the contract for default.","Apply the penalty clause immediately.","Look for a replacement seller."],
+  ["Xem lại điều khoản hợp đồng để xác nhận nghĩa vụ và biện pháp xử lý.","Chấm dứt hợp đồng do vi phạm.","Áp dụng ngay điều khoản phạt.","Tìm nhà cung cấp thay thế."],"A",
+  "Mọi hành động phải căn cứ vào {Contract}. PM xem lại nghĩa vụ và biện pháp khắc phục trước khi chọn bước tiếp theo.",
+  "Always review the contract before taking action on seller non-performance.",
+  ["Chấm dứt hợp đồng là biện pháp cuối cùng.","Phạt khi chưa kiểm tra điều khoản có thể sai quy định.","Tìm nhà cung cấp mới khi chưa rõ vấn đề là quá sớm."],"PMBOK Guide – Procurement")
+].forEach(q => EMBEDDED_QUESTIONS.push(q));
+
+/* ===================== MAIN APP ===================== */
+class PMPApp {
+  constructor() {
+    this.PREFIX = 'pmp_';
+    this.currentSession = null;
+    this.currentExam = null;
+    this.examTimerInterval = null;
+    this.lastSubmittedSession = null;
+    this.prefExpLang = this.getStorage('exp_lang') || 'VI';
+    this.reviewExpLang = this.getStorage('review_exp_lang') || 'VI';
+    this._flashState = null;
+    this.palettePage = 1; 
+
+    this.initData();
+    this.initRouter();
+    this.initEvents();
+  }
+
+  getStorage(k) { try { const d = localStorage.getItem(this.PREFIX + k); return d ? JSON.parse(d) : null; } catch (e) { return null; } }
+  setStorage(k, v) { try { localStorage.setItem(this.PREFIX + k, JSON.stringify(v)); } catch (e) { console.error('LS write', e); } }
+
+  // Đảm bảo dữ liệu không bao giờ bị trống hoặc lỗi cấu trúc
+  initData() {
+    const qs = this.getStorage('questions');
+    if (!qs || !Array.isArray(qs) || qs.length === 0) this.setStorage('questions', EMBEDDED_QUESTIONS);
+    
+    const s = this.getStorage('sessions');
+    if (!s || !Array.isArray(s)) this.setStorage('sessions', []);
+    
+    const p = this.getStorage('practice_log');
+    if (!p || !Array.isArray(p)) this.setStorage('practice_log', []);
+    
+    if (!this.getStorage('srs')) this.setStorage('srs', {});
+    if (!this.getStorage('glossary_status')) this.setStorage('glossary_status', {});
+    if (!this.getStorage('settings')) this.setStorage('settings', { easy_mode: false, start_date: new Date().toISOString() });
+    
+    const t = this.getStorage('translate_log');
+    if (!t || !Array.isArray(t)) this.setStorage('translate_log', []);
+    this.migrateBank();
+  }
+
+  // Bản cũ chứa 25 câu giả (Q006–Q030, đáp án luôn là A, bản dịch sai). Gỡ chúng và dọn lịch sử liên quan.
+  migrateBank() {
+    if (this.getStorage('bank_ver') >= 2) return;
+    const qs = this.getStorage('questions') || [];
+    const fake = new Set(qs.filter(q => q.enabler === 'Standard PMP ECO Enabler').map(q => q.id));
+    const clean = qs.filter(q => !fake.has(q.id));
+    const ids = new Set(clean.map(q => q.id));
+    EMBEDDED_QUESTIONS.forEach(q => { if (!ids.has(q.id)) clean.push(q); });
+    this.setStorage('questions', clean);
+    if (fake.size) {
+      this.setStorage('practice_log', (this.getStorage('practice_log') || []).filter(a => !fake.has(a.qId)));
+      const ss = [];
+      (this.getStorage('sessions') || []).forEach(s => {
+        const ans = (s.answers || []).filter(a => !fake.has(a.qId));
+        if (!ans.length) return;
+        const sc = ans.filter(a => a.isCorrect).length;
+        ss.push({ ...s, answers: ans, score: sc, total: ans.length, percentage: Math.round(sc / ans.length * 100) });
+      });
+      this.setStorage('sessions', ss);
+      this.setStorage('srs', Object.fromEntries(Object.entries(this.getStorage('srs') || {}).filter(([k]) => !fake.has(k))));
+    }
+    this.setStorage('bank_ver', 2);
+  }
+
+  getQuestions() { const q = this.getStorage('questions'); return (Array.isArray(q) && q.length) ? q : EMBEDDED_QUESTIONS; }
+
+  saveCurrentExamState() { if (this.currentExam) this.setStorage('current_exam', this.currentExam); }
+
+  startSrsPractice() {
+    const today = todayISO(), srs = this.getStorage('srs') || {};
+    const due = new Set(Object.keys(srs).filter(k => srs[k].nextReview <= today));
+    const qs = this.getQuestions().filter(q => due.has(q.id));
+    if (!qs.length) { this.showModal('Không có câu đến hạn', '<p>Hiện không có câu nào cần ôn lại.</p>', [{text:'OK', class:'', onClick:()=>this.closeModal()}]); return; }
+    document.getElementById('practice-filter-domain').value = 'ALL';
+    this.currentSession = { mode:'PRACTICE', domain:'ALL', questions: qs, currentIndex:0, answers:{}, flags:{}, confidence:{}, usedTranslate:{} };
+    this.palettePage = 1;
+    if (window.location.hash === '#practice') this.route(); else window.location.hash = '#practice';
+  }
+
+  /* ---- Dropdown / Matching / MultiSelect ---- */
+  handleDropdownChange(qId, idx, val) {
+    const sess = this.getActiveSession(); if (!sess || (sess.mode === 'EXAM' && sess.isPaused)) return;
+    const q = sess.questions.find(x => x.id === qId); if (!q) return;
+    if (sess.mode === 'PRACTICE' && sess.answers[q.id] && this._complete(q, sess.answers[q.id])) return;
+    const arr = (sess.answers[q.id] ? sess.answers[q.id].split(',') : []);
+    while (arr.length < q.dropdowns.length) arr.push('');
+    arr[idx] = val;
+    if (arr.every(x => x === '')) delete sess.answers[q.id]; else sess.answers[q.id] = arr.join(',');
+    this._afterPartialAnswer(sess, q);
+  }
+  handleMatchClick(qId, key, side) {
+    const sess = this.getActiveSession(); if (!sess || (sess.mode === 'EXAM' && sess.isPaused)) return;
+    const q = sess.questions.find(x => x.id === qId); if (!q) return;
+    if (sess.mode === 'PRACTICE' && sess.answers[q.id] && this._complete(q, sess.answers[q.id])) return;
+    sess.pendingMatch = sess.pendingMatch || {};
+    const cur = sess.answers[q.id] ? JSON.parse(sess.answers[q.id]) : {};
+    if (side === 'left') {
+      if (cur[key]) { delete cur[key]; sess.pendingMatch[q.id] = null; }   // bấm lại mục đã nối để gỡ
+      else sess.pendingMatch[q.id] = (sess.pendingMatch[q.id] === key ? null : key);
+    } else if (sess.pendingMatch[q.id]) {
+      cur[sess.pendingMatch[q.id]] = key; sess.pendingMatch[q.id] = null;
+    } else return;
+    if (Object.keys(cur).length) sess.answers[q.id] = JSON.stringify(cur); else delete sess.answers[q.id];
+    this._afterPartialAnswer(sess, q);
+  }
+  toggleMultiSelect(key) {
+    const sess = this.getActiveSession();
+    if (!sess || (sess.mode === 'EXAM' && sess.isPaused)) return;
+    const q = sess.questions[sess.currentIndex];
+    if (!q || q.type !== 'MultipleResponse' || !q.options || !q.options[key]) return;
+    if (sess.mode === 'PRACTICE' && sess.answers[q.id] && this._complete(q, sess.answers[q.id])) return;
+
+    let arr = sess.answers[q.id] ? sess.answers[q.id].split(',') : [];
+    if (arr.includes(key)) arr = arr.filter(k => k !== key);
+    else {
+      const maxAns = q.correctAnswer.split(',').length;
+      if (arr.length >= maxAns) {
+        // Nếu đã chọn đủ số lượng đáp án, thay thế đáp án cũ nhất để cho phép đổi ý
+        arr.shift();
+      }
+      arr.push(key);
+    }
+    
+    if (!arr.length) delete sess.answers[q.id]; else sess.answers[q.id] = arr.sort().join(',');
+    this._afterPartialAnswer(sess, q);
+  }
+  _complete(q, sel) {
+    if (q.type === 'Dropdown') { const a = String(sel).split(','); return a.length === q.dropdowns.length && a.every(x => x !== ''); }
+    if (q.type === 'Matching') { try { return Object.keys(JSON.parse(sel)).length === q.matchingPairs.length; } catch (e) { return false; } }
+    if (q.type === 'MultipleResponse') return sel.split(',').length === q.correctAnswer.split(',').length;
+    return !!sel;
+  }
+  _afterPartialAnswer(sess, q) {
+    if (sess.mode === 'EXAM') this.saveCurrentExamState();
+    else if (sess.answers[q.id] && this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+    this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+  }
+
+  /* ---- ROUTER ---- */
+  initRouter() {
+    window.addEventListener('hashchange', () => this.route());
+    this.route();
+  }
+  route() {
+    let pageId = (window.location.hash || '#dashboard').replace('#', '');
+    if (!document.getElementById(pageId) || !document.getElementById(pageId).classList.contains('page')) pageId = 'dashboard';
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+    const page = document.getElementById(pageId);
+    const nav = document.getElementById('nav-' + pageId);
+    if (page) page.classList.add('active');
+    if (nav) nav.classList.add('active');
+
+    if (pageId === 'dashboard') this.renderDashboard();
+    else if (pageId === 'practice') this.initPracticeSession(false);
+    else if (pageId === 'exam') this.checkOrInitExam();
+    else if (pageId === 'review') this.renderReviewPage();
+    else if (pageId === 'gap') this.renderGapAnalysis();
+    else if (pageId === 'plan') this.render14DayPlan();
+    else if (pageId === 'glossary') this.renderGlossary();
+    else if (pageId === 'settings') this.renderSettings();
+  }
+
+  /* ---- EVENTS ---- */
+  initEvents() {
+    const qbankInput = document.getElementById('qbank-file-input');
+    if (qbankInput) {
+      qbankInput.addEventListener('change', (e) => this.importQuestionBank(e));
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (document.querySelector('.modal-overlay.active')) return; 
+      
+      const pid = document.querySelector('.page.active')?.id;
+      if (pid !== 'practice' && pid !== 'exam') return;
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+      if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+      if (['1', '2', '3', '4'].includes(e.key)) {
+        const sess = this.getActiveSession();
+        const q = sess?.questions[sess.currentIndex];
+        if (q && q.type === 'MultipleResponse') {
+           this.toggleMultiSelect(['A', 'B', 'C', 'D'][parseInt(e.key) - 1]);
+        } else {
+           this.selectAnswer(['A', 'B', 'C', 'D'][parseInt(e.key) - 1]);
+        }
+      } else if (e.key === 'ArrowRight') {
+        this.navQuestion(1);
+      } else if (e.key === 'ArrowLeft') {
+        this.navQuestion(-1);
+      } else if (e.key.toLowerCase() === 'f') {
+        this.toggleFlag();
+      }
+    });
+
+    document.addEventListener('click', (e) => {
+      const el = e.target.closest('[data-action]');
+      if (!el) return;
+      const action = el.dataset.action;
+      if (action === 'speak') this.speakTerm(el.dataset.term || '');
+      else if (action === 'toggle-glossary') this.toggleGlossaryStatus(el.dataset.term);
+      else if (action === 'open-kw') this.openKwModal(el.dataset.term);
+      else if (action === 'srs-know') this.updateSRS(el.dataset.qid, true);
+      else if (action === 'srs-review') this.updateSRS(el.dataset.qid, false);
+      else if (action === 'review-lang') this.setReviewLang(el.dataset.val);
+    });
+
+    const pracFilter = document.getElementById('practice-filter-domain');
+    if (pracFilter) pracFilter.addEventListener('change', () => this.initPracticeSession(true));
+
+    const glosSearch = document.getElementById('glossary-search');
+    if (glosSearch) glosSearch.addEventListener('input', () => this.renderGlossary());
+    const glosFilter = document.getElementById('glossary-filter-status');
+    if (glosFilter) glosFilter.addEventListener('change', () => this.renderGlossary());
+
+    const easyMode = document.getElementById('set-easy-mode');
+    if (easyMode) easyMode.addEventListener('change', (e) => {
+      const s = this.getStorage('settings') || {};
+      s.easy_mode = e.target.checked;
+      this.setStorage('settings', s);
+    });
+
+    const importBackup = document.getElementById('import-file-input');
+    if (importBackup) importBackup.addEventListener('change', (e) => this.importData(e));
+
+    window.addEventListener('beforeunload', (e) => {
+      if (this.currentExam && this.currentExam.status === 'IN_PROGRESS') this.saveCurrentExamState();
+    });
+  }
+
+  /* ---- MODAL ---- */
+  showModal(title, body, buttons = [], allowClose = true) {
+    document.getElementById('modal-title').textContent = title;
+    document.getElementById('modal-body').innerHTML = body;
+    const footer = document.getElementById('modal-footer');
+    footer.innerHTML = '';
+    buttons.forEach(b => {
+      const btn = document.createElement('button');
+      btn.className = 'btn ' + (b.class || 'btn-outline');
+      btn.textContent = b.text;
+      btn.onclick = () => b.onClick();
+      footer.appendChild(btn);
+    });
+    if (!allowClose) {
+      document.querySelector('#app-modal .modal-close-x').style.display = 'none';
+    } else {
+      document.querySelector('#app-modal .modal-close-x').style.display = 'block';
+    }
+    document.getElementById('app-modal').classList.add('active');
+  }
+  closeModal() { document.getElementById('app-modal').classList.remove('active'); }
+
+  /* ---- STUDY DAY & PROGRESSIVE LOCK ---- */
+  getCurrentStudyDay() {
+    const s = this.getStorage('settings') || {};
+    const st = new Date(s.start_date || Date.now()), n = new Date();
+    const a = new Date(st.getFullYear(), st.getMonth(), st.getDate()), b = new Date(n.getFullYear(), n.getMonth(), n.getDate());
+    const diff = Math.round((b - a) / 86400000) + 1;
+    return Math.max(1, Math.min(14, diff));
+  }
+  canUseTranslateInExam() {
+    const s = this.getStorage('settings') || {};
+    if (s.easy_mode) return true;
+    const d = this.getCurrentStudyDay();
+    if (d >= 12) return false;                                   // Ngày 12-14: khóa cứng
+    if (d >= 8) return this.getTodayTranslateCount('EXAM') < 20; // Ngày 8-11: tối đa 20 lượt dịch/ngày trong Exam
+    return true;
+  }
+  logTranslate(qId, mode) {
+    const logs = this.getStorage('translate_log') || [];
+    logs.push({ qId, ts: Date.now(), day: this.getCurrentStudyDay(), mode: mode || 'PRACTICE' });
+    this.setStorage('translate_log', logs);
+  }
+  getTodayTranslateCount(mode) {
+    const logs = this.getStorage('translate_log') || [];
+    const today = new Date().toDateString();
+    return logs.filter(l => new Date(l.ts).toDateString() === today && (!mode || l.mode === mode)).length;
+  }
+
+  /* ---- DATA AGGREGATION ---- */
+  getAllAnswers() {
+    const sessions = this.getStorage('sessions') || [];
+    const practice = this.getStorage('practice_log') || [];
+    const all = [];
+    
+    sessions.forEach(s => {
+      if (s.answers) {
+        s.answers.forEach(a => all.push({ ...a, timestamp: a.timestamp || s.timestamp }));
+      }
+    });
+    
+    all.push(...practice);
+    all.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
+    
+    const seen = new Map();
+    all.forEach(a => seen.set(a.qId, a)); 
+    return Array.from(seen.values());
+  }
+
+  savePracticeAnswer(q, selected, usedTranslate, confidence) {
+    const log = this.getStorage('practice_log') || [];
+    const isCorrect = isAnswerCorrect(q, selected);
+    const entry = {
+      qId: q.id, domain: q.domain, task: q.task, methodology: q.methodology,
+      difficulty: q.difficulty, english_level: q.english_level,
+      selected, correctAnswer: q.correctAnswer, isCorrect,
+      usedTranslate: !!usedTranslate, confidence: confidence || 'Sure',
+      timestamp: Date.now(), source: 'practice'
+    };
+    const idx = log.findIndex(a => a.qId === q.id);
+    if (idx >= 0) log[idx] = entry; else log.push(entry);
+    this.setStorage('practice_log', log);
+  }
+
+  /* ---- DASHBOARD ---- */
+  updateDashboardMetrics() {
+    const answers = this.getAllAnswers();
+    let totalQ = 0, correctQ = 0, correctNoTranslate = 0;
+    const domainStats = { People:{t:0,c:0}, Process:{t:0,c:0}, BusinessEnvironment:{t:0,c:0} };
+    const topicWrong = {};
+    answers.forEach(a => {
+      totalQ++;
+      if (a.isCorrect) { correctQ++; if (!a.usedTranslate) correctNoTranslate++; }
+      else { topicWrong[a.task] = (topicWrong[a.task] || 0) + 1; }
+      if (domainStats[a.domain]) { domainStats[a.domain].t++; if (a.isCorrect) domainStats[a.domain].c++; }
+    });
+    return {
+      totalQ,
+      accuracy: totalQ ? Math.round(correctQ/totalQ*100) : 0,
+      comprehension: totalQ ? Math.round(correctNoTranslate/totalQ*100) : 0,
+      domainStats, topicWrong
+    };
+  }
+
+  renderDashboard() {
+    const m = this.updateDashboardMetrics();
+    document.getElementById('m-accuracy').textContent = m.accuracy + '%';
+    document.getElementById('m-total-q').textContent = m.totalQ + ' câu đã làm';
+    document.getElementById('m-comprehension').textContent = m.comprehension + '%';
+
+    const srs = this.getStorage('srs') || {};
+    const today = todayISO();
+    const dueCount = Object.values(srs).filter(v => v.nextReview <= today).length;
+    document.getElementById('m-srs-count').textContent = dueCount;
+    document.getElementById('m-srs-sub').textContent = dueCount + ' mục cần ôn';
+    document.getElementById('btn-srs-practice').style.display = dueCount ? 'inline-flex' : 'none';
+
+    document.getElementById('dash-streak').textContent = `Lộ trình 14 Ngày | Ngày hiện tại: Day ${this.getCurrentStudyDay()}`;
+
+    const savedExam = this.getStorage('current_exam');
+    document.getElementById('btn-resume-exam').style.display = (savedExam && savedExam.status === 'IN_PROGRESS') ? 'inline-flex' : 'none';
+
+    this.renderDomainChart(m.domainStats);
+
+    const weak = Object.entries(m.topicWrong).sort((a,b) => b[1]-a[1]).slice(0,3);
+    document.getElementById('top-weak-topics').innerHTML = weak.length
+      ? weak.map(([t,c]) => `<div style="display:flex; justify-content:space-between; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>⚠️ ${escapeHtml(t)}</span><strong style="color:var(--danger);">${c} sai</strong></div>`).join('')
+      : '<span style="color:var(--success);">Chưa ghi nhận topic yếu.</span>';
+
+    this.renderVocabWidget();
+    this.renderComprehensionTrend();
+  }
+
+  renderDomainChart(stats) {
+    const domains = ['People','Process','BusinessEnvironment'];
+    let h = '<svg viewBox="0 0 400 140" width="100%">';
+    domains.forEach((d, idx) => {
+      const s = stats[d], pct = s.t ? Math.round(s.c/s.t*100) : 0;
+      const y = idx * 40 + 20;
+      const fill = pct >= 70 ? '#16a34a' : (pct >= 50 ? '#d97706' : '#dc2626');
+      h += `<text x="0" y="${y+15}" font-size="12" font-weight="600" fill="#334155">${d} (${pct}%)</text>
+            <rect x="140" y="${y}" width="240" height="20" rx="4" fill="#e2e8f0"/>
+            <rect x="140" y="${y}" width="${(pct/100)*240}" height="20" rx="4" fill="${fill}"/>`;
+    });
+    h += '</svg>';
+    document.getElementById('chart-domain').innerHTML = h;
+  }
+
+  renderVocabWidget() {
+    const qs = this.getQuestions();
+    const answers = this.getAllAnswers();
+    const wrongQIds = new Set(answers.filter(a => !a.isCorrect).map(a => a.qId));
+    const kw = {};
+    qs.forEach(q => {
+      if (wrongQIds.has(q.id) && q.glossary) {
+        q.glossary.forEach(g => {
+          kw[g.en] = kw[g.en] || { count: 0, vi: g.vi };
+          kw[g.en].count++;
+        });
+      }
+    });
+    const top = Object.entries(kw).sort((a,b) => b[1].count - a[1].count).slice(0, 5);
+    document.getElementById('widget-vocab-list').innerHTML = top.length
+      ? top.map(([k,v]) => `<div style="display:flex; justify-content:space-between; align-items:center; padding:.4rem 0; border-bottom:1px solid var(--border);">
+          <div><strong style="color:var(--primary); cursor:pointer;" data-action="open-kw" data-term="${escapeAttr(k)}">${escapeHtml(k)}</strong> <span style="font-size:.85rem; color:var(--text-muted);">- ${escapeHtml(v.vi)}</span></div>
+          <span class="tag tag-people">${v.count} sai</span>
+        </div>`).join('')
+      : '<span style="font-size:.9rem; color:var(--text-muted);">Chưa có từ vựng cần chú ý.</span>';
+  }
+
+  renderComprehensionTrend() {
+    const sessions = (this.getStorage('sessions') || []).slice(-7);
+    if (sessions.length === 0) {
+      document.getElementById('chart-comprehension').innerHTML = '<div style="font-size:.85rem; color:var(--text-muted); padding:1rem; text-align:center;">Chưa đủ bài thi để vẽ trend.</div>';
+      return;
+    }
+    const pts = sessions.map((s, idx) => {
+      const tot = s.answers.length;
+      const noTrans = s.answers.filter(a => a.isCorrect && !a.usedTranslate).length;
+      const rate = tot ? Math.round(noTrans/tot*100) : 0;
+      return { x: (idx/Math.max(1,sessions.length-1))*320 + 40, y: 120 - (rate/100)*90, rate };
+    });
+    const path = pts.map((p,i) => (i?'L':'M') + ' ' + p.x + ' ' + p.y).join(' ');
+    let h = `<svg viewBox="0 0 400 140" width="100%">
+      <line x1="40" y1="30" x2="360" y2="30" stroke="#cbd5e1" stroke-dasharray="4"/>
+      <text x="5" y="34" font-size="10" fill="#94a3b8">100%</text>
+      <line x1="40" y1="120" x2="360" y2="120" stroke="#cbd5e1"/>
+      <path d="${path}" fill="none" stroke="#2563eb" stroke-width="3"/>
+      ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="5" fill="#2563eb"/><text x="${p.x-10}" y="${p.y-10}" font-size="10" font-weight="700" fill="#1e293b">${p.rate}%</text>`).join('')}
+    </svg>`;
+    document.getElementById('chart-comprehension').innerHTML = h;
+  }
+
+  /* ---- PRACTICE ---- */
+  initPracticeSession(force) {
+    const domain = document.getElementById('practice-filter-domain').value;
+    if (!force && this.currentSession && this.currentSession.domain === domain) {
+      this.renderQuestionCard('practice-card-container');
+      return;
+    }
+    let qs = this.getQuestions();
+    if (domain !== 'ALL') qs = qs.filter(q => q.domain === domain);
+    this.palettePage = 1;
+    this.currentSession = {
+      mode: 'PRACTICE', domain, questions: qs,
+      currentIndex: 0, answers: {}, flags: {}, confidence: {}, usedTranslate: {}
+    };
+    this.renderQuestionCard('practice-card-container');
+  }
+
+  /* ---- EXAM ---- */
+  checkOrInitExam() {
+    document.getElementById('btn-submit-exam').style.display = 'none';
+    document.getElementById('btn-pause-exam').style.display = 'none';
+    document.getElementById('exam-timer').textContent = '--:--';
+    document.getElementById('exam-timer').classList.remove('warning');
+
+    const saved = this.getStorage('current_exam');
+    
+    // Khôi phục nếu có bài thi đang làm dở
+    if (saved && saved.status === 'IN_PROGRESS' && saved.questions && saved.questions.length > 0) {
+      this.currentExam = saved;
+      if (!this.currentExam.startTime) this.currentExam.startTime = Date.now();
+      this.palettePage = 1;
+
+      document.getElementById('btn-submit-exam').style.display = 'inline-flex';
+      document.getElementById('btn-pause-exam').style.display = 'inline-flex';
+      document.getElementById('exam-header-title').textContent = `⏱️ Mock Exam (${saved.questions.length} câu)`;
+
+      const pauseBtn = document.getElementById('btn-pause-exam');
+      if (this.currentExam.isPaused) {
+        pauseBtn.textContent = '▶ Tiếp tục';
+        pauseBtn.className = 'btn btn-success btn-sm';
+      } else {
+        pauseBtn.textContent = '⏸ Tạm dừng';
+        pauseBtn.className = 'btn btn-warning btn-sm';
+      }
+
+      this.updateExamTimerUI();
+      this.resumeExamTimer();
+      this.renderQuestionCard('exam-card-container');
+    } else {
+      // Nếu không có bài thi hợp lệ, xóa dữ liệu lỗi và hiển thị form setup
+      this.setStorage('current_exam', null);
+      this.currentExam = null;
+      this.renderExamSetup();
+    }
+  }
+
+  renderExamSetup() {
+    const avail = this.getQuestions().length;
+    const defaultSize = Math.min(30, avail);
+    const defaultMins = Math.ceil(defaultSize * 75 / 60);
+    
+    document.getElementById('exam-header-title').textContent = '⏱️ Thiết lập bài thi';
+    document.getElementById('exam-card-container').innerHTML = `
+      <div style="padding: 2rem; max-width: 500px; margin: 0 auto;">
+        <h3 style="margin-bottom: 1.5rem; text-align: center; color: var(--primary);">Cấu hình Mock Exam</h3>
+        
+        <div style="margin-bottom: 1.5rem;">
+          <label style="font-weight:600; display:block; margin-bottom:0.5rem;">Số câu hỏi:</label>
+          <div style="display:flex; align-items:center; gap:0.5rem;">
+            <input type="number" id="setup-q-count" value="${defaultSize}" min="5" max="${avail}" style="width: 100px; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
+            <span style="color:var(--text-muted);">/ ${avail} câu có sẵn</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 1.5rem;">
+          <label style="font-weight:600; display:block; margin-bottom:0.5rem;">Thời gian làm bài (phút):</label>
+          <input type="number" id="setup-time" value="${defaultMins}" min="1" max="300" style="width: 100px; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
+        </div>
+
+        <div style="background: var(--info-bg); color: var(--info); padding: 1rem; border-radius: 6px; font-size: 0.9rem; margin-bottom: 1.5rem;">
+          <strong>Lưu ý:</strong> Trong chế độ Exam, đáp án sẽ không hiện ngay. Nút dịch có thể bị khóa tùy theo ngày học.
+        </div>
+
+        <button class="btn" style="width: 100%; font-size: 1.1rem; padding: 1rem;" onclick="app.startNewExam(parseInt(document.getElementById('setup-q-count').value), parseInt(document.getElementById('setup-time').value))">🚀 Bắt đầu làm bài</button>
+      </div>
+    `;
+    document.getElementById('exam-sidebar').innerHTML = `
+      <div style="padding: 1rem; text-align: center; color: var(--text-muted);">
+        <p>Palette sẽ xuất hiện khi bài thi bắt đầu.</p>
+      </div>
+    `;
+  }
+
+  startNewExam(size = 30, durationMins = 38) {
+    // Xử lý chống lỗi NaN nếu người dùng nhập sai
+    size = parseInt(size) || 30;
+    durationMins = parseInt(durationMins) || 38;
+
+    const all = shuffle(this.getQuestions());
+    this.palettePage = 1;
+    const actualSize = Math.max(1, Math.min(size, all.length));
+    const qs = all.slice(0, actualSize);
+    
+    if (qs.length === 0) {
+        this.showModal('Lỗi', '<p>Ngân hàng câu hỏi trống. Vui lòng F5 tải lại trang hoặc Import dữ liệu.</p>', [{text:'Tải lại', class:'', onClick:()=>location.reload()}]);
+        return;
+    }
+
+    const durationMs = durationMins * 60 * 1000;
+    
+    this.currentExam = {
+      mode: 'EXAM', status: 'IN_PROGRESS',
+      startTime: Date.now(), durationMs,
+      questions: qs, currentIndex: 0,
+      answers: {}, flags: {}, usedTranslate: {}, isPaused: false
+    };
+    this.saveCurrentExamState();
+    
+    document.getElementById('btn-submit-exam').style.display = 'inline-flex';
+    const pauseBtn = document.getElementById('btn-pause-exam');
+    pauseBtn.style.display = 'inline-flex';
+    pauseBtn.textContent = '⏸ Tạm dừng';
+    pauseBtn.className = 'btn btn-warning btn-sm';
+    
+    document.getElementById('exam-header-title').textContent = `⏱️ Mock Exam (${actualSize} câu / ${durationMins} phút)`;
+    
+    this.updateExamTimerUI();
+    this.resumeExamTimer();
+    this.renderQuestionCard('exam-card-container');
+  }
+
+  togglePauseExam() {
+    if (!this.currentExam) return;
+    const btn = document.getElementById('btn-pause-exam');
+    
+    if (this.currentExam.isPaused) {
+      this.currentExam.isPaused = false;
+      this.currentExam.startTime += (Date.now() - this.currentExam.pauseStartTime);
+      delete this.currentExam.pauseStartTime;
+      btn.textContent = '⏸ Tạm dừng';
+      btn.className = 'btn btn-warning btn-sm';
+      this.resumeExamTimer();
+    } else {
+      this.currentExam.isPaused = true;
+      this.currentExam.pauseStartTime = Date.now();
+      btn.textContent = '▶ Tiếp tục';
+      btn.className = 'btn btn-success btn-sm';
+      clearInterval(this.examTimerInterval);
+    }
+    this.saveCurrentExamState();
+    this.renderQuestionCard('exam-card-container');
+  }
+
+  updateExamTimerUI() {
+    if (!this.currentExam) return;
+    const remain = this.currentExam.isPaused 
+      ? (this.currentExam.durationMs - (this.currentExam.pauseStartTime - this.currentExam.startTime))
+      : (this.currentExam.durationMs - (Date.now() - this.currentExam.startTime));
+      
+    const el = document.getElementById('exam-timer');
+    if (el) {
+      if (remain > 0) {
+        const min = Math.floor(remain/60000);
+        const sec = Math.floor((remain%60000)/1000);
+        el.textContent = String(min).padStart(2,'0') + ':' + String(sec).padStart(2,'0');
+        el.classList.toggle('warning', min < 5);
+      } else {
+        el.textContent = '00:00';
+      }
+    }
+  }
+
+  resumeExamTimer() {
+    if (this.examTimerInterval) clearInterval(this.examTimerInterval);
+    if (this.currentExam && this.currentExam.isPaused) return;
+    
+    this.examTimerInterval = setInterval(() => {
+      if (!this.currentExam || this.currentExam.status !== 'IN_PROGRESS' || this.currentExam.isPaused) {
+        clearInterval(this.examTimerInterval);
+        return;
+      }
+      const remain = this.currentExam.durationMs - (Date.now() - this.currentExam.startTime);
+      if (remain <= 0) {
+        clearInterval(this.examTimerInterval);
+        this.autoSubmitExam();
+        return;
+      }
+      this.updateExamTimerUI();
+    }, 1000);
+  }
+
+  getActiveSession() { return window.location.hash === '#exam' ? this.currentExam : this.currentSession; }
+
+  /* ---- RENDER QUESTION ---- */
+  renderQuestionCard(containerId) {
+    const sess = this.getActiveSession();
+    const container = document.getElementById(containerId);
+    if (!sess || !sess.questions || sess.questions.length === 0) {
+      container.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">Không có câu hỏi nào. Vui lòng bắt đầu bài thi mới.</div>';
+      if (containerId === 'exam-card-container') this.renderExamSetup();
+      return;
+    }
+    
+    // Nếu đang tạm dừng, hiển thị màn hình khóa
+    if (sess.mode === 'EXAM' && sess.isPaused) {
+      container.innerHTML = `
+        <div style="padding:4rem 2rem; text-align:center;">
+          <h2 style="color:var(--warning); margin-bottom:1rem;">⏸ Bài thi đang tạm dừng</h2>
+          <p style="color:var(--text-muted); margin-bottom:2rem;">Nhấn nút "Tiếp tục" trên thanh công cụ để làm tiếp.</p>
+        </div>
+      `;
+      document.getElementById('exam-sidebar').innerHTML = '';
+      return;
+    }
+
+    const q = sess.questions[sess.currentIndex];
+    if (!q) { container.innerHTML = '<p>Lỗi câu hỏi.</p>'; return; }
+    
+    const isExam = sess.mode === 'EXAM';
+    const selected = sess.answers[q.id];
+    const flagged = !!sess.flags[q.id];
+    const showVi = !!sess.usedTranslate[q.id];
+    const canTranslate = isExam ? this.canUseTranslateInExam() : true;
+    
+    const qType = q.type || "MCQ";
+    let interactionHtml = "";
+    
+    if (qType === "MCQ" && q.options) {
+      interactionHtml = `
+        <div class="options-list">
+          ${Object.keys(q.options).map(k => {
+            let c = 'option-item';
+            if (selected === k) c += ' selected';
+            if (!isExam && selected) {
+              if (k === q.correctAnswer) c += ' correct';
+              else if (selected === k) c += ' wrong';
+            }
+            return `<div class="${c}" onclick="app.selectAnswer('${k}')">
+              <div class="option-key">${k}</div>
+              <div class="option-content">
+                <div>${escapeHtml(q.options[k])}</div>
+                ${showVi && q.options_vi && q.options_vi[k] ? `<div style="font-size:.85rem; color:#475569; margin-top:.2rem;">${escapeHtml(q.options_vi[k])}</div>` : ''}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+    } else if (qType === "MultipleResponse" && q.options) {
+      const selArr = selected ? selected.split(',') : [];
+      interactionHtml = `
+        <div class="options-list">
+          ${Object.keys(q.options).map(k => {
+            let c = 'option-item';
+            if (selArr.includes(k)) c += ' selected';
+            if (!isExam && selected) {
+              const isCorrectAnswer = q.correctAnswer.split(',').includes(k);
+              if (isCorrectAnswer) c += ' correct';
+              else if (selArr.includes(k)) c += ' wrong';
+            }
+            return `<div class="${c}" onclick="app.toggleMultiSelect('${k}')">
+              <div class="option-key">${k}</div>
+              <div class="option-content">
+                <div>${escapeHtml(q.options[k])}</div>
+                ${showVi && q.options_vi && q.options_vi[k] ? `<div style="font-size:.85rem; color:#475569; margin-top:.2rem;">${escapeHtml(q.options_vi[k])}</div>` : ''}
+              </div>
+            </div>`;
+          }).join('')}
+        </div>
+      `;
+    } else if (qType === "Dropdown" && q.dropdowns) {
+      let textHtml = escapeHtml(q.question);
+      let currentAnswers = selected ? selected.split(",") : ["", ""];
+      q.dropdowns.forEach((dd, idx) => {
+        const val = currentAnswers[idx] || "";
+        let selectHtml = `<select class="dropdown-select" onchange="app.handleDropdownChange('${q.id}', ${idx}, this.value)">
+          <option value="">-- Chọn --</option>
+          ${dd.options.map(opt => `<option value="${opt.key}" ${val === opt.key ? 'selected' : ''}>${escapeHtml(opt.text)}</option>`).join('')}
+        </select>`;
+        textHtml = textHtml.replace(`[${idx + 1}]`, selectHtml);
+      });
+      interactionHtml = `<div class="q-text" style="font-size:1.1rem; line-height:2;">${textHtml}</div>`;
+    } else if (qType === "Matching" && q.matchingPairs) {
+      let currentMatches = selected ? JSON.parse(selected) : {};
+      interactionHtml = `
+        <div class="matching-container">
+          <div class="matching-col">
+            ${q.matchingPairs.map(p => {
+              const isMatched = Object.keys(currentMatches).includes(p.id);
+              const matchedVal = currentMatches[p.id] || "";
+              return `<div class="match-item ${isMatched ? 'matched' : ''} ${(sess.pendingMatch && sess.pendingMatch[q.id] === p.id) ? 'selected' : ''}" onclick="app.handleMatchClick('${q.id}', '${p.id}', 'left')" id="match-left-${p.id}">
+                <strong>${p.id}.</strong> ${escapeHtml(p.left)}
+                ${isMatched ? `<div style="font-size:0.85rem; color:var(--success); margin-top:0.3rem;">→ ${escapeHtml(matchedVal)}</div>` : ''}
+              </div>`;
+            }).join('')}
+          </div>
+          <div class="matching-col">
+            ${q.matchingOptions.map(o => `<div class="match-item" onclick="app.handleMatchClick('${q.id}', '${o.key}', 'right')">
+              <strong>${o.key}.</strong> ${escapeHtml(o.text)}
+            </div>`).join('')}
+          </div>
+        </div>
+      `;
+    }
+
+    let h = `
+      <div class="q-header">
+        <div>
+          <span style="font-weight:700; margin-right:.5rem;">Câu ${sess.currentIndex+1}/${sess.questions.length}</span>
+          <span class="tag tag-${q.domain.toLowerCase()}">${escapeHtml(q.domain)}</span>
+          <span class="tag tag-predictive">${escapeHtml(q.methodology)}</span>
+          <span class="tag">${qType}</span>
+        </div>
+        <div style="display:flex; gap:0.5rem;">
+          <button class="btn btn-sm ${flagged?'btn-warning':'btn-outline'}" onclick="app.toggleFlag()">${flagged?'⭐ Flagged':'☆ Flag'}</button>
+          ${!isExam ? `<button class="btn btn-sm btn-outline" style="color:var(--danger); border-color:var(--danger);" onclick="app.deleteQuestion('${escapeAttr(q.id)}')">🗑️ Xóa</button>` : ''}
+        </div>
+      </div>
+
+      ${(() => {
+        if (!q.scenario) return '';
+        if (q.scenario.length < 300) {
+          return `
+            <div style="font-size: 1rem; font-style: italic; color: #475569; margin-bottom: 1rem; padding-left: 0.75rem; border-left: 3px solid #cbd5e1;">
+              ${escapeHtml(q.scenario)}
+              ${(!isExam && selected && q.scenario_vi) ? `<br><span style="color:var(--primary); font-style:normal;">🇻🇳 ${escapeHtml(q.scenario_vi)}</span>` : ''}
+            </div>
+          `;
+        }
+        return `
+          <div class="scenario-panel">
+            <button class="scenario-toggle" onclick="app.toggleScenario('${q.id}')">
+              ${(sess.scenarioState?.[q.id] !== false) ? '📖 Ẩn Case Study Context' : '📖 Xem Case Study Context'}
+            </button>
+            ${(sess.scenarioState?.[q.id] !== false) ? `
+              <div class="scenario-text">${escapeHtml(q.scenario)}</div>
+              ${(!isExam && selected && q.scenario_vi) ? `<div class="scenario-vi">🇻🇳 <strong>Bản dịch:</strong> ${escapeHtml(q.scenario_vi)}</div>` : ''}
+            ` : ''}
+          </div>
+        `;
+      })()}
+      
+      ${q.image ? `<img src="${escapeAttr(q.image)}" class="q-image" alt="Question Graphic">` : ''}
+      <div class="q-text">${escapeHtml(q.question)}</div>
+      ${showVi ? `<div class="q-text-vi">🇻🇳 <strong>Dịch:</strong> ${escapeHtml(q.question_vi)}</div>` : ''}
+      
+      ${interactionHtml}
+
+      <div style="margin-bottom:1rem;">
+        ${(canTranslate || showVi)
+          ? `<button class="btn btn-sm btn-outline" onclick="app.toggleTranslate('${q.id}')">🇻🇳 ${showVi?'Ẩn dịch':'Dịch câu hỏi'}</button>`
+          : `<span style="font-size:.85rem; color:var(--danger); font-weight:600;">🔒 Đã khóa nút Dịch</span>`}
+      </div>
+    `;
+
+    let isAnswered = false;
+    if (qType === "MCQ" || qType === "MultipleResponse") {
+      isAnswered = !!selected && (qType === "MCQ" || selected.split(',').length === q.correctAnswer.split(',').length);
+    } else if (qType === "Dropdown") {
+      isAnswered = selected && selected.split(",").length === q.dropdowns.length && selected.split(",").every(s => s !== "");
+    } else if (qType === "Matching") {
+      isAnswered = selected && Object.keys(JSON.parse(selected)).length === q.matchingPairs.length;
+    }
+    
+    if (!isExam && isAnswered) {
+      const conf = sess.confidence[q.id] || '';
+      if (qType !== 'MCQ') {
+        const okNow = isAnswerCorrect(q, selected);
+        h += `<div class="card" style="background:${okNow?'var(--success-bg)':'var(--danger-bg)'}; font-weight:600;">${okNow ? '✅ Chính xác!' : '❌ Chưa đúng. Đáp án: ' + escapeHtml(q.correctAnswer)}</div>`;
+      }
+      h += `<div class="card" style="background:#f8fafc; border-left:4px solid var(--primary); margin-top:1rem;">
+        <div style="font-size:.9rem; margin-bottom:.5rem; font-weight:600;">Độ tự tin:</div>
+        <div class="confidence-group">
+          <div class="conf-btn ${conf==='Sure'?'selected':''}" onclick="app.setConfidence('Sure')">💪 Sure</div>
+          <div class="conf-btn ${conf==='Unsure'?'selected':''}" onclick="app.setConfidence('Unsure')">🤔 Unsure</div>
+          <div class="conf-btn ${conf==='Guess'?'selected':''}" onclick="app.setConfidence('Guess')">🎲 Guess</div>
+        </div>
+      </div>
+      <div class="exp-panel">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h4 style="color:var(--primary);">💡 Giải Thích</h4>
+          <div class="exp-toggle">
+            <button class="${this.prefExpLang==='VI'?'active':''}" onclick="app.setExpLang('VI')">VI</button>
+            <button class="${this.prefExpLang==='EN'?'active':''}" onclick="app.setExpLang('EN')">EN</button>
+            <button class="${this.prefExpLang==='VI_EN'?'active':''}" onclick="app.setExpLang('VI_EN')">VI+EN</button>
+          </div>
+        </div>
+        <div style="margin-top:.75rem;">
+          ${(this.prefExpLang==='VI'||this.prefExpLang==='VI_EN') ? `<div style="margin-bottom:.75rem;"><strong>[VI]:</strong> ${sanitizeRich(q.explanation.correct_vi)}</div>` : ''}
+          ${(this.prefExpLang==='EN'||this.prefExpLang==='VI_EN') ? `<div style="margin-bottom:.75rem; font-style:italic;"><strong>[EN]:</strong> ${escapeHtml(q.explanation.correct_en)}</div>` : ''}
+          <div style="font-size:.85rem; color:var(--text-muted);">📌 ${escapeHtml(q.reference)}</div>
+        </div>
+      </div>`;
+    }
+
+    h += `<div style="display:flex; justify-content:space-between; margin-top:1.5rem;">
+      <button class="btn btn-outline" onclick="app.navQuestion(-1)" ${sess.currentIndex===0?'disabled':''}>← Câu trước</button>
+      <button class="btn" onclick="app.navQuestion(1)" ${sess.currentIndex===sess.questions.length-1?'disabled':''}>Câu tiếp →</button>
+    </div>`;
+
+    container.innerHTML = h;
+    this.bindKwClicks();
+
+    const sidebarId = isExam ? 'exam-sidebar' : 'practice-sidebar';
+    this.renderSidebarPalette(sidebarId, sess);
+  }
+
+  renderSidebarPalette(containerId, sess) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+
+    const answeredCount = Object.keys(sess.answers).length;
+    const isExam = sess.mode === 'EXAM';
+    const totalQ = sess.questions.length;
+    
+    const ITEMS_PER_PAGE = 25;
+    const totalPages = Math.ceil(totalQ / ITEMS_PER_PAGE);
+    
+    if (this.palettePage > totalPages) this.palettePage = totalPages;
+    if (this.palettePage < 1) this.palettePage = 1;
+
+    const startIdx = (this.palettePage - 1) * ITEMS_PER_PAGE;
+    const endIdx = Math.min(startIdx + ITEMS_PER_PAGE, totalQ);
+    const pageQuestions = sess.questions.slice(startIdx, endIdx);
+
+    let h = `
+      <div style="font-size:1.1rem; font-weight:700; color:var(--primary); margin-bottom:0.5rem; display:flex; justify-content:space-between;">
+        <span>${isExam ? 'Exam' : 'Practice'} Map</span>
+        <span style="font-size:0.9rem; color:var(--text-muted);">${answeredCount}/${totalQ}</span>
+      </div>
+      
+      <div class="palette-header">
+        <div class="palette-legend">
+          <div class="legend-item"><div class="legend-color" style="background:#fff;"></div> Chưa làm</div>
+          <div class="legend-item"><div class="legend-color" style="background:#cbd5e1;"></div> Đã làm</div>
+          <div class="legend-item"><div class="legend-color" style="background:#fef08a;"></div> Flag</div>
+          <div class="legend-item"><div class="legend-color" style="background:#eff6ff; border-color:var(--primary);"></div> Hiện tại</div>
+        </div>
+        <div style="display:flex; gap:0.5rem; align-items:center; margin-top:0.5rem;">
+          <span style="font-weight:600; font-size:0.85rem;">Nhảy đến:</span>
+          <input type="number" min="1" max="${totalQ}" placeholder="Số câu..." 
+                 style="width:100%; padding:0.3rem 0.5rem; border:1px solid var(--border); border-radius:4px; font-size:0.9rem;"
+                 onkeypress="if(event.key === 'Enter') { app.jumpToQuestion(parseInt(this.value) - 1); this.value=''; }">
+        </div>
+      </div>
+
+      <div class="palette-grid-sidebar">
+        ${pageQuestions.map((item, idx) => {
+          const realIdx = startIdx + idx;
+          let cls = 'palette-btn';
+          if (realIdx === sess.currentIndex) cls += ' active';
+          if (sess.flags[item.id]) cls += ' flagged';
+          else if (sess.answers[item.id]) cls += ' answered';
+          return `<button class="${cls}" onclick="app.jumpToQuestion(${realIdx})" title="Câu ${realIdx+1}">${realIdx+1}</button>`;
+        }).join('')}
+      </div>
+
+      <div class="palette-pagination">
+        <button onclick="app.changePalettePage(-1)" ${this.palettePage === 1 ? 'disabled' : ''}>← Trước</button>
+        <span>Trang ${this.palettePage} / ${totalPages}</span>
+        <button onclick="app.changePalettePage(1)" ${this.palettePage === totalPages ? 'disabled' : ''}>Sau →</button>
+      </div>
+    `;
+    container.innerHTML = h;
+  }
+  
+  changePalettePage(delta) {
+    this.palettePage += delta;
+    const sess = this.getActiveSession();
+    this.renderSidebarPalette(sess.mode === 'EXAM' ? 'exam-sidebar' : 'practice-sidebar', sess);
+  }
+  
+  bindKwClicks() {
+    document.querySelectorAll('.kw').forEach(el => {
+      el.onclick = (e) => {
+        e.stopPropagation();
+        this.openKwModal(el.getAttribute('data-kw') || el.textContent);
+      };
+    });
+  }
+
+  selectAnswer(k) {
+    const sess = this.getActiveSession();
+    if (!sess || (sess.mode === 'EXAM' && sess.isPaused)) return;
+    const q = sess.questions[sess.currentIndex];
+    if (!q || q.type === 'MultipleResponse' || (q.type || 'MCQ') !== 'MCQ' || !q.options || !q.options[k]) return;
+    if (sess.mode === 'PRACTICE' && sess.answers[q.id]) return;   // Practice: khóa đáp án sau khi đã chọn để thống kê không bị gian lận
+    sess.answers[q.id] = k;
+    if (sess.mode === 'EXAM') this.saveCurrentExamState();
+    else this.savePracticeAnswer(q, k, !!sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+    this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+  }
+
+  toggleFlag() {
+    const sess = this.getActiveSession();
+    if (!sess) return;
+    const q = sess.questions[sess.currentIndex];
+    sess.flags[q.id] = !sess.flags[q.id];
+    if (sess.mode === 'EXAM') this.saveCurrentExamState();
+    this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+  }
+    
+  toggleScenario(qId) {
+    const sess = this.getActiveSession();
+    if (!sess) return;
+    if (!sess.scenarioState) sess.scenarioState = {};
+    const currentlyOpen = sess.scenarioState[qId] !== false;
+    sess.scenarioState[qId] = !currentlyOpen;
+    if (sess.mode === 'EXAM') this.saveCurrentExamState();
+    this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+  }
+  
+  deleteQuestion(qId) {
+    this.showModal('Xóa câu hỏi?', 
+      `<p>Bạn có chắc chắn muốn xóa câu hỏi <strong>${qId}</strong> khỏi ngân hàng đề thi không?</p>
+       <p style="font-size:0.85rem; color:var(--danger); margin-top:0.5rem;">Hành động này không thể hoàn tác.</p>`,
+      [
+        { text: 'Hủy', class: 'btn-secondary', onClick: () => this.closeModal() },
+        { text: 'Xóa', class: 'btn-danger', onClick: () => {
+            this.closeModal();
+            let qs = this.getQuestions();
+            qs = qs.filter(q => q.id !== qId);
+            this.setStorage('questions', qs);
+            const srs = this.getStorage('srs') || {}; delete srs[qId]; this.setStorage('srs', srs);
+            this.initPracticeSession(true);
+            this.showModal('Đã xóa', `<p>Câu hỏi đã được xóa thành công.</p>`, [{ text: 'OK', class: '', onClick: () => this.closeModal() }]);
+        }}
+      ]
+    );
+  }
+  
+  toggleTranslate(qId) {
+    const sess = this.getActiveSession();
+    if (!sess) return;
+    sess.usedTranslate[qId] = !sess.usedTranslate[qId];
+    if (sess.usedTranslate[qId]) this.logTranslate(qId, sess.mode);
+    if (sess.mode === 'EXAM') this.saveCurrentExamState();
+    else {
+      const q = sess.questions[sess.currentIndex];
+      if (sess.answers[q.id]) this.savePracticeAnswer(q, sess.answers[q.id], sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+    }
+    this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+  }
+
+  setConfidence(level) {
+    const sess = this.getActiveSession();
+    if (!sess || sess.mode === 'EXAM') return;
+    const q = sess.questions[sess.currentIndex];
+    sess.confidence[q.id] = level;
+    if (sess.answers[q.id]) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id], level);
+    this.renderQuestionCard('practice-card-container');
+  }
+
+  setExpLang(lang) { this.prefExpLang = lang; this.setStorage('exp_lang', lang); this.renderQuestionCard('practice-card-container'); }
+
+  navQuestion(dir) {
+    const sess = this.getActiveSession();
+    if (!sess) return;
+    const n = sess.currentIndex + dir;
+    if (n >= 0 && n < sess.questions.length) {
+      sess.currentIndex = n;
+      this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+    }
+  }
+  
+  jumpToQuestion(idx) {
+    const sess = this.getActiveSession();
+    if (!sess || !Number.isInteger(idx) || idx < 0 || idx >= sess.questions.length) return;
+    
+    const ITEMS_PER_PAGE = 25;
+    this.palettePage = Math.floor(idx / ITEMS_PER_PAGE) + 1;
+    
+    sess.currentIndex = idx;
+    this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+  }
+
+  /* ---- SUBMIT ---- */
+  confirmSubmitExam() {
+    const sess = this.currentExam;
+    if (!sess) return;
+    const un = sess.questions.length - Object.keys(sess.answers).length;
+    const fl = Object.values(sess.flags).filter(Boolean).length;
+    this.showModal('Xác nhận nộp bài',
+      `<p>Còn <strong>${un}</strong> câu chưa làm, <strong>${fl}</strong> câu flagged.</p>
+       <p style="margin-top:.5rem; font-size:.9rem;">Nộp bài để xem kết quả?</p>`,
+      [
+        { text: 'Làm tiếp', class: 'btn-secondary', onClick: () => this.closeModal() },
+        { text: 'Nộp bài', class: 'btn-danger', onClick: () => { this.closeModal(); this.submitExam(); } }
+      ]
+    );
+  }
+
+  autoSubmitExam() {
+    this.showModal('⏰ Hết giờ!',
+      '<p>Hệ thống tự động nộp bài của bạn.</p>',
+      [{ text: 'Xem kết quả', class: '', onClick: () => { this.closeModal(); this.submitExam(); } }],
+      false 
+    );
+  }
+
+  submitExam() {
+    if (!this.currentExam) return;
+    try {
+      clearInterval(this.examTimerInterval);
+      const sess = this.currentExam;
+      
+      let correct = 0;
+      const answersList = sess.questions.map(q => {
+        const sel = sess.answers[q.id];
+        const ok = isAnswerCorrect(q, sel);
+        if (ok) correct++;
+        return {
+          qId: q.id, domain: q.domain, task: q.task, methodology: q.methodology,
+          difficulty: q.difficulty, english_level: q.english_level,
+          selected: sel || '—', correctAnswer: q.correctAnswer, isCorrect: ok,
+          usedTranslate: !!sess.usedTranslate[q.id], confidence: (sess.confidence && sess.confidence[q.id]) || 'Sure',
+          timestamp: Date.now()
+        };
+      });
+      
+      const record = {
+        id: 'SESS_' + Date.now(), timestamp: Date.now(),
+        score: correct, total: sess.questions.length,
+        percentage: Math.round(correct/sess.questions.length*100),
+        answers: answersList
+      };
+      
+      let sessions = this.getStorage('sessions');
+      if (!Array.isArray(sessions)) sessions = [];
+      sessions.push(record);
+      this.setStorage('sessions', sessions);
+      
+      this.setStorage('current_exam', null);
+      this.currentExam = null;
+      this.lastSubmittedSession = record;
+      this.reviewSessId = null;
+      
+      // Reset giao diện exam
+      document.getElementById('btn-submit-exam').style.display = 'none';
+      document.getElementById('btn-pause-exam').style.display = 'none';
+      document.getElementById('exam-timer').textContent = '--:--';
+      document.getElementById('exam-timer').classList.remove('warning');
+      
+      // Chuyển trang (Chỉ dùng location.hash, không gọi hàm route() để tránh race condition)
+      window.location.hash = '#review';
+      
+    } catch (e) {
+      console.error("Lỗi khi nộp bài:", e);
+      alert("Có lỗi xảy ra khi nộp bài. Vui lòng F5 tải lại trang và thử lại.");
+    }
+  }
+
+  /* ---- REVIEW ---- */
+  renderReviewPage() {
+    const sessions = this.getStorage('sessions') || [];
+    const sess = (this.reviewSessId && sessions.find(s => s.id === this.reviewSessId)) || this.lastSubmittedSession || (sessions.length ? sessions[sessions.length-1] : null);
+    if (!sess) {
+      document.getElementById('review-summary').innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">Chưa có dữ liệu bài thi nào được lưu.</div>';
+      document.getElementById('review-list').innerHTML = '';
+      return;
+    }
+    const pass = sess.percentage >= 70;
+    const picker = sessions.length > 1 ? `<div style="margin-bottom:.75rem;"><label style="font-size:.85rem; color:var(--text-muted);">Chọn bài thi: </label><select onchange="app.pickReviewSession(this.value)" style="padding:.3rem; border:1px solid var(--border); border-radius:6px;">${sessions.slice().reverse().map(s => `<option value="${escapeAttr(s.id)}" ${s.id===sess.id?'selected':''}>${new Date(s.timestamp).toLocaleString('vi-VN')} — ${s.score}/${s.total} (${s.percentage}%)</option>`).join('')}</select></div>` : '';
+    document.getElementById('review-summary').innerHTML = picker + `
+      <div class="card" style="background:${pass?'var(--success-bg)':'var(--danger-bg)'}; border-color:${pass?'var(--success)':'var(--danger)'}">
+        <h3 style="color:${pass?'var(--success)':'var(--danger)'}">${pass?'🎉 PASS!':'❌ FAIL — Cần cố gắng'}</h3>
+        <p style="font-size:1.2rem; font-weight:700; margin:.3rem 0;">${sess.score}/${sess.total} (${sess.percentage}%) — Ngưỡng: 70%</p>
+      </div>`;
+
+    document.querySelectorAll('.rev-lang-btn').forEach(b => b.classList.toggle('active', b.dataset.val === this.reviewExpLang));
+
+    const qs = this.getQuestions();
+    const qMap = {};
+    qs.forEach(q => qMap[q.id] = q);
+
+    const dom = {People:{t:0,c:0},Process:{t:0,c:0},BusinessEnvironment:{t:0,c:0}};
+    sess.answers.forEach(a => { if (dom[a.domain]) { dom[a.domain].t++; if (a.isCorrect) dom[a.domain].c++; } });
+    let ch = '<svg viewBox="0 0 400 140" width="100%">';
+    Object.keys(dom).forEach((d, i) => {
+      const pct = dom[d].t ? Math.round(dom[d].c/dom[d].t*100) : 0;
+      const y = i*40+20, fill = pct>=70?'#16a34a':(pct>=50?'#d97706':'#dc2626');
+      ch += `<text x="0" y="${y+15}" font-size="12" fill="#334155">${d} ${pct}%</text>
+        <rect x="140" y="${y}" width="240" height="20" rx="4" fill="#e2e8f0"/>
+        <rect x="140" y="${y}" width="${pct/100*240}" height="20" rx="4" fill="${fill}"/>`;
+    });
+    ch += '</svg>';
+    document.getElementById('chart-review-domain').innerHTML = ch;
+    const lv = {};
+    sess.answers.forEach(a => { const k = a.english_level || '—'; lv[k] = lv[k] || {t:0,c:0}; lv[k].t++; if (a.isCorrect) lv[k].c++; });
+    document.getElementById('chart-review-level').innerHTML = Object.keys(lv).sort().map(k => { const p = Math.round(lv[k].c/lv[k].t*100); return `<div style="display:flex; align-items:center; gap:.5rem; margin:.4rem 0; font-size:.9rem;"><strong style="width:2.5rem;">${escapeHtml(k)}</strong><div style="flex:1; background:#e2e8f0; border-radius:4px; height:18px;"><div style="width:${p}%; background:${p>=70?'#16a34a':(p>=50?'#d97706':'#dc2626')}; height:100%; border-radius:4px;"></div></div><span style="width:5.5rem; text-align:right;">${p}% (${lv[k].c}/${lv[k].t})</span></div>`; }).join('');
+
+    document.getElementById('review-list').innerHTML = sess.answers.map((ans, idx) => {
+      const q = qMap[ans.qId];
+      if (!q) return '';
+      const showVi = this.reviewExpLang === 'VI' || this.reviewExpLang === 'VI_EN';
+      const showEn = this.reviewExpLang === 'EN' || this.reviewExpLang === 'VI_EN';
+      const whyWrong = (!ans.isCorrect && q.explanation.whyWrong_vi && q.explanation.whyWrong_vi[ans.selected]) 
+        ? q.explanation.whyWrong_vi[ans.selected] 
+        : '';
+        
+      return `<div class="card" style="border-left:4px solid ${ans.isCorrect?'var(--success)':'var(--danger)'};">
+        <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:.5rem;">
+          <strong>Câu ${idx+1}: ${q.id}</strong>
+          <span class="tag ${ans.isCorrect?'tag-businessenvironment':'tag-people'}">${ans.isCorrect?'ĐÚNG':'SAI'}</span>
+        </div>
+        <div style="margin-bottom:.5rem; font-style:italic;">${escapeHtml(q.question)}</div>
+        <div style="font-size:.9rem; margin-bottom:.5rem;">
+          Bạn chọn: <strong style="color:${ans.isCorrect?'var(--success)':'var(--danger)'}">${ans.selected||'—'}</strong> |
+          Đáp án: <strong style="color:var(--success)">${q.correctAnswer}</strong>
+        </div>
+        <div class="exp-panel">
+          ${showVi ? `<div><strong>[VI]:</strong> ${sanitizeRich(q.explanation.correct_vi)}</div>` : ''}
+          ${showEn ? `<div style="margin-top:.4rem; font-style:italic;"><strong>[EN]:</strong> ${escapeHtml(q.explanation.correct_en)}</div>` : ''}
+          ${whyWrong ? `<div style="color:var(--danger); margin-top:.4rem;"><strong>Vì sao sai:</strong> ${escapeHtml(whyWrong)}</div>` : ''}
+        </div>
+        <div style="margin-top:.75rem; display:flex; gap:.5rem;">
+          <button class="btn btn-sm btn-outline" data-action="srs-know" data-qid="${q.id}">✓ Đã hiểu</button>
+          <button class="btn btn-sm btn-warning" data-action="srs-review" data-qid="${q.id}">🔁 Cần ôn lại</button>
+        </div>
+      </div>`;
+    }).join('');
+    this.bindKwClicks();
+  }
+
+  pickReviewSession(id) { this.reviewSessId = id; this.renderReviewPage(); }
+
+  setReviewLang(lang) {
+    this.reviewExpLang = lang;
+    this.setStorage('review_exp_lang', lang);
+    this.renderReviewPage();
+  }
+
+  updateSRS(qId, understood) {
+    const srs = this.getStorage('srs') || {};
+    const cur = srs[qId] || { interval: 1, nextReview: todayISO() };
+    cur.interval = understood ? cur.interval * 2 : 1;
+    const next = new Date();
+    next.setDate(next.getDate() + cur.interval);
+    cur.nextReview = todayISO(next);
+    srs[qId] = cur;
+    this.setStorage('srs', srs);
+    this.showModal('Cập nhật SRS', `<p>Câu ${qId}: lần ôn tiếp theo vào <strong>${cur.nextReview}</strong>.</p>`, [
+      { text: 'OK', class: '', onClick: () => this.closeModal() }
+    ]);
+  }
+
+  /* ---- GAP ANALYSIS ---- */
+  renderGapAnalysis() {
+    const answers = this.getAllAnswers();
+    const kGaps = {}, lGaps = {}, kwGaps = {};
+    answers.forEach(a => {
+      if (!a.isCorrect) {
+        if (a.usedTranslate) lGaps[a.task] = (lGaps[a.task]||0)+1;
+        else kGaps[a.task] = (kGaps[a.task]||0)+1;
+      }
+    });
+    const qs = this.getQuestions();
+    const qMap = {};
+    qs.forEach(q => qMap[q.id] = q);
+    answers.forEach(a => {
+      if (!a.isCorrect) {
+        const q = qMap[a.qId];
+        if (q && q.glossary) q.glossary.forEach(g => { kwGaps[g.en] = (kwGaps[g.en]||0)+1; });
+      }
+    });
+
+    const fmt = (obj, colorClass, recommend) => {
+      const sorted = Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,3);
+      if (!sorted.length) return `<p style="color:var(--success);">Chưa ghi nhận lỗ hổng đáng kể.</p>`;
+      return sorted.map(([t,c]) => `<div style="padding:.4rem 0; border-bottom:1px solid var(--border);">
+        <strong>${escapeHtml(t)}</strong>: ${c} câu sai.
+        <div style="font-size:.8rem; color:${colorClass};">→ ${recommend}</div>
+      </div>`).join('');
+    };
+    document.getElementById('gap-knowledge-list').innerHTML = fmt(kGaps, 'var(--danger)', 'Đọc lại PMBOK 7 / APG.');
+    document.getElementById('gap-language-list').innerHTML = fmt(lGaps, 'var(--info)', 'Ôn Glossary + Shadow Reading.');
+
+    const kwSorted = Object.entries(kwGaps).sort((a,b) => b[1]-a[1]).slice(0,5);
+    document.getElementById('gap-keywords-list').innerHTML = kwSorted.length
+      ? kwSorted.map(([k,c]) => `<div style="display:flex; justify-content:space-between; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>🔑 <span data-action="open-kw" data-term="${escapeAttr(k)}" style="color:var(--primary); cursor:pointer; font-weight:600;">${escapeHtml(k)}</span></span><span class="tag tag-people">${c}</span></div>`).join('')
+      : '<p style="color:var(--text-muted);">Chưa có keyword sai.</p>';
+
+    this.renderGapHeatmap(kGaps, lGaps);
+  }
+
+  renderGapHeatmap(kGaps, lGaps) {
+    const tasks = Array.from(new Set([...Object.keys(kGaps), ...Object.keys(lGaps)])).slice(0, 10);
+    if (!tasks.length) { document.getElementById('chart-gap-heatmap').innerHTML = '<p style="font-size:.85rem; color:var(--text-muted);">Chưa đủ dữ liệu.</p>'; return; }
+    let h = `<svg viewBox="0 0 500 ${tasks.length*35+40}" width="100%">
+      <text x="150" y="20" font-size="12" font-weight="700" fill="#dc2626">Knowledge</text>
+      <text x="320" y="20" font-size="12" font-weight="700" fill="#0284c7">Language</text>`;
+    tasks.forEach((t, i) => {
+      const y = i*35+40, k = kGaps[t]||0, l = lGaps[t]||0;
+      const label = t.length > 20 ? t.substring(0,20)+'…' : t;
+      h += `<text x="0" y="${y+15}" font-size="10" fill="#334155">${escapeHtml(label)}</text>
+        <rect x="150" y="${y}" width="${Math.min(120, k*25)}" height="20" rx="4" fill="#dc2626" opacity=".8"/>
+        <text x="${155+Math.min(120,k*25)}" y="${y+14}" font-size="10">${k}</text>
+        <rect x="320" y="${y}" width="${Math.min(120, l*25)}" height="20" rx="4" fill="#0284c7" opacity=".8"/>
+        <text x="${325+Math.min(120,l*25)}" y="${y+14}" font-size="10">${l}</text>`;
+    });
+    h += '</svg>';
+    document.getElementById('chart-gap-heatmap').innerHTML = h;
+  }
+
+  /* ---- PLAN ---- */
+  render14DayPlan() {
+    const cur = this.getCurrentStudyDay();
+    const days = [];
+    for (let d = 1; d <= 14; d++) {
+      let title, desc;
+      if (d === 1) { title = `Ngày 1: Diagnostic Test`; desc = 'Làm 50 câu practice, mở dịch tự do.'; }
+      else if (d <= 7) { title = `Ngày ${d}: Practice 2 Set × 25 câu`; desc = 'Dịch tự do, nạp kiến thức.'; }
+      else if (d <= 11) { title = `Ngày ${d}: Mock Exam 30-60 câu`; desc = 'Soft lock dịch 20 lần/ngày, đọc EN nhiều hơn.'; }
+      else { title = `Ngày ${d}: Exam Hard Lock (Khóa dịch)`; desc = 'Thi thử như thi thật. Không dịch trong exam.'; }
+      days.push({ day: d, title, desc });
+    }
+    const done = this.getStorage('plan_done') || {};
+    document.getElementById('plan-checklist').innerHTML = days.map(p => `
+      <div class="card" style="${p.day===cur?'border-color:var(--primary); outline:2px solid var(--primary);':''}">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <h4>${p.title}</h4>
+          ${p.day===cur ? '<span class="tag tag-people">HÔM NAY</span>' : ''}
+        </div>
+        <p style="font-size:.9rem; color:var(--text-muted); margin-top:.3rem;">${p.desc}</p>
+        <label style="display:inline-flex; align-items:center; gap:.4rem; margin-top:.5rem; cursor:pointer; min-height:32px;"><input type="checkbox" ${done[p.day]?'checked':''} onchange="app.togglePlanDay(${p.day}, this.checked)"> Đã hoàn thành</label>
+      </div>
+    `).join('');
+  }
+
+  togglePlanDay(d, v) { const m = this.getStorage('plan_done') || {}; if (v) m[d] = true; else delete m[d]; this.setStorage('plan_done', m); }
+  resetStartDate() {
+    this.showModal('Đặt lại Ngày 1?', '<p>Hôm nay sẽ trở thành Ngày 1 của lộ trình (ảnh hưởng đến việc khóa nút Dịch).</p>', [
+      { text: 'Hủy', class: 'btn-secondary', onClick: () => this.closeModal() },
+      { text: 'Đặt lại', class: '', onClick: () => { const s = this.getStorage('settings') || {}; s.start_date = new Date().toISOString(); this.setStorage('settings', s); this.closeModal(); this.render14DayPlan(); } }
+    ]);
+  }
+
+  /* ---- GLOSSARY ---- */
+  renderGlossary() {
+    const qs = this.getQuestions();
+    const search = (document.getElementById('glossary-search').value || '').toLowerCase();
+    const filt = document.getElementById('glossary-filter-status').value;
+    const status = this.getStorage('glossary_status') || {};
+    const answers = this.getAllAnswers();
+    const wrongQ = new Set(answers.filter(a => !a.isCorrect).map(a => a.qId));
+
+    const map = {};
+    qs.forEach(q => {
+      if (q.glossary) q.glossary.forEach(g => {
+        if (!map[g.en]) map[g.en] = { ...g, wrongCount: 0 };
+        if (wrongQ.has(q.id)) map[g.en].wrongCount++;
+      });
+    });
+
+    let list = Object.values(map);
+    if (search) list = list.filter(t => t.en.toLowerCase().includes(search) || t.vi.toLowerCase().includes(search));
+    if (filt !== 'ALL') list = list.filter(t => (status[t.en] || 'LEARNING') === filt);
+    list.sort((a,b) => b.wrongCount - a.wrongCount);
+
+    document.getElementById('glossary-tbody').innerHTML = list.map(t => {
+      const st = status[t.en] || 'LEARNING';
+      return `<tr>
+        <td><strong style="color:var(--primary);">${escapeHtml(t.en)}</strong></td>
+        <td>${escapeHtml(t.vi)}</td>
+        <td style="font-size:.85rem;"><em>${escapeHtml(t.example)}</em><br><span style="color:var(--text-muted);">${escapeHtml(t.source)}</span></td>
+        <td><span class="tag tag-people">${t.wrongCount}</span></td>
+        <td><button class="btn btn-sm btn-outline" data-action="speak" data-term="${escapeAttr(t.en)}">🔊</button></td>
+        <td><button class="btn btn-sm ${st==='MASTERED'?'btn-secondary':'btn-outline'}" data-action="toggle-glossary" data-term="${escapeAttr(t.en)}">${st==='MASTERED'?'✓ Đã thuộc':'📖 Cần học'}</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  speakTerm(text) {
+    if (!('speechSynthesis' in window)) { this.showModal('Không hỗ trợ', '<p>Trình duyệt không hỗ trợ SpeechSynthesis.</p>', [{text:'OK', class:'', onClick:()=>this.closeModal()}]); return; }
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'en-US';
+    window.speechSynthesis.speak(u);
+  }
+  
+  speakCurrentKw() { this.speakTerm(document.getElementById('kw-modal-term').textContent); }
+
+  openKwModal(term) {
+    if (!term) return;
+    const qs = this.getQuestions();
+    let entry = null;
+    for (const q of qs) {
+      if (q.glossary) {
+        entry = q.glossary.find(g => g.en.toLowerCase() === term.toLowerCase());
+        if (entry) break;
+      }
+    }
+    if (entry) {
+      document.getElementById('kw-modal-term').textContent = entry.en;
+      document.getElementById('kw-modal-vi').textContent = entry.vi;
+      document.getElementById('kw-modal-ex').textContent = entry.example;
+      document.getElementById('kw-modal-src').textContent = entry.source;
+      document.getElementById('kw-modal').classList.add('active');
+    } else {
+      this.showModal('Không tìm thấy', `<p>Thuật ngữ "<strong>${escapeHtml(term)}</strong>" chưa có trong tự điển mẫu.</p>`, [{text:'Đóng', class:'', onClick:()=>this.closeModal()}]);
+    }
+  }
+
+  toggleGlossaryStatus(term) {
+    const status = this.getStorage('glossary_status') || {};
+    status[term] = status[term] === 'MASTERED' ? 'LEARNING' : 'MASTERED';
+    this.setStorage('glossary_status', status);
+    this.renderGlossary();
+  }
+
+  /* ---- FLASHCARD QUIZ ---- */
+  startVocabularyQuiz() {
+    const qs = this.getQuestions();
+    const map = {};
+    qs.forEach(q => q.glossary && q.glossary.forEach(g => { if (!map[g.en]) map[g.en] = g; }));
+    const all = Object.values(map);
+    if (all.length < 5) { this.showModal('Không đủ dữ liệu', '<p>Cần ít nhất 5 thuật ngữ trong bank để tạo quiz.</p>', [{text:'OK', class:'', onClick:()=>this.closeModal()}]); return; }
+    const sample = shuffle(all).slice(0, Math.min(20, all.length));
+    this._flashState = { terms: sample, idx: 0, flipped: false };
+    this.renderFlashcard();
+    document.getElementById('flashcard-modal').classList.add('active');
+  }
+
+  renderFlashcard() {
+    const st = this._flashState;
+    if (!st) return;
+    if (st.idx >= st.terms.length) {
+      document.getElementById('flashcard-content').innerHTML = '<div style="text-align:center; padding:2rem;"><h3 style="color:var(--success);">🎉 Hoàn thành!</h3><p style="margin-top:.5rem;">Đã ôn xong ' + st.terms.length + ' từ.</p></div>';
+      document.getElementById('flashcard-progress').textContent = 'Hoàn thành';
+      return;
+    }
+    const t = st.terms[st.idx];
+    document.getElementById('flashcard-progress').textContent = (st.idx+1) + '/' + st.terms.length;
+    document.getElementById('flashcard-content').innerHTML = st.flipped
+      ? `<div class="flashcard flipped">${escapeHtml(t.vi)}<div style="font-size:.8rem; margin-top:.5rem; color:var(--text-muted);">${escapeHtml(t.source)}</div></div>`
+      : `<div class="flashcard">${escapeHtml(t.en)}<div style="font-size:.8rem; margin-top:.5rem; opacity:.7;">(Bấm để xem nghĩa)</div></div>`;
+    document.querySelector('#flashcard-content .flashcard').onclick = () => { st.flipped = !st.flipped; this.renderFlashcard(); };
+  }
+
+  flashcardMark(known) {
+    const st = this._flashState;
+    if (!st) return;
+    const t = st.terms[st.idx];
+    const status = this.getStorage('glossary_status') || {};
+    status[t.en] = known ? 'MASTERED' : 'LEARNING';
+    this.setStorage('glossary_status', status);
+    st.idx++; st.flipped = false;
+    this.renderFlashcard();
+  }
+  
+  closeFlashcard() {
+    document.getElementById('flashcard-modal').classList.remove('active');
+    this._flashState = null;
+    if (window.location.hash === '#glossary') this.renderGlossary();
+  }
+
+  /* ---- SETTINGS ---- */
+  renderSettings() {
+    const s = this.getStorage('settings') || {};
+    document.getElementById('set-easy-mode').checked = !!s.easy_mode;
+  }
+
+  exportData() {
+    const backup = {};
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i);
+      if (k.startsWith(this.PREFIX)) backup[k] = localStorage.getItem(k);
+    }
+    const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'pmp-backup-' + todayISO() + '.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
+
+  importData(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        const data = JSON.parse(ev.target.result);
+        if (!data || typeof data !== 'object' || Array.isArray(data)) throw new Error('bad');
+        let count = 0;
+        Object.keys(data).forEach(k => {
+          if (k.startsWith(this.PREFIX) && typeof data[k] === 'string') { JSON.parse(data[k]); localStorage.setItem(k, data[k]); count++; }
+        });
+        if (!count) throw new Error('empty');
+        this.showModal('Import thành công', `<p>Đã khôi phục ${count} key. Tải lại trang để áp dụng.</p>`, [
+          { text: 'Tải lại', class: '', onClick: () => location.reload() },
+          { text: 'Đóng', class: 'btn-secondary', onClick: () => this.closeModal() }
+        ]);
+      } catch (err) {
+        this.showModal('Lỗi Import', '<p>File JSON không đúng định dạng backup.</p>', [{text:'OK', class:'', onClick:()=>this.closeModal()}]);
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  }
+
+  resetAllData() {
+    this.showModal('Xóa toàn bộ dữ liệu?',
+      '<p style="color:var(--danger);">⚠️ Toàn bộ tiến trình học sẽ bị xóa vĩnh viễn.</p>',
+      [
+        { text: 'Hủy', class: 'btn-secondary', onClick: () => this.closeModal() },
+        { text: 'Xóa hết', class: 'btn-danger', onClick: () => { Object.keys(localStorage).filter(k => k.startsWith(this.PREFIX)).forEach(k => localStorage.removeItem(k)); location.reload(); } }
+      ]
+    );
+  }
+
+  /* ---- IMPORT QUESTION BANK ---- */
+  importQuestionBank(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      try {
+        let text = String(ev.target.result).replace(/^\uFEFF/, '').replace(/^\s*```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim();
+        let incoming;
+        try { incoming = JSON.parse(text); }
+        catch (firstErr) {   // Chỉ "sửa lỗi nhẹ" khi JSON gốc không hợp lệ (dấu phẩy thừa)
+          incoming = JSON.parse(text.replace(/,\s*([\]}])/g, '$1'));
+        }
+
+        if (!Array.isArray(incoming)) {
+          if (Array.isArray(incoming.questions)) incoming = incoming.questions;
+          else if (incoming.pmp_questions) {
+            incoming = typeof incoming.pmp_questions === 'string' ? JSON.parse(incoming.pmp_questions) : incoming.pmp_questions;
+          }
+        }
+        if (!Array.isArray(incoming)) throw new Error('File phải là mảng câu hỏi.');
+
+        const errors = [];
+        incoming.forEach((q, i) => {
+          if (!q || typeof q !== 'object') { errors.push(`[${i}] không phải object`); return; }
+          if (!q.id) errors.push(`[${i}] thiếu id`);
+          else if (!/^[A-Za-z0-9_-]+$/.test(String(q.id))) errors.push(`[${i}] id "${q.id}" chỉ được chứa chữ, số, _ và -`);
+          if (!q.question) errors.push(`[${i}] ${q.id||'?'}: thiếu question`);
+          if (!q.question_vi) errors.push(`[${i}] ${q.id||'?'}: thiếu question_vi`);
+          if (!q.explanation || !q.explanation.correct_vi)
+            errors.push(`[${i}] ${q.id||'?'}: thiếu explanation.correct_vi`);
+            
+          const type = q.type || "MCQ";
+          if (type === "MCQ") {
+            if (!q.options || Object.keys(q.options).length !== 4)
+              errors.push(`[${i}] ${q.id||'?'}: cần đúng 4 options (A, B, C, D)`);
+            if (!q.options || !q.options[q.correctAnswer])
+              errors.push(`[${i}] ${q.id||'?'}: correctAnswer "${q.correctAnswer}" không có trong options`);
+          } else if (type === "MultipleResponse") {
+            if (!q.options || Object.keys(q.options).length < 2)
+              errors.push(`[${i}] ${q.id||'?'}: cần ít nhất 2 options`);
+            const ansArr = String(q.correctAnswer).split(',').map(s => s.trim());
+            if (!ansArr.every(a => q.options[a]))
+              errors.push(`[${i}] ${q.id||'?'}: correctAnswer "${q.correctAnswer}" chứa đáp án không có trong options`);
+          } else if (type === "Dropdown") {
+            if (!q.dropdowns || !Array.isArray(q.dropdowns))
+              errors.push(`[${i}] ${q.id||'?'}: thiếu mảng dropdowns`);
+            if (!q.correctAnswer || typeof q.correctAnswer !== 'string')
+              errors.push(`[${i}] ${q.id||'?'}: correctAnswer phải là chuỗi (VD: "A,B")`);
+          } else if (type === "Matching") {
+            if (!q.matchingPairs || !q.matchingOptions)
+              errors.push(`[${i}] ${q.id||'?'}: thiếu matchingPairs hoặc matchingOptions`);
+            if (!q.correctAnswer || typeof q.correctAnswer !== 'string')
+              errors.push(`[${i}] ${q.id||'?'}: correctAnswer phải là chuỗi JSON (VD: "{\\"1\\":\\"B\\"}")`);
+          }
+        });
+
+        if (errors.length) {
+          this.showModal('❌ Schema lỗi',
+            `<p>${errors.length} lỗi cần sửa trước khi import:</p>
+             <pre style="font-size:.75rem; max-height:250px; overflow:auto; background:#f1f5f9; padding:.5rem; border-radius:4px;">${errors.slice(0,15).join('\n')}</pre>`,
+            [{text:'Đóng', class:'', onClick:()=>this.closeModal()}]);
+          e.target.value = '';
+          return;
+        }
+
+        incoming.forEach(normalizeQuestion);
+        const existing = this.getQuestions();
+        const existingIds = new Set(existing.map(q => q.id));
+        const conflicts = incoming.filter(q => existingIds.has(q.id));
+
+        if (conflicts.length === 0) {
+          this._applyImport(existing, incoming, [], 'APPEND');
+        } else {
+          this._showImportChoiceModal(existing, incoming, conflicts);
+        }
+      } catch (err) {
+        this.showModal('❌ Lỗi đọc file JSON', 
+          `<p style="color:var(--danger); font-weight:bold;">${escapeHtml(err.message)}</p>
+           <p style="margin-top:0.5rem; font-size:0.9rem;">Nguyên nhân: File JSON của bạn bị sai cấu trúc nghiêm trọng. Hãy dùng jsonlint.com để kiểm tra.</p>`, 
+          [{text:'Đã hiểu', class:'', onClick:()=>this.closeModal()}]);
+      }
+      e.target.value = '';
+    };
+    reader.readAsText(file);
+  }  
+
+  _showImportChoiceModal(existing, incoming, conflicts) {
+    const conflictList = conflicts.slice(0, 8).map(q => q.id).join(', ');
+    const moreText = conflicts.length > 8 ? ` ... (+${conflicts.length - 8} câu)` : '';
+    
+    this.showModal('⚠️ Phát hiện ID trùng',
+      `<p>File có <strong>${incoming.length}</strong> câu, trong đó <strong>${conflicts.length}</strong> câu trùng ID:</p>
+       <p style="font-family:monospace; font-size:.85rem; background:#fef3c7; padding:.5rem; border-radius:4px; margin:.5rem 0;">${conflictList}${moreText}</p>
+       <p style="margin-top:.75rem;">Bạn muốn xử lý thế nào?</p>
+       <ul style="margin:.5rem 0 0 1.25rem; font-size:.9rem;">
+         <li><strong>Thêm mới (khuyên dùng):</strong> Tự động đánh số mới cho câu trùng, giữ nguyên câu cũ.</li>
+         <li><strong>Ghi đè:</strong> Thay thế câu cũ bằng câu mới.</li>
+       </ul>`,
+      [
+        { text: 'Ghi đè', class: 'btn-outline', onClick: () => {
+          this.closeModal();
+          this._applyImport(existing, incoming, conflicts, 'OVERWRITE');
+        }},
+        { text: '🚀 Thêm mới (Auto-Renumber)', class: '', onClick: () => {
+          this.closeModal();
+          this._applyImport(existing, incoming, conflicts, 'APPEND');
+        }}
+      ],
+      false
+    );
+  }
+
+  _applyImport(existing, incoming, conflicts, mode) {
+    const byId = new Map(existing.map(q => [q.id, q]));
+    const renamed = [];
+    let addedCount = 0, updatedCount = 0;
+
+    if (mode === 'APPEND') {
+      let maxNum = 0;
+      const scanIds = existing.concat(incoming);
+      scanIds.forEach(q => {
+        const m = String(q.id).match(/^Q(\d+)$/i);
+        if (m) maxNum = Math.max(maxNum, parseInt(m[1]));
+      });
+
+      const existingIds = new Set(existing.map(q => q.id));
+      incoming.forEach(q => {
+        if (existingIds.has(q.id)) {
+          maxNum++;
+          const newId = 'Q' + String(maxNum).padStart(3, '0');
+          renamed.push({ old: q.id, new: newId });
+          q.id = newId;
+          addedCount++;
+        } else {
+          addedCount++;
+        }
+        byId.set(q.id, q);
+      });
+    } else {
+      incoming.forEach(q => {
+        if (byId.has(q.id)) updatedCount++; else addedCount++;
+        byId.set(q.id, q);
+      });
+    }
+
+    this.setStorage('questions', Array.from(byId.values()));
+
+    let summaryHtml = `
+      <p>Chế độ: <strong>${mode === 'APPEND' ? '🚀 Thêm mới' : '📝 Ghi đè'}</strong></p>
+      <p>Thêm mới: <strong>${addedCount}</strong> câu</p>
+      ${mode === 'OVERWRITE' ? `<p>Cập nhật: <strong>${updatedCount}</strong> câu</p>` : ''}
+      <p>Tổng bank hiện tại: <strong>${byId.size}</strong> câu</p>
+    `;
+
+    if (renamed.length > 0) {
+      summaryHtml += `
+        <details style="margin-top:.75rem; background:#f0fdf4; padding:.5rem; border-radius:4px;">
+          <summary style="cursor:pointer; font-weight:600; color:#166534;">
+            ✅ ${renamed.length} câu đã được tự động đánh số lại (bấm để xem chi tiết)
+          </summary>
+          <div style="max-height:200px; overflow:auto; font-size:.8rem; margin-top:.5rem; font-family:monospace; line-height:1.6;">
+            ${renamed.map(r => `${r.old} → <strong style="color:var(--success);">${r.new}</strong>`).join('<br>')}
+          </div>
+        </details>
+      `;
+    }
+
+    this.showModal('✅ Import thành công', summaryHtml, [
+      { text: 'OK', class: '', onClick: () => { this.closeModal(); location.reload(); } }
+    ]);
+  }
+}
+
+const app = new PMPApp();
+</script>
+</body>
+</html>
