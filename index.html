@@ -93,9 +93,14 @@
       padding: 1rem; box-shadow: var(--shadow); max-height: calc(100vh - 100px);
       display: flex; flex-direction: column;
     }
-    @media (max-width: 900px) {
+    @media (max-width: 1200px) {
       .question-layout { flex-direction: column; }
-      .question-sidebar { width: 100%; position: static; max-height: 300px; order: -1; }
+      .question-sidebar { width: 100%; position: static; max-height: none; order: 1; }
+      .matching-container { gap: 1rem; }
+      button, a, .option-item, .match-item { touch-action: manipulation; }
+    }
+    @media (max-width: 1280px), (pointer: coarse) {
+      input, select, textarea, .dropdown-select { font-size: 16px; }
     }
 
     .palette-header { display: flex; flex-direction: column; gap: 0.75rem; margin-bottom: 0.75rem; font-size: 0.85rem; color: var(--text-muted); border-bottom: 1px solid var(--border); padding-bottom: 0.75rem; }
@@ -909,10 +914,11 @@ class PMPApp {
     if (!q || q.type !== 'MultipleResponse' || !q.options || !q.options[key]) return;
     if (sess.mode === 'PRACTICE' && sess.answers[q.id] && this._complete(q, sess.answers[q.id])) return;
 
-    let arr = sess.answers[q.id] ? sess.answers[q.id].split(',') : [];
+    let arr = sess.answers[q.id] ? this._parseAnswerKeys(sess.answers[q.id]) : [];
     if (arr.includes(key)) arr = arr.filter(k => k !== key);
     else {
-      const maxAns = q.correctAnswer.split(',').length;
+      const maxAns = this._parseAnswerKeys(q.correctAnswer).length;
+      if (!maxAns) return;
       if (arr.length >= maxAns) {
         // Nếu đã chọn đủ số lượng đáp án, thay thế đáp án cũ nhất để cho phép đổi ý
         arr.shift();
@@ -923,10 +929,33 @@ class PMPApp {
     if (!arr.length) delete sess.answers[q.id]; else sess.answers[q.id] = arr.sort().join(',');
     this._afterPartialAnswer(sess, q);
   }
+  _parseAnswerKeys(value) {
+    return String(value == null ? '' : value).split(',').map(key => key.trim()).filter(Boolean);
+  }
   _complete(q, sel) {
-    if (q.type === 'Dropdown') { const a = String(sel).split(','); return a.length === q.dropdowns.length && a.every(x => x !== ''); }
-    if (q.type === 'Matching') { try { return Object.keys(JSON.parse(sel)).length === q.matchingPairs.length; } catch (e) { return false; } }
-    if (q.type === 'MultipleResponse') return sel.split(',').length === q.correctAnswer.split(',').length;
+    if (sel === undefined || sel === null || sel === '') return false;
+    const type = q.type || 'MCQ';
+    if (type === 'Dropdown') {
+      if (!Array.isArray(q.dropdowns) || !q.dropdowns.length) return false;
+      const answers = String(sel).split(',');
+      return answers.length === q.dropdowns.length && answers.every(answer => answer.trim() !== '');
+    }
+    if (type === 'Matching') {
+      try {
+        const matches = JSON.parse(sel);
+        if (!matches || typeof matches !== 'object' || Array.isArray(matches) || !Array.isArray(q.matchingPairs)) return false;
+        return q.matchingPairs.length > 0 && q.matchingPairs.every(pair =>
+          Object.prototype.hasOwnProperty.call(matches, pair.id) && String(matches[pair.id]).trim() !== ''
+        );
+      } catch (e) { return false; }
+    }
+    if (type === 'MultipleResponse') {
+      const answers = this._parseAnswerKeys(sel);
+      const correctAnswers = this._parseAnswerKeys(q.correctAnswer);
+      return correctAnswers.length > 0 && answers.length === correctAnswers.length &&
+        new Set(answers).size === answers.length &&
+        answers.every(key => q.options && Object.prototype.hasOwnProperty.call(q.options, key));
+    }
     return !!sel;
   }
   _afterPartialAnswer(sess, q) {
@@ -1156,7 +1185,7 @@ class PMPApp {
   savePracticeAnswer(q, selected, usedTranslate, confidence) {
     const log = this.getStorage('practice_log') || [];
     const sess = this.currentSession;
-    if (!sess || !sess.id) return;
+    if (!sess || !sess.id || !this._complete(q, selected)) return;
     const isCorrect = isAnswerCorrect(q, selected);
     const entry = {
       qId: q.id, domain: q.domain, task: q.task, knowledge_area: q.knowledge_area || null, methodology: q.methodology,
@@ -1963,6 +1992,7 @@ class PMPApp {
     const canTranslate = isExam ? this.canUseTranslateInExam() : true;
     
     const qType = q.type || "MCQ";
+    const isAnswered = this._complete(q, selected);
     let interactionHtml = "";
     
     if (qType === "MCQ" && q.options) {
@@ -1986,14 +2016,17 @@ class PMPApp {
         </div>
       `;
     } else if (qType === "MultipleResponse" && q.options) {
-      const selArr = selected ? selected.split(',') : [];
+      const selArr = selected ? this._parseAnswerKeys(selected) : [];
+      const correctAnswers = new Set(this._parseAnswerKeys(q.correctAnswer));
+      const requiredAnswers = correctAnswers.size;
       interactionHtml = `
+        <p class="insight-meta" style="margin-bottom:.5rem;">Chọn ${requiredAnswers} đáp án · Đã chọn ${selArr.length}/${requiredAnswers}</p>
         <div class="options-list">
           ${Object.keys(q.options).map(k => {
             let c = 'option-item';
             if (selArr.includes(k)) c += ' selected';
-            if (!isExam && selected) {
-              const isCorrectAnswer = q.correctAnswer.split(',').includes(k);
+            if (!isExam && isAnswered) {
+              const isCorrectAnswer = correctAnswers.has(k);
               if (isCorrectAnswer) c += ' correct';
               else if (selArr.includes(k)) c += ' wrong';
             }
@@ -2063,7 +2096,7 @@ class PMPApp {
           return `
             <div style="font-size: 1rem; font-style: italic; color: #475569; margin-bottom: 1rem; padding-left: 0.75rem; border-left: 3px solid #cbd5e1;">
               <span data-note-scope="scenario">${escapeHtml(q.scenario)}</span>
-              ${(!isExam && selected && q.scenario_vi) ? `<br><span style="color:var(--primary); font-style:normal;">🇻🇳 ${escapeHtml(q.scenario_vi)}</span>` : ''}
+              ${(!isExam && isAnswered && q.scenario_vi) ? `<br><span style="color:var(--primary); font-style:normal;">🇻🇳 ${escapeHtml(q.scenario_vi)}</span>` : ''}
             </div>
           `;
         }
@@ -2074,7 +2107,7 @@ class PMPApp {
             </button>
             ${(sess.scenarioState?.[q.id] !== false) ? `
               <div class="scenario-text" data-note-scope="scenario">${escapeHtml(q.scenario)}</div>
-              ${(!isExam && selected && q.scenario_vi) ? `<div class="scenario-vi">🇻🇳 <strong>Bản dịch:</strong> ${escapeHtml(q.scenario_vi)}</div>` : ''}
+              ${(!isExam && isAnswered && q.scenario_vi) ? `<div class="scenario-vi">🇻🇳 <strong>Bản dịch:</strong> ${escapeHtml(q.scenario_vi)}</div>` : ''}
             ` : ''}
           </div>
         `;
@@ -2095,15 +2128,6 @@ class PMPApp {
       </div>
     `;
 
-    let isAnswered = false;
-    if (qType === "MCQ" || qType === "MultipleResponse") {
-      isAnswered = !!selected && (qType === "MCQ" || selected.split(',').length === q.correctAnswer.split(',').length);
-    } else if (qType === "Dropdown") {
-      isAnswered = selected && selected.split(",").length === q.dropdowns.length && selected.split(",").every(s => s !== "");
-    } else if (qType === "Matching") {
-      isAnswered = selected && Object.keys(JSON.parse(selected)).length === q.matchingPairs.length;
-    }
-    
     if (!isExam && isAnswered) {
       const conf = sess.confidence[q.id] || '';
       if (qType !== 'MCQ') {
@@ -2160,7 +2184,7 @@ class PMPApp {
     const container = document.getElementById(containerId);
     if (!container) return;
 
-    const answeredCount = Object.keys(sess.answers).length;
+    const answeredCount = sess.questions.filter(question => this._complete(question, sess.answers[question.id])).length;
     const isExam = sess.mode === 'EXAM';
     const totalQ = sess.questions.length;
     
@@ -2201,7 +2225,7 @@ class PMPApp {
           let cls = 'palette-btn';
           if (realIdx === sess.currentIndex) cls += ' active';
           if (sess.flags[item.id]) cls += ' flagged';
-          else if (sess.answers[item.id]) cls += ' answered';
+          else if (this._complete(item, sess.answers[item.id])) cls += ' answered';
           return `<button class="${cls}" onclick="app.jumpToQuestion(${realIdx})" title="Câu ${realIdx+1}">${realIdx+1}</button>`;
         }).join('')}
       </div>
@@ -2301,7 +2325,7 @@ class PMPApp {
     if (sess.mode === 'EXAM') this.saveCurrentExamState();
     else {
       const q = sess.questions[sess.currentIndex];
-      if (sess.answers[q.id]) this.savePracticeAnswer(q, sess.answers[q.id], sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+      if (this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
       else this.saveCurrentPracticeState();
     }
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
@@ -2312,7 +2336,7 @@ class PMPApp {
     if (!sess || sess.mode === 'EXAM') return;
     const q = sess.questions[sess.currentIndex];
     sess.confidence[q.id] = level;
-    if (sess.answers[q.id]) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id], level);
+    if (this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id], level);
     else this.saveCurrentPracticeState();
     this.renderQuestionCard('practice-card-container');
   }
@@ -2360,7 +2384,8 @@ class PMPApp {
   confirmSubmitExam() {
     const sess = this.currentExam;
     if (!sess) return;
-    const un = sess.questions.length - Object.keys(sess.answers).length;
+    const answered = sess.questions.filter(question => this._complete(question, sess.answers[question.id])).length;
+    const un = sess.questions.length - answered;
     const fl = Object.values(sess.flags).filter(Boolean).length;
     this.showModal('Xác nhận nộp bài',
       `<p>Còn <strong>${un}</strong> câu chưa làm, <strong>${fl}</strong> câu flagged.</p>
@@ -2908,7 +2933,9 @@ class PMPApp {
             errors.push(`[${i}] ${q.id||'?'}: thiếu explanation.correct_vi`);
             
           const type = q.type || "MCQ";
-          if (type === "MCQ") {
+          if (!["MCQ", "MultipleResponse", "Dropdown", "Matching"].includes(type)) {
+            errors.push(`[${i}] ${q.id||'?'}: type "${type}" chưa được hỗ trợ`);
+          } else if (type === "MCQ") {
             if (!q.options || Object.keys(q.options).length !== 4)
               errors.push(`[${i}] ${q.id||'?'}: cần đúng 4 options (A, B, C, D)`);
             if (!q.options || !q.options[q.correctAnswer])
@@ -2917,18 +2944,47 @@ class PMPApp {
             if (!q.options || Object.keys(q.options).length < 2)
               errors.push(`[${i}] ${q.id||'?'}: cần ít nhất 2 options`);
             const ansArr = String(q.correctAnswer).split(',').map(s => s.trim());
-            if (!ansArr.every(a => q.options[a]))
+            if (ansArr.length < 2 || ansArr.some(answer => !answer) || new Set(ansArr).size !== ansArr.length)
+              errors.push(`[${i}] ${q.id||'?'}: MultipleResponse phải có ít nhất 2 đáp án đúng, không rỗng và không trùng nhau`);
+            if (!q.options || !ansArr.every(a => Object.prototype.hasOwnProperty.call(q.options, a)))
               errors.push(`[${i}] ${q.id||'?'}: correctAnswer "${q.correctAnswer}" chứa đáp án không có trong options`);
           } else if (type === "Dropdown") {
-            if (!q.dropdowns || !Array.isArray(q.dropdowns))
-              errors.push(`[${i}] ${q.id||'?'}: thiếu mảng dropdowns`);
-            if (!q.correctAnswer || typeof q.correctAnswer !== 'string')
-              errors.push(`[${i}] ${q.id||'?'}: correctAnswer phải là chuỗi (VD: "A,B")`);
+            if (!Array.isArray(q.dropdowns) || !q.dropdowns.length) {
+              errors.push(`[${i}] ${q.id||'?'}: cần mảng dropdowns không rỗng`);
+            } else {
+              const ansArr = typeof q.correctAnswer === 'string' ? q.correctAnswer.split(',').map(s => s.trim()) : [];
+              if (ansArr.length !== q.dropdowns.length || ansArr.some(answer => !answer))
+                errors.push(`[${i}] ${q.id||'?'}: số đáp án trong correctAnswer phải khớp số dropdowns`);
+              q.dropdowns.forEach((dropdown, index) => {
+                if (!dropdown || !Array.isArray(dropdown.options) || !dropdown.options.length)
+                  errors.push(`[${i}] ${q.id||'?'}: dropdown ${index + 1} cần mảng options không rỗng`);
+                else if (ansArr[index] && !dropdown.options.some(option => option && option.key === ansArr[index]))
+                  errors.push(`[${i}] ${q.id||'?'}: đáp án dropdown ${index + 1} không có trong options`);
+              });
+            }
           } else if (type === "Matching") {
-            if (!q.matchingPairs || !q.matchingOptions)
-              errors.push(`[${i}] ${q.id||'?'}: thiếu matchingPairs hoặc matchingOptions`);
-            if (!q.correctAnswer || typeof q.correctAnswer !== 'string')
-              errors.push(`[${i}] ${q.id||'?'}: correctAnswer phải là chuỗi JSON (VD: "{\\"1\\":\\"B\\"}")`);
+            if (!Array.isArray(q.matchingPairs) || !q.matchingPairs.length)
+              errors.push(`[${i}] ${q.id||'?'}: cần mảng matchingPairs không rỗng`);
+            if (!Array.isArray(q.matchingOptions) || !q.matchingOptions.length)
+              errors.push(`[${i}] ${q.id||'?'}: cần mảng matchingOptions không rỗng`);
+            try {
+              const answerMap = JSON.parse(q.correctAnswer);
+              if (!answerMap || typeof answerMap !== 'object' || Array.isArray(answerMap))
+                throw new Error('not an object');
+              const pairIds = (q.matchingPairs || []).map(pair => pair && pair.id != null ? String(pair.id) : '');
+              const answerIds = Object.keys(answerMap);
+              const optionKeys = (q.matchingOptions || []).map(option => option && option.key != null ? String(option.key) : '');
+              if (pairIds.some(id => !id) || new Set(pairIds).size !== pairIds.length)
+                errors.push(`[${i}] ${q.id||'?'}: matchingPairs cần id hợp lệ và không trùng nhau`);
+              if (optionKeys.some(key => !key) || new Set(optionKeys).size !== optionKeys.length)
+                errors.push(`[${i}] ${q.id||'?'}: matchingOptions cần key hợp lệ và không trùng nhau`);
+              if (pairIds.length !== answerIds.length || pairIds.some(id => !id || !Object.prototype.hasOwnProperty.call(answerMap, id)))
+                errors.push(`[${i}] ${q.id||'?'}: correctAnswer phải có đúng một đáp án cho mỗi matchingPair`);
+              if (answerIds.some(id => !optionKeys.includes(String(answerMap[id]))))
+                errors.push(`[${i}] ${q.id||'?'}: correctAnswer chứa lựa chọn không có trong matchingOptions`);
+            } catch (e) {
+              errors.push(`[${i}] ${q.id||'?'}: correctAnswer phải là chuỗi JSON object hợp lệ`);
+            }
           }
         });
 
