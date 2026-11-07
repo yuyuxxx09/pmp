@@ -24,6 +24,7 @@
     .nav-container { max-width: 1200px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; }
     .brand { font-size: 1.25rem; font-weight: 700; color: #38bdf8; display: flex; align-items: center; gap: .5rem; }
     .nav-links { display: flex; gap: .25rem; flex-wrap: wrap; }
+    .nav-toggle { display: none; align-items: center; justify-content: center; width: 44px; height: 44px; border: 1px solid #475569; border-radius: 8px; background: transparent; color: #fff; font-size: 1.35rem; cursor: pointer; }
     .nav-btn { background: transparent; border: none; color: #94a3b8; padding: .5rem .75rem; border-radius: 6px; cursor: pointer; font-size: .9rem; font-weight: 500; text-decoration: none; display: inline-flex; align-items: center; gap: .3rem; min-height: 44px; }
     .nav-btn:hover, .nav-btn.active { color: #fff; background: #334155; }
     main { max-width: 1200px; margin: 1.5rem auto; padding: 0 1rem; }
@@ -32,7 +33,12 @@
     .card { background: var(--card-bg); border-radius: var(--radius); border: 1px solid var(--border); padding: 1.25rem; margin-bottom: 1.25rem; box-shadow: var(--shadow); }
     .grid-2 { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
     .grid-3 { display: grid; grid-template-columns: 1fr; gap: 1.25rem; }
-    @media (min-width: 768px) { .grid-2 { grid-template-columns: 1fr 1fr; } .grid-3 { grid-template-columns: repeat(3, 1fr); } }
+    @media (min-width: 700px) {
+      .grid-2, .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (min-width: 1000px) {
+      .grid-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
     .btn { display: inline-flex; align-items: center; justify-content: center; gap: .5rem; background: var(--primary); color: #fff; border: none; padding: .6rem 1.2rem; border-radius: 6px; cursor: pointer; font-weight: 600; font-size: .95rem; min-height: 44px; min-width: 44px; text-decoration: none; transition: background .2s; }
     .btn:hover { background: var(--primary-hover); }
     .btn:disabled { opacity: .5; cursor: not-allowed; }
@@ -151,15 +157,29 @@
     .match-item.selected { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
     .match-item.matched { border-color: var(--success); background: var(--success-bg); cursor: pointer; }
     .q-image { max-width: 100%; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border); }
+    @media (max-width: 1100px) {
+      header { padding: .35rem .65rem; }
+      .nav-container { position: relative; flex-wrap: nowrap; gap: .5rem; }
+      .brand { min-width: 0; font-size: 1rem; gap: .35rem; }
+      .brand svg { width: 21px; height: 21px; flex-shrink: 0; }
+      .nav-toggle { display: inline-flex; flex-shrink: 0; }
+      .nav-links {
+        display: none; position: absolute; top: calc(100% + .35rem); left: -.65rem; right: -.65rem;
+        grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .25rem; padding: .65rem;
+        background: #1e293b; border-top: 1px solid #334155; box-shadow: var(--shadow);
+        max-height: calc(100vh - 60px); max-height: calc(100dvh - 60px); overflow-y: auto;
+      }
+      .nav-links.is-open { display: grid; }
+      .nav-btn { min-width: 0; padding: .5rem; white-space: normal; }
+    }
+    @media (max-width: 900px) {
+      main { padding-inline: .85rem; }
+      .card { min-width: 0; }
+      .data-table { display: block; overflow-x: auto; }
+    }
     @media (max-width: 600px) {
-      header { padding: 0.4rem 0.6rem; }
-      .nav-container { flex-wrap: nowrap; gap: 0.4rem; }
-      .brand { flex-shrink: 0; gap: 0.3rem; font-size: 0.95rem; }
-      .brand svg { width: 20px; height: 20px; }
-      .nav-links { flex: 1; min-width: 0; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; }
-      .nav-btn { flex-shrink: 0; min-height: 40px; padding: 0.35rem 0.5rem; font-size: 0.82rem; white-space: nowrap; }
-      .nav-links::-webkit-scrollbar { display: none; }
-      .nav-links { scrollbar-width: none; }
+      .brand { font-size: .95rem; }
+      .nav-btn { font-size: .85rem; }
       main { margin: 0.75rem auto; padding: 0 0.65rem; }
       .card { padding: 0.9rem; }
       .question-layout { gap: 0.75rem; }
@@ -187,7 +207,8 @@
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
       PMP Accelerator 14D
     </div>
-    <nav class="nav-links">
+    <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false" aria-controls="primary-navigation" aria-label="Mở menu điều hướng">☰</button>
+    <nav class="nav-links" id="primary-navigation" aria-label="Điều hướng chính">
       <a href="#dashboard" class="nav-btn" id="nav-dashboard">📊 Dashboard</a>
       <a href="#practice" class="nav-btn" id="nav-practice">📝 Practice</a>
       <a href="#exam" class="nav-btn" id="nav-exam">⏱️ Exam</a>
@@ -936,6 +957,7 @@ class PMPApp {
     this.route();
   }
   route() {
+    this.closeNavMenu();
     let pageId = (window.location.hash || '#dashboard').replace('#', '');
     if (!document.getElementById(pageId) || !document.getElementById(pageId).classList.contains('page')) pageId = 'dashboard';
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -955,8 +977,38 @@ class PMPApp {
     else if (pageId === 'settings') this.renderSettings();
   }
 
+  closeNavMenu() {
+    const menu = document.getElementById('primary-navigation');
+    const toggle = document.getElementById('nav-toggle');
+    if (!menu || !toggle) return;
+    menu.classList.remove('is-open');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'Mở menu điều hướng');
+    toggle.textContent = '☰';
+  }
+
   /* ---- EVENTS ---- */
   initEvents() {
+    const navToggle = document.getElementById('nav-toggle');
+    const navMenu = document.getElementById('primary-navigation');
+    if (navToggle && navMenu) {
+      navToggle.addEventListener('click', () => {
+        const isOpen = navMenu.classList.toggle('is-open');
+        navToggle.setAttribute('aria-expanded', String(isOpen));
+        navToggle.setAttribute('aria-label', isOpen ? 'Đóng menu điều hướng' : 'Mở menu điều hướng');
+        navToggle.textContent = isOpen ? '×' : '☰';
+      });
+      navMenu.addEventListener('click', (event) => {
+        if (event.target.closest('a')) this.closeNavMenu();
+      });
+      document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') this.closeNavMenu();
+      });
+      window.addEventListener('resize', () => {
+        if (window.innerWidth > 1100) this.closeNavMenu();
+      });
+    }
+
     const qbankInput = document.getElementById('qbank-file-input');
     if (qbankInput) {
       qbankInput.addEventListener('change', (e) => this.importQuestionBank(e));
