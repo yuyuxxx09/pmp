@@ -252,6 +252,19 @@
       <div class="card"><h3>⚠️ Điểm yếu cần ưu tiên</h3><div id="top-weak-topics" style="margin-top:.5rem;">Chưa đủ dữ liệu.</div><div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('weak')">Ôn điểm yếu</button><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện câu sai</button><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('flagged')">Câu đã đánh dấu</button></div></div>
     </div>
     <div class="grid-2">
+      <div class="card">
+        <h3>🗓️ Luyện tập 7 ngày gần nhất</h3>
+        <p class="insight-meta" style="margin-top:.25rem;">Thống kê câu đã trả lời hoàn chỉnh trong phần Practice; câu làm lại ở lượt khác được tính là lượt trả lời mới.</p>
+        <div id="daily-practice-stats" style="margin-top:.5rem;"></div>
+      </div>
+      <div class="card">
+        <h3>🔁 Câu sai lặp lại nhiều nhất</h3>
+        <p class="insight-meta" style="margin-top:.25rem;">Số lần sai / tổng lượt trả lời cho từng câu luyện.</p>
+        <div id="frequent-mistakes" style="margin-top:.5rem;"></div>
+        <div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện lại các câu đã sai</button></div>
+      </div>
+    </div>
+    <div class="grid-2">
       <div class="card"><h3>🔤 Widget: Từ Vựng Cần Học</h3><div id="widget-vocab-list">Chưa có dữ liệu.</div></div>
       <div class="card"><h3>📈 English Comprehension Trend</h3><div id="widget-trend-desc" style="font-size:.9rem; color:var(--text-muted); margin-bottom:.5rem;">Tỷ lệ đúng KHÔNG bấm dịch.</div><div class="chart-container" id="chart-comprehension"></div></div>
     </div>
@@ -1384,6 +1397,80 @@ class PMPApp {
     this.renderComprehensionTrend();
     this.renderReadiness();
     this.renderStudyHistory();
+    this.renderPracticeAnalytics();
+  }
+
+  renderPracticeAnalytics() {
+    const practiceAnswers = this.getStorage('practice_log') || [];
+    const practiceRuns = this.getStorage('practice_runs') || [];
+    const today = new Date();
+    const days = [];
+    for (let offset = 0; offset < 7; offset++) {
+      const date = new Date(today.getFullYear(), today.getMonth(), today.getDate() - offset);
+      days.push({ key: todayISO(date), date, answers: [], questionIds: new Set(), runs: 0 });
+    }
+    const dayByKey = new Map(days.map(day => [day.key, day]));
+    practiceAnswers.forEach(answer => {
+      const timestamp = Number(answer.timestamp);
+      if (!Number.isFinite(timestamp) || timestamp <= 0) return;
+      const day = dayByKey.get(todayISO(new Date(timestamp)));
+      if (!day) return;
+      day.answers.push(answer);
+      if (answer.qId) day.questionIds.add(answer.qId);
+    });
+    practiceRuns.forEach(run => {
+      const timestamp = Number(run.startedAt);
+      if (!Number.isFinite(timestamp) || timestamp <= 0) return;
+      const day = dayByKey.get(todayISO(new Date(timestamp)));
+      if (day) day.runs++;
+    });
+
+    document.getElementById('daily-practice-stats').innerHTML = days.some(day => day.answers.length || day.runs)
+      ? `<table class="data-table">
+          <thead><tr><th>Ngày</th><th>Lượt</th><th>Câu đã làm</th><th>Sai</th><th>Đúng</th></tr></thead>
+          <tbody>${days.map(day => {
+            const wrong = day.answers.filter(answer => !answer.isCorrect).length;
+            const correct = day.answers.length - wrong;
+            return `<tr>
+              <td>${day.key === todayISO(today) ? 'Hôm nay' : escapeHtml(day.date.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit' }))}</td>
+              <td>${day.runs}</td>
+              <td>${day.answers.length}${day.questionIds.size && day.questionIds.size !== day.answers.length ? ` <span class="insight-meta">(${day.questionIds.size} câu khác nhau)</span>` : ''}</td>
+              <td style="color:${wrong ? 'var(--danger)' : 'inherit'}; font-weight:${wrong ? '700' : '400'};">${wrong}</td>
+              <td>${correct}</td>
+            </tr>`;
+          }).join('')}</tbody>
+        </table>`
+      : '<p class="insight-meta">Chưa có câu trả lời luyện tập được lưu trong 7 ngày gần nhất.</p>';
+
+    const questionStats = new Map();
+    practiceAnswers.forEach(answer => {
+      if (!answer.qId) return;
+      const stat = questionStats.get(answer.qId) || { attempts: 0, wrong: 0, lastWrongAt: 0 };
+      stat.attempts++;
+      if (!answer.isCorrect) {
+        stat.wrong++;
+        stat.lastWrongAt = Math.max(stat.lastWrongAt, Number(answer.timestamp) || 0);
+      }
+      questionStats.set(answer.qId, stat);
+    });
+    const questionById = new Map(this.getQuestions().map(question => [question.id, question]));
+    const frequentMistakes = Array.from(questionStats, ([qId, stat]) => ({ qId, ...stat }))
+      .filter(stat => stat.wrong > 0)
+      .sort((a, b) => b.wrong - a.wrong ||
+        (b.wrong / b.attempts) - (a.wrong / a.attempts) ||
+        b.lastWrongAt - a.lastWrongAt)
+      .slice(0, 5);
+    document.getElementById('frequent-mistakes').innerHTML = frequentMistakes.length
+      ? frequentMistakes.map(stat => {
+          const question = questionById.get(stat.qId);
+          const label = question ? question.question : `Câu ${stat.qId}`;
+          const wrongRate = Math.round(stat.wrong / stat.attempts * 100);
+          return `<div style="padding:.65rem 0; border-bottom:1px solid var(--border);">
+            <div style="font-weight:600; overflow-wrap:anywhere;">${escapeHtml(label)}</div>
+            <div class="insight-meta">${escapeHtml(question?.domain || 'Chưa phân loại')} · Sai ${stat.wrong}/${stat.attempts} lượt (${wrongRate}%)${stat.lastWrongAt ? ` · Sai gần nhất ${new Date(stat.lastWrongAt).toLocaleDateString('vi-VN')}` : ''}</div>
+          </div>`;
+        }).join('')
+      : '<p class="insight-meta">Chưa có câu sai nào được ghi nhận trong phần luyện tập.</p>';
   }
 
   renderReadiness() {
