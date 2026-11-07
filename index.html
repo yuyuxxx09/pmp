@@ -51,6 +51,13 @@
     .metric-box { text-align: center; padding: 1rem; background: #f8fafc; border-radius: var(--radius); border: 1px solid var(--border); }
     .metric-val { font-size: 2rem; font-weight: 700; color: var(--primary); margin: .2rem 0; }
     .metric-lbl { font-size: .85rem; color: var(--text-muted); font-weight: 500; }
+    .insight-card { background: #fff; border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin-bottom: 1rem; }
+    .insight-card h3 { margin-bottom: .5rem; }
+    .insight-meta { font-size: .8rem; color: var(--text-muted); }
+    .readiness-status { font-weight: 700; margin: .4rem 0; }
+    .study-actions { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: .75rem; }
+    .history-row { display: flex; justify-content: space-between; gap: .75rem; align-items: center; padding: .55rem 0; border-bottom: 1px solid var(--border); }
+    .history-row:last-child { border-bottom: 0; }
     .q-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .5rem; padding-bottom: .75rem; border-bottom: 1px solid var(--border); margin-bottom: 1rem; }
     .q-text { font-size: 1.1rem; font-weight: 500; line-height: 1.6; margin-bottom: 1rem; color: #0f172a; }
     .q-text-vi { font-size: 1rem; line-height: 1.6; color: #334155; background: #f1f5f9; padding: .75rem; border-radius: 6px; margin-bottom: 1rem; border-left: 4px solid var(--primary); }
@@ -65,6 +72,11 @@
     .option-item.correct .option-key { background: var(--success); color: #fff; }
     .option-item.wrong .option-key { background: var(--danger); color: #fff; }
     .option-content { flex-grow: 1; }
+    .study-highlight { background: #fef08a; border-radius: 2px; box-shadow: 0 0 0 1px rgba(202,138,4,.2); }
+    .study-notes { margin: 1rem 0; padding: 0.9rem; border: 1px solid var(--border); border-radius: 8px; background: #fffbeb; }
+    .study-note { padding: 0.65rem 0; border-bottom: 1px solid #fde68a; overflow-wrap: anywhere; }
+    .study-note:last-child { border-bottom: 0; }
+    .study-note-quote { font-weight: 700; background: #fef08a; padding: 0.1rem 0.25rem; border-radius: 3px; }
     
     /* ===== Bố cục 2 cột (Câu hỏi + Sidebar) ===== */
     .question-layout { display: flex; gap: 1.5rem; align-items: flex-start; }
@@ -139,6 +151,32 @@
     .match-item.selected { border-color: var(--primary); background: #eff6ff; box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.2); }
     .match-item.matched { border-color: var(--success); background: var(--success-bg); cursor: pointer; }
     .q-image { max-width: 100%; border-radius: 8px; margin-bottom: 1rem; border: 1px solid var(--border); }
+    @media (max-width: 600px) {
+      header { padding: 0.4rem 0.6rem; }
+      .nav-container { flex-wrap: nowrap; gap: 0.4rem; }
+      .brand { flex-shrink: 0; gap: 0.3rem; font-size: 0.95rem; }
+      .brand svg { width: 20px; height: 20px; }
+      .nav-links { flex: 1; min-width: 0; flex-wrap: nowrap; overflow-x: auto; overscroll-behavior-x: contain; }
+      .nav-btn { flex-shrink: 0; min-height: 40px; padding: 0.35rem 0.5rem; font-size: 0.82rem; white-space: nowrap; }
+      .nav-links::-webkit-scrollbar { display: none; }
+      .nav-links { scrollbar-width: none; }
+      main { margin: 0.75rem auto; padding: 0 0.65rem; }
+      .card { padding: 0.9rem; }
+      .question-layout { gap: 0.75rem; }
+      .question-sidebar { order: 1; max-height: none; padding: 0.75rem; }
+      .palette-grid-sidebar { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 0.4rem; }
+      .palette-btn { min-height: 44px; }
+      .q-header { align-items: flex-start; }
+      .q-header > div:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 0.35rem; }
+      .q-header > div:last-child { flex-wrap: wrap; }
+      .option-item { min-width: 0; padding: 0.7rem; }
+      .option-content, .match-item { min-width: 0; overflow-wrap: anywhere; }
+      .matching-container { gap: 0.5rem; }
+      .matching-col { min-width: 0; }
+      .dropdown-select { max-width: 100%; }
+      section[id] { scroll-margin-top: 56px; }
+      .history-row { align-items: flex-start; flex-direction: column; gap: .25rem; }
+    }
   </style>
 </head>
 <body>
@@ -168,25 +206,30 @@
     <div class="card" style="background: linear-gradient(to right,#1e293b,#0f172a); color:#fff;">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:1rem;">
         <div>
-          <h2 style="font-size:1.5rem; margin-bottom:.3rem;">Tiến độ Luyện thi PMP (ECO 2021)</h2>
-          <p style="color:#94a3b8; font-size:.95rem;" id="dash-streak">Streak: 0 ngày | Ngày hiện tại: Day 1</p>
+          <h2 style="font-size:1.5rem; margin-bottom:.3rem;">PMP Study Coach</h2>
+          <p style="color:#cbd5e1; font-size:.95rem;" id="dash-streak">Bắt đầu một lượt luyện ngắn để xác định điểm yếu.</p>
         </div>
-        <button class="btn btn-warning" id="btn-resume-exam" style="display:none;" onclick="location.hash='#exam'">▶️ Tiếp tục bài thi dở</button>
+        <div class="study-actions">
+          <button class="btn btn-warning" onclick="app.startTargetedPractice('adaptive')">🎯 Luyện thích ứng</button>
+          <button class="btn btn-warning" id="btn-resume-exam" style="display:none;" onclick="location.hash='#exam'">▶️ Tiếp tục bài thi dở</button>
+        </div>
       </div>
     </div>
     <div class="grid-3">
-      <div class="metric-box"><div class="metric-lbl">Tỷ lệ đúng tổng thể</div><div class="metric-val" id="m-accuracy">0%</div><div class="metric-lbl" id="m-total-q">0 câu đã làm</div></div>
-      <div class="metric-box"><div class="metric-lbl">English Comprehension %</div><div class="metric-val" id="m-comprehension">0%</div><div class="metric-lbl">Mục tiêu: Tuần 1 ≥40%, Tuần 2 ≥70%</div></div>
+      <div class="metric-box"><div class="metric-lbl">Độ chính xác các lượt trả lời</div><div class="metric-val" id="m-accuracy">0%</div><div class="metric-lbl" id="m-total-q">0 lượt trả lời đã lưu</div></div>
+      <div class="metric-box"><div class="metric-lbl">Độ chính xác khi không dịch</div><div class="metric-val" id="m-comprehension">—</div><div class="metric-lbl" id="m-comprehension-sample">Chỉ tính câu trả lời không dùng bản dịch</div></div>
       <div class="metric-box"><div class="metric-lbl">Hôm nay cần ôn (SRS)</div><div class="metric-val" id="m-srs-count">0</div><div class="metric-lbl" id="m-srs-sub">0 câu</div><button class="btn btn-sm" id="btn-srs-practice" style="margin-top:.5rem; display:none;" onclick="app.startSrsPractice()">▶ Ôn ngay</button></div>
     </div>
+    <div class="insight-card" id="readiness-card" aria-live="polite"></div>
     <div class="grid-2">
-      <div class="card"><h3>📊 Độ chính xác theo Domain</h3><div class="chart-container" id="chart-domain"></div></div>
-      <div class="card"><h3>⚠️ Top 3 Topics Cần Cải Thiện</h3><div id="top-weak-topics" style="margin-top:.5rem;">Chưa đủ dữ liệu.</div></div>
+      <div class="card"><h3>📊 Độ chính xác theo Domain</h3><div class="chart-container" id="chart-domain"></div><div class="insight-meta">Mẫu số là lượt trả lời; luyện lại cùng câu vẫn được tính là lượt mới.</div></div>
+      <div class="card"><h3>⚠️ Điểm yếu cần ưu tiên</h3><div id="top-weak-topics" style="margin-top:.5rem;">Chưa đủ dữ liệu.</div><div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('weak')">Ôn điểm yếu</button><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện câu sai</button><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('flagged')">Câu đã đánh dấu</button></div></div>
     </div>
     <div class="grid-2">
       <div class="card"><h3>🔤 Widget: Từ Vựng Cần Học</h3><div id="widget-vocab-list">Chưa có dữ liệu.</div></div>
       <div class="card"><h3>📈 English Comprehension Trend</h3><div id="widget-trend-desc" style="font-size:.9rem; color:var(--text-muted); margin-bottom:.5rem;">Tỷ lệ đúng KHÔNG bấm dịch.</div><div class="chart-container" id="chart-comprehension"></div></div>
     </div>
+    <div class="card"><h3>🗓️ Lịch sử luyện gần đây</h3><div id="study-history" style="margin-top:.5rem;"></div></div>
   </section>
 
     <!-- PRACTICE -->
@@ -194,12 +237,24 @@
     <div class="card" style="margin-bottom:1rem;">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem;">
         <h3>📝 Luyện Tập Theo Chủ Đề</h3>
-        <select id="practice-filter-domain" style="padding:.4rem; border-radius:6px; border:1px solid var(--border);">
-          <option value="ALL">Tất cả Domain</option>
-          <option value="People">People</option>
-          <option value="Process">Process</option>
-          <option value="BusinessEnvironment">Business Environment</option>
-        </select>
+        <div style="display:flex; flex-wrap:wrap; gap:.5rem;">
+          <label for="practice-filter-domain" class="insight-meta" style="align-self:center;">Domain</label>
+          <select id="practice-filter-domain" style="padding:.4rem; border-radius:6px; border:1px solid var(--border);">
+            <option value="ALL">Tất cả Domain</option>
+            <option value="People">People</option>
+            <option value="Process">Process</option>
+            <option value="BusinessEnvironment">Business Environment</option>
+          </select>
+          <label for="practice-filter-mode" class="insight-meta" style="align-self:center;">Lượt luyện</label>
+          <select id="practice-filter-mode" style="padding:.4rem; border-radius:6px; border:1px solid var(--border);">
+            <option value="all">Toàn bộ ngân hàng</option>
+            <option value="adaptive">Thích ứng (yếu + đến hạn)</option>
+            <option value="weak">Theo điểm yếu</option>
+            <option value="wrong">Câu từng làm sai</option>
+            <option value="flagged">Câu đã đánh dấu</option>
+            <option value="due">Câu đến hạn SRS</option>
+          </select>
+        </div>
       </div>
     </div>
     <!-- Layout 2 cột -->
@@ -254,22 +309,25 @@
   <!-- GAP -->
   <section id="gap" class="page">
     <div class="card">
-      <h2>🎯 Phân Tích Lỗ Hổng 2 Chiều</h2>
-      <p style="color:var(--text-muted); margin-bottom:1rem; font-size:.9rem;">Phân tách lỗi do chưa thuộc quy trình PMP vs rào cản từ vựng tiếng Anh.</p>
+      <h2>🎯 Điểm yếu & kế hoạch khắc phục</h2>
+      <p style="color:var(--text-muted); margin-bottom:1rem; font-size:.9rem;">Theo dõi lỗi theo domain/task và tín hiệu sử dụng bản dịch. Đây là tín hiệu cần kiểm tra, không kết luận nguyên nhân chỉ dựa trên việc bấm dịch.</p>
+      <div class="insight-card" id="taxonomy-quality"></div>
       <div class="grid-2" style="margin-bottom:1.5rem;">
         <div class="card" style="border-top:4px solid var(--danger);">
-          <h3 style="color:var(--danger);">🔴 Knowledge Gap</h3>
-          <p style="font-size:.85rem; color:var(--text-muted);">Sai dù không bấm dịch.</p>
+          <h3 style="color:var(--danger);">🔴 Sai khi không dùng dịch</h3>
+          <p style="font-size:.85rem; color:var(--text-muted);">Tín hiệu cần ôn kiến thức và cách đọc đề.</p>
           <div id="gap-knowledge-list" style="margin-top:.75rem;">—</div>
         </div>
         <div class="card" style="border-top:4px solid var(--info);">
-          <h3 style="color:var(--info);">🔵 Language Gap</h3>
-          <p style="font-size:.85rem; color:var(--text-muted);">Sai khi đã dùng dịch / đoán mò.</p>
+          <h3 style="color:var(--info);">🔵 Sai khi có dùng dịch</h3>
+          <p style="font-size:.85rem; color:var(--text-muted);">Kiểm tra thuật ngữ, bản dịch và hiểu biết nội dung.</p>
           <div id="gap-language-list" style="margin-top:.75rem;">—</div>
         </div>
       </div>
-      <div class="card"><h3>🔑 Top Keywords Sai Nhiều Nhất</h3><div id="gap-keywords-list" style="margin-top:.75rem;">—</div></div>
-      <div class="card"><h3>🔥 Heatmap Tasks</h3><div class="chart-container" id="chart-gap-heatmap"></div></div>
+      <div class="card"><h3>🔑 Thuật ngữ cần xem lại</h3><div id="gap-keywords-list" style="margin-top:.75rem;">—</div></div>
+      <div class="card"><h3>📝 Cụm từ và ghi chú của tôi</h3><div id="annotation-review-list" style="margin-top:.75rem;">—</div></div>
+      <div class="card"><h3>📊 Tỷ lệ sai theo task</h3><div class="chart-container" id="chart-gap-heatmap"></div><p class="insight-meta">Chỉ số dưới đây là lượt sai/lượt trả lời; nhóm ít mẫu được đánh dấu sơ bộ.</p></div>
+      <div class="study-actions"><button class="btn" onclick="app.startTargetedPractice('weak')">Ôn điểm yếu ngay</button><button class="btn btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện lại câu sai</button></div>
     </div>
   </section>
 
@@ -279,6 +337,7 @@
       <h2>📅 Lộ Trình 14 Ngày</h2>
       <p style="color:var(--text-muted); font-size:.9rem; margin-bottom:.75rem;">Balancing knowledge intake & progressive translation unlock.</p>
       <button class="btn btn-outline btn-sm" style="margin-bottom:1rem;" onclick="app.resetStartDate()">🔄 Đặt hôm nay là Ngày 1</button>
+      <div id="plan-recommendation"></div>
       <div id="plan-checklist"></div>
     </div>
   </section>
@@ -431,7 +490,9 @@ function normalizeQuestion(q) {
   q.id = String(q.id); q.type = q.type || 'MCQ';
   q.domain = String(q.domain || 'Process').replace(/\s+/g,'');
   if (!['People','Process','BusinessEnvironment'].includes(q.domain)) q.domain = 'Process';
-  q.task = q.task || 'Imported'; q.methodology = q.methodology || 'Predictive';
+  q.task = q.task || 'Imported';
+  q.knowledge_area = q.knowledge_area ? String(q.knowledge_area).trim() : null;
+  q.methodology = q.methodology || 'Predictive';
   q.difficulty = q.difficulty || 'medium'; q.english_level = q.english_level || 'B1';
   q.keywords = Array.isArray(q.keywords) ? q.keywords : [];
   q.glossary = Array.isArray(q.glossary) ? q.glossary.filter(g => g && g.en) .map(g => ({en:String(g.en), vi:String(g.vi||''), example:String(g.example||''), source:String(g.source||'')})) : [];
@@ -584,6 +645,8 @@ class PMPApp {
     this.currentExam = null;
     this.examTimerInterval = null;
     this.lastSubmittedSession = null;
+    this._pendingAnnotation = null;
+    this._annotationActionPressed = false;
     this.prefExpLang = this.getStorage('exp_lang') || 'VI';
     this.reviewExpLang = this.getStorage('review_exp_lang') || 'VI';
     this._flashState = null;
@@ -595,7 +658,7 @@ class PMPApp {
   }
 
   getStorage(k) { try { const d = localStorage.getItem(this.PREFIX + k); return d ? JSON.parse(d) : null; } catch (e) { return null; } }
-  setStorage(k, v) { try { localStorage.setItem(this.PREFIX + k, JSON.stringify(v)); } catch (e) { console.error('LS write', e); } }
+  setStorage(k, v) { try { localStorage.setItem(this.PREFIX + k, JSON.stringify(v)); return true; } catch (e) { console.error('LS write', e); return false; } }
 
   // Đảm bảo dữ liệu không bao giờ bị trống hoặc lỗi cấu trúc
   initData() {
@@ -610,6 +673,9 @@ class PMPApp {
     
     if (!this.getStorage('srs')) this.setStorage('srs', {});
     if (!this.getStorage('glossary_status')) this.setStorage('glossary_status', {});
+    if (!Array.isArray(this.getStorage('practice_runs'))) this.setStorage('practice_runs', []);
+    if (!Array.isArray(this.getStorage('flagged_questions'))) this.setStorage('flagged_questions', []);
+    if (!Array.isArray(this.getStorage('learning_events'))) this.setStorage('learning_events', []);
     if (!this.getStorage('settings')) this.setStorage('settings', { easy_mode: false, start_date: new Date().toISOString() });
     
     const t = this.getStorage('translate_log');
@@ -645,15 +711,147 @@ class PMPApp {
 
   saveCurrentExamState() { if (this.currentExam) this.setStorage('current_exam', this.currentExam); }
 
+  createId(prefix) { return prefix + '_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8); }
+
+  trackEvent(name, props = {}) {
+    const events = this.getStorage('learning_events') || [];
+    events.push({
+      id: this.createId('evt'),
+      name,
+      ts: Date.now(),
+      ...props
+    });
+    this.setStorage('learning_events', events.slice(-1000));
+  }
+
+  getQuestionPerformance() {
+    const byQuestion = {};
+    this.getAllAnswers().forEach(answer => {
+      const stat = byQuestion[answer.qId] || (byQuestion[answer.qId] = {
+        attempts: 0, wrong: 0, lastCorrect: null, lastTimestamp: 0
+      });
+      stat.attempts++;
+      if (!answer.isCorrect) stat.wrong++;
+      if ((answer.timestamp || 0) >= stat.lastTimestamp) {
+        stat.lastTimestamp = answer.timestamp || 0;
+        stat.lastCorrect = !!answer.isCorrect;
+      }
+    });
+    return byQuestion;
+  }
+
+  getWeaknessStats() {
+    const byTask = {};
+    this.getAllAnswers().forEach(answer => {
+      const domain = answer.domain || 'Chưa phân loại';
+      const task = answer.knowledge_area || answer.task || 'Chưa phân loại';
+      const taxonomy = answer.knowledge_area ? 'Knowledge area' : 'Task';
+      const key = domain + '|' + taxonomy + '|' + task;
+      const stat = byTask[key] || (byTask[key] = { domain, task, taxonomy, attempts: 0, wrong: 0, questionIds: new Set() });
+      stat.attempts++;
+      if (!answer.isCorrect) stat.wrong++;
+      if (answer.qId) stat.questionIds.add(answer.qId);
+    });
+    return Object.values(byTask).map(stat => ({
+      ...stat,
+      questionIds: Array.from(stat.questionIds),
+      accuracy: stat.attempts ? Math.round((stat.attempts - stat.wrong) / stat.attempts * 100) : 0,
+      confidence: stat.attempts < 3 ? 'Sơ bộ' : 'Ổn định hơn'
+    })).filter(stat => stat.wrong > 0).sort((a, b) =>
+      (a.accuracy - b.accuracy) || (b.wrong - a.wrong) || (b.attempts - a.attempts)
+    );
+  }
+
+  getReviewQuestionIds(mode) {
+    const performance = this.getQuestionPerformance();
+    const srs = this.getStorage('srs') || {};
+    const today = todayISO();
+    const flags = new Set(this.getStorage('flagged_questions') || []);
+    if (this.currentSession) Object.keys(this.currentSession.flags || {}).forEach(id => {
+      if (this.currentSession.flags[id]) flags.add(id);
+    });
+    if (this.currentExam) Object.keys(this.currentExam.flags || {}).forEach(id => {
+      if (this.currentExam.flags[id]) flags.add(id);
+    });
+    const weakTasks = new Set(this.getWeaknessStats()
+      .filter(stat => stat.accuracy < 70 && stat.attempts >= 2)
+    .map(stat => stat.domain + '|' + stat.taxonomy + '|' + stat.task));
+
+    const questions = this.getQuestions().filter(question => {
+      const stat = performance[question.id];
+    const questionTopic = question.knowledge_area || question.task || 'Chưa phân loại';
+    const questionTaxonomy = question.knowledge_area ? 'Knowledge area' : 'Task';
+    const taskIsWeak = weakTasks.has((question.domain || 'Chưa phân loại') + '|' + questionTaxonomy + '|' + questionTopic);
+    if (mode === 'flagged') return flags.has(question.id);
+    if (mode === 'due') return !!srs[question.id] && srs[question.id].nextReview <= today;
+    if (mode === 'wrong') return !!stat && stat.wrong > 0;
+    if (mode === 'weak') return taskIsWeak || (!!stat && stat.wrong > 0);
+      if (mode === 'adaptive') return true;
+      return true;
+    });
+    if (mode === 'all') return questions;
+    return questions.sort((a, b) => {
+      const aStat = performance[a.id] || { wrong: 0, attempts: 0, lastCorrect: true };
+      const bStat = performance[b.id] || { wrong: 0, attempts: 0, lastCorrect: true };
+      const aDue = srs[a.id] && srs[a.id].nextReview <= today ? 1 : 0;
+      const bDue = srs[b.id] && srs[b.id].nextReview <= today ? 1 : 0;
+      const aPriority = aDue * 100 + aStat.wrong * 10 + (aStat.lastCorrect === false ? 5 : 0) - aStat.attempts;
+      const bPriority = bDue * 100 + bStat.wrong * 10 + (bStat.lastCorrect === false ? 5 : 0) - bStat.attempts;
+      return bPriority - aPriority;
+    });
+  }
+
+  startTargetedPractice(mode) {
+    const domain = document.getElementById('practice-filter-domain');
+    const filter = document.getElementById('practice-filter-mode');
+    if (!domain || !filter) return;
+    domain.value = 'ALL';
+    filter.value = mode;
+    if (window.location.hash === '#practice') this.initPracticeSession(true);
+    else window.location.hash = '#practice';
+  }
+
+  startPracticeRun(questions, mode, domain) {
+    if (this.currentSession && this.currentSession.id) {
+      const previousRuns = this.getStorage('practice_runs') || [];
+      const previous = previousRuns.find(item => item.id === this.currentSession.id);
+      if (previous && previous.status === 'IN_PROGRESS') {
+        previous.status = 'ENDED_EARLY';
+        previous.completedAt = Date.now();
+        this.setStorage('practice_runs', previousRuns);
+      }
+    }
+    const sessionId = this.createId('practice');
+    const now = Date.now();
+    const savedFlags = new Set(this.getStorage('flagged_questions') || []);
+    const flags = Object.fromEntries(questions.filter(question => savedFlags.has(question.id)).map(question => [question.id, true]));
+    this.currentSession = {
+      id: sessionId, mode: 'PRACTICE', practiceMode: mode, domain,
+      startedAt: now, questions, currentIndex: 0, answers: {}, flags,
+      confidence: {}, usedTranslate: {}, currentQuestionStartedAt: now
+    };
+    const runs = this.getStorage('practice_runs') || [];
+    runs.push({
+      id: sessionId, mode, domain, startedAt: now, completedAt: null,
+      planned: questions.length, answered: 0, correct: 0, status: 'IN_PROGRESS'
+    });
+    this.setStorage('practice_runs', runs);
+    this.setStorage('current_practice', {
+      id: sessionId, mode, domain, startedAt: now,
+      qIds: questions.map(question => question.id), currentIndex: 0,
+      answers: {}, flags, confidence: {}, usedTranslate: {}, currentQuestionStartedAt: now
+    });
+    this.trackEvent('practice_started', { sessionId, mode, questionCount: questions.length, domain });
+    this.palettePage = 1;
+    this.renderQuestionCard('practice-card-container');
+  }
+
   startSrsPractice() {
     const today = todayISO(), srs = this.getStorage('srs') || {};
     const due = new Set(Object.keys(srs).filter(k => srs[k].nextReview <= today));
     const qs = this.getQuestions().filter(q => due.has(q.id));
     if (!qs.length) { this.showModal('Không có câu đến hạn', '<p>Hiện không có câu nào cần ôn lại.</p>', [{text:'OK', class:'', onClick:()=>this.closeModal()}]); return; }
-    document.getElementById('practice-filter-domain').value = 'ALL';
-    this.currentSession = { mode:'PRACTICE', domain:'ALL', questions: qs, currentIndex:0, answers:{}, flags:{}, confidence:{}, usedTranslate:{} };
-    this.palettePage = 1;
-    if (window.location.hash === '#practice') this.route(); else window.location.hash = '#practice';
+    this.startTargetedPractice('due');
   }
 
   /* ---- Dropdown / Matching / MultiSelect ---- */
@@ -710,9 +908,25 @@ class PMPApp {
     return !!sel;
   }
   _afterPartialAnswer(sess, q) {
-    if (sess.mode === 'EXAM') this.saveCurrentExamState();
+    if (sess.mode === 'EXAM') {
+      if (sess.answers[q.id] && this._complete(q, sess.answers[q.id])) this.recordExamResponse(sess, q);
+      this.saveCurrentExamState();
+    }
     else if (sess.answers[q.id] && this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+    else this.saveCurrentPracticeState();
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+  }
+
+  recordExamResponse(session, question) {
+    session.responseTimes = session.responseTimes || {};
+    const now = Date.now();
+    session.responseTimes[question.id] = Math.max(0, now - (session.currentQuestionStartedAt || now));
+    this.trackEvent('question_answered', {
+      sessionId: session.id, qId: question.id, mode: 'EXAM',
+      isCorrect: isAnswerCorrect(question, session.answers[question.id]),
+      responseTimeMs: session.responseTimes[question.id]
+    });
+    session.currentQuestionStartedAt = now;
   }
 
   /* ---- ROUTER ---- */
@@ -746,6 +960,7 @@ class PMPApp {
     if (qbankInput) {
       qbankInput.addEventListener('change', (e) => this.importQuestionBank(e));
     }
+    document.addEventListener('selectionchange', () => this.handleAnnotationSelectionChange());
 
     document.addEventListener('keydown', (e) => {
       if (document.querySelector('.modal-overlay.active')) return; 
@@ -786,6 +1001,8 @@ class PMPApp {
 
     const pracFilter = document.getElementById('practice-filter-domain');
     if (pracFilter) pracFilter.addEventListener('change', () => this.initPracticeSession(true));
+    const practiceMode = document.getElementById('practice-filter-mode');
+    if (practiceMode) practiceMode.addEventListener('change', () => this.initPracticeSession(true));
 
     const glosSearch = document.getElementById('glossary-search');
     if (glosSearch) glosSearch.addEventListener('input', () => this.renderGlossary());
@@ -827,7 +1044,10 @@ class PMPApp {
     }
     document.getElementById('app-modal').classList.add('active');
   }
-  closeModal() { document.getElementById('app-modal').classList.remove('active'); }
+  closeModal() {
+    document.getElementById('app-modal').classList.remove('active');
+    this._annotationActionPressed = false;
+  }
 
   /* ---- STUDY DAY & PROGRESSIVE LOCK ---- */
   getCurrentStudyDay() {
@@ -860,62 +1080,200 @@ class PMPApp {
   getAllAnswers() {
     const sessions = this.getStorage('sessions') || [];
     const practice = this.getStorage('practice_log') || [];
+    const questions = new Map(this.getQuestions().map(question => [question.id, question]));
     const all = [];
     
     sessions.forEach(s => {
       if (s.answers) {
-        s.answers.forEach(a => all.push({ ...a, timestamp: a.timestamp || s.timestamp }));
+        s.answers.forEach(a => all.push({
+          ...(questions.get(a.qId) || {}),
+          ...a,
+          timestamp: a.timestamp || s.timestamp,
+          sessionId: a.sessionId || s.id,
+          source: a.source || 'mock_exam'
+        }));
       }
     });
     
     all.push(...practice);
     all.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
-    
-    const seen = new Map();
-    all.forEach(a => seen.set(a.qId, a)); 
-    return Array.from(seen.values());
+    return all;
   }
 
   savePracticeAnswer(q, selected, usedTranslate, confidence) {
     const log = this.getStorage('practice_log') || [];
+    const sess = this.currentSession;
+    if (!sess || !sess.id) return;
     const isCorrect = isAnswerCorrect(q, selected);
     const entry = {
-      qId: q.id, domain: q.domain, task: q.task, methodology: q.methodology,
+      qId: q.id, domain: q.domain, task: q.task, knowledge_area: q.knowledge_area || null, methodology: q.methodology,
       difficulty: q.difficulty, english_level: q.english_level,
       selected, correctAnswer: q.correctAnswer, isCorrect,
       usedTranslate: !!usedTranslate, confidence: confidence || 'Sure',
-      timestamp: Date.now(), source: 'practice'
+      timestamp: Date.now(), source: 'practice', sessionId: sess.id,
+      runMode: sess.practiceMode || 'all',
+      responseTimeMs: Math.max(0, Date.now() - (sess.currentQuestionStartedAt || Date.now()))
     };
-    const idx = log.findIndex(a => a.qId === q.id);
-    if (idx >= 0) log[idx] = entry; else log.push(entry);
+    const idx = log.findIndex(a => a.sessionId === sess.id && a.qId === q.id);
+    const isNewAttempt = idx < 0;
+    if (isNewAttempt) log.push(entry);
+    else log[idx] = {
+      ...log[idx], ...entry,
+      timestamp: log[idx].timestamp,
+      responseTimeMs: log[idx].responseTimeMs
+    };
     this.setStorage('practice_log', log);
+    if (isNewAttempt) {
+      this.trackEvent('question_answered', {
+        sessionId: sess.id, qId: q.id, mode: sess.practiceMode || 'all',
+        isCorrect, usedTranslate: !!usedTranslate, confidence: confidence || 'Sure',
+        responseTimeMs: entry.responseTimeMs
+      });
+      this.updateQuestionSRS(q.id, isCorrect, confidence);
+    }
+
+    const runs = this.getStorage('practice_runs') || [];
+    const run = runs.find(item => item.id === sess.id);
+    if (run) {
+      const attempts = log.filter(item => item.sessionId === sess.id);
+      run.answered = attempts.length;
+      run.correct = attempts.filter(item => item.isCorrect).length;
+      if (run.answered >= run.planned) {
+        run.status = 'COMPLETED';
+        run.completedAt = run.completedAt || Date.now();
+      }
+      this.setStorage('practice_runs', runs);
+    }
+    this.saveCurrentPracticeState();
+  }
+
+  updateQuestionSRS(qId, isCorrect, confidence) {
+    const srs = this.getStorage('srs') || {};
+    const current = srs[qId] || { interval: 0, repetitions: 0, lapses: 0 };
+    if (!isCorrect) {
+      current.interval = 0;
+      current.repetitions = 0;
+      current.lapses = (current.lapses || 0) + 1;
+      current.nextReview = todayISO();
+    } else {
+      const intervals = [1, 3, 7, 14, 30];
+      const repetition = Math.min((current.repetitions || 0) + 1, intervals.length);
+      current.repetitions = repetition;
+      current.interval = intervals[repetition - 1];
+      if (confidence === 'Guess' || confidence === 'Unsure') current.interval = Math.min(current.interval, 1);
+      const next = new Date();
+      next.setDate(next.getDate() + current.interval);
+      current.nextReview = todayISO(next);
+    }
+    current.lastReviewed = Date.now();
+    srs[qId] = current;
+    this.setStorage('srs', srs);
+  }
+
+  saveCurrentPracticeState() {
+    const sess = this.currentSession;
+    if (!sess || !sess.id) return;
+    this.setStorage('current_practice', {
+      id: sess.id, mode: sess.practiceMode || 'all', domain: sess.domain,
+      startedAt: sess.startedAt || Date.now(),
+      qIds: sess.questions.map(question => question.id), currentIndex: sess.currentIndex,
+      answers: sess.answers, flags: sess.flags, confidence: sess.confidence,
+      usedTranslate: sess.usedTranslate, currentQuestionStartedAt: sess.currentQuestionStartedAt
+    });
+  }
+
+  finishPracticeSession() {
+    const sess = this.currentSession;
+    if (!sess || !sess.id) return;
+    const runs = this.getStorage('practice_runs') || [];
+    const run = runs.find(item => item.id === sess.id);
+    const answered = run ? run.answered : 0;
+    const planned = run ? run.planned : sess.questions.length;
+    if (run) {
+      run.status = answered >= planned ? 'COMPLETED' : 'ENDED_EARLY';
+      run.completedAt = Date.now();
+      this.setStorage('practice_runs', runs);
+    }
+    this.trackEvent('practice_finished', {
+      sessionId: sess.id, answered, planned,
+      completed: answered >= planned
+    });
+    this.setStorage('current_practice', null);
+    this.currentSession = null;
+    document.getElementById('practice-card-container').innerHTML = `
+      <div style="padding:2rem; text-align:center;">
+        <h3 style="margin-bottom:.5rem;">Lượt luyện đã kết thúc</h3>
+        <p class="insight-meta">Đã trả lời ${answered}/${planned} câu. Kết quả được lưu trong lịch sử học tập.</p>
+        <button class="btn btn-outline" style="margin-top:.75rem;" onclick="app.startTargetedPractice('all')">Luyện toàn bộ ngân hàng</button>
+      </div>`;
+    document.getElementById('practice-sidebar').innerHTML = '';
+    this.showModal('Đã lưu lượt luyện', '<p>Kết quả đã được lưu vào lịch sử. Bạn có thể bắt đầu một lượt mới hoặc xem lại các câu sai.</p>', [
+      { text: 'Xem điểm yếu', class: '', onClick: () => { this.closeModal(); window.location.hash = '#gap'; } },
+      { text: 'Đóng', class: 'btn-secondary', onClick: () => this.closeModal() }
+    ]);
+  }
+
+  getExamReadiness() {
+    const fullLength = 180;
+    const qualifying = (this.getStorage('sessions') || [])
+      .filter(session => session.total >= fullLength && Array.isArray(session.answers))
+      .slice(-3);
+    if (qualifying.length < 2) {
+      return {
+        label: 'Chưa đủ dữ liệu',
+        detail: `Cần ít nhất 2 mock exam đủ ${fullLength} câu để ước lượng xu hướng ổn định.`
+      };
+    }
+    const recent = qualifying.slice(-2);
+    const scores = recent.map(session => session.percentage);
+    const domainRates = {};
+    recent.forEach(session => session.answers.forEach(answer => {
+      const stat = domainRates[answer.domain] || (domainRates[answer.domain] = { total: 0, correct: 0 });
+      stat.total++;
+      if (answer.isCorrect) stat.correct++;
+    }));
+    const weakestDomain = Object.entries(domainRates)
+      .map(([domain, stat]) => ({ domain, accuracy: Math.round(stat.correct / stat.total * 100) }))
+      .sort((a, b) => a.accuracy - b.accuracy)[0];
+    const scoreAverage = Math.round(scores.reduce((sum, score) => sum + score, 0) / scores.length);
+    if (scores.every(score => score >= 75) && (!weakestDomain || weakestDomain.accuracy >= 65)) {
+      return { label: 'Xu hướng luyện thi tích cực', detail: `2 mock exam gần nhất đạt trung bình ${scoreAverage}%. Đây không phải xác suất đỗ hay bảo đảm kết quả.` };
+    }
+    if (scoreAverage >= 60) {
+      return { label: 'Đang tiến bộ — cần củng cố', detail: `Trung bình 2 mock exam gần nhất: ${scoreAverage}%. Ưu tiên domain yếu nhất${weakestDomain ? `: ${weakestDomain.domain} (${weakestDomain.accuracy}%)` : ''}.` };
+    }
+    return { label: 'Cần củng cố trước khi thi', detail: `Trung bình 2 mock exam gần nhất: ${scoreAverage}%. Dùng luyện thích ứng và ôn các câu sai trước mock tiếp theo.` };
   }
 
   /* ---- DASHBOARD ---- */
   updateDashboardMetrics() {
     const answers = this.getAllAnswers();
-    let totalQ = 0, correctQ = 0, correctNoTranslate = 0;
+    let correctQ = 0, correctNoTranslate = 0, noTranslateTotal = 0;
     const domainStats = { People:{t:0,c:0}, Process:{t:0,c:0}, BusinessEnvironment:{t:0,c:0} };
-    const topicWrong = {};
     answers.forEach(a => {
-      totalQ++;
-      if (a.isCorrect) { correctQ++; if (!a.usedTranslate) correctNoTranslate++; }
-      else { topicWrong[a.task] = (topicWrong[a.task] || 0) + 1; }
+      if (a.isCorrect) correctQ++;
+      if (!a.usedTranslate) {
+        noTranslateTotal++;
+        if (a.isCorrect) correctNoTranslate++;
+      }
       if (domainStats[a.domain]) { domainStats[a.domain].t++; if (a.isCorrect) domainStats[a.domain].c++; }
     });
     return {
-      totalQ,
-      accuracy: totalQ ? Math.round(correctQ/totalQ*100) : 0,
-      comprehension: totalQ ? Math.round(correctNoTranslate/totalQ*100) : 0,
-      domainStats, topicWrong
+      totalQ: answers.length,
+      accuracy: answers.length ? Math.round(correctQ/answers.length*100) : 0,
+      comprehension: noTranslateTotal ? Math.round(correctNoTranslate/noTranslateTotal*100) : null,
+      noTranslateTotal, domainStats, weaknesses: this.getWeaknessStats()
     };
   }
 
   renderDashboard() {
     const m = this.updateDashboardMetrics();
     document.getElementById('m-accuracy').textContent = m.accuracy + '%';
-    document.getElementById('m-total-q').textContent = m.totalQ + ' câu đã làm';
-    document.getElementById('m-comprehension').textContent = m.comprehension + '%';
+    document.getElementById('m-total-q').textContent = m.totalQ + ' lượt trả lời đã lưu';
+    document.getElementById('m-comprehension').textContent = m.comprehension === null ? '—' : m.comprehension + '%';
+    document.getElementById('m-comprehension-sample').textContent = m.noTranslateTotal
+      ? `${m.noTranslateTotal} lượt không dùng bản dịch`
+      : 'Chưa có lượt trả lời không dùng bản dịch';
 
     const srs = this.getStorage('srs') || {};
     const today = todayISO();
@@ -924,20 +1282,57 @@ class PMPApp {
     document.getElementById('m-srs-sub').textContent = dueCount + ' mục cần ôn';
     document.getElementById('btn-srs-practice').style.display = dueCount ? 'inline-flex' : 'none';
 
-    document.getElementById('dash-streak').textContent = `Lộ trình 14 Ngày | Ngày hiện tại: Day ${this.getCurrentStudyDay()}`;
+    const activeDays = new Set(this.getAllAnswers().map(answer =>
+      answer.timestamp ? new Date(answer.timestamp).toDateString() : null
+    ).filter(Boolean));
+    document.getElementById('dash-streak').textContent =
+      `${activeDays.size} ngày có hoạt động học được lưu | Ngày ${this.getCurrentStudyDay()} trong lộ trình`;
 
     const savedExam = this.getStorage('current_exam');
     document.getElementById('btn-resume-exam').style.display = (savedExam && savedExam.status === 'IN_PROGRESS') ? 'inline-flex' : 'none';
 
     this.renderDomainChart(m.domainStats);
 
-    const weak = Object.entries(m.topicWrong).sort((a,b) => b[1]-a[1]).slice(0,3);
+    const weak = m.weaknesses.slice(0, 3);
     document.getElementById('top-weak-topics').innerHTML = weak.length
-      ? weak.map(([t,c]) => `<div style="display:flex; justify-content:space-between; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>⚠️ ${escapeHtml(t)}</span><strong style="color:var(--danger);">${c} sai</strong></div>`).join('')
-      : '<span style="color:var(--success);">Chưa ghi nhận topic yếu.</span>';
+      ? weak.map(stat => `<div style="display:flex; justify-content:space-between; gap:.5rem; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>⚠️ ${escapeHtml(stat.domain)} · ${escapeHtml(stat.taxonomy)}: ${escapeHtml(stat.task)}<small class="insight-meta" style="display:block;">${stat.confidence}: ${stat.attempts} lượt · ${stat.questionIds.length} câu</small></span><strong style="color:var(--danger);">${100 - stat.accuracy}% sai</strong></div>`).join('')
+      : '<span style="color:var(--text-muted);">Chưa có đủ dữ liệu để xác định điểm yếu. Hãy bắt đầu bằng bài luyện ngắn.</span>';
 
     this.renderVocabWidget();
     this.renderComprehensionTrend();
+    this.renderReadiness();
+    this.renderStudyHistory();
+  }
+
+  renderReadiness() {
+    const readiness = this.getExamReadiness();
+    document.getElementById('readiness-card').innerHTML = `
+      <h3>🧭 Mức sẵn sàng luyện thi</h3>
+      <div class="readiness-status">${escapeHtml(readiness.label)}</div>
+      <p>${escapeHtml(readiness.detail)}</p>
+      <p class="insight-meta" style="margin-top:.35rem;">Chỉ báo dựa trên dữ liệu mock exam của ứng dụng, không phải dự báo xác suất đỗ. Chỉ nên diễn giải khi ngân hàng câu hỏi đủ rộng và được kiểm định.</p>`;
+  }
+
+  renderStudyHistory() {
+    const runs = (this.getStorage('practice_runs') || []).slice().sort((a, b) => b.startedAt - a.startedAt).slice(0, 5);
+    const exams = (this.getStorage('sessions') || []).slice(-3).reverse().map(session => ({
+      id: session.id, mode: 'Mock exam', startedAt: session.timestamp || 0,
+      answered: session.total, planned: session.total, correct: session.score,
+      status: 'COMPLETED'
+    }));
+    const entries = runs.map(run => ({
+      ...run, mode: run.mode === 'adaptive' ? 'Luyện thích ứng' :
+        run.mode === 'wrong' ? 'Câu từng sai' :
+        run.mode === 'weak' ? 'Điểm yếu' :
+        run.mode === 'flagged' ? 'Đã đánh dấu' :
+        run.mode === 'due' ? 'SRS đến hạn' : 'Luyện tự do'
+    })).concat(exams).sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0)).slice(0, 5);
+    document.getElementById('study-history').innerHTML = entries.length
+      ? entries.map(entry => `<div class="history-row">
+          <div><strong>${escapeHtml(entry.mode)}</strong><div class="insight-meta">${entry.startedAt ? new Date(entry.startedAt).toLocaleString('vi-VN') : 'Ngày chưa được lưu ở dữ liệu cũ'} · ${entry.status === 'IN_PROGRESS' ? 'Đang làm dở' : entry.status === 'ENDED_EARLY' ? 'Kết thúc sớm' : 'Đã lưu'}</div></div>
+          <strong>${entry.correct || 0}/${entry.answered || 0}${entry.planned ? ` · ${entry.planned} câu trong lượt` : ''}</strong>
+        </div>`).join('')
+      : '<p class="insight-meta">Lịch sử các lượt luyện sẽ xuất hiện tại đây sau khi bạn trả lời câu hỏi.</p>';
   }
 
   renderDomainChart(stats) {
@@ -978,15 +1373,21 @@ class PMPApp {
   }
 
   renderComprehensionTrend() {
-    const sessions = (this.getStorage('sessions') || []).slice(-7);
+    const sessions = (this.getStorage('sessions') || []).map(session => {
+      const answers = session.answers || [];
+      const unassisted = answers.filter(answer => !answer.usedTranslate);
+      return {
+        ...session,
+        unassistedTotal: unassisted.length,
+        unassistedCorrect: unassisted.filter(answer => answer.isCorrect).length
+      };
+    }).filter(session => session.unassistedTotal > 0).slice(-7);
     if (sessions.length === 0) {
       document.getElementById('chart-comprehension').innerHTML = '<div style="font-size:.85rem; color:var(--text-muted); padding:1rem; text-align:center;">Chưa đủ bài thi để vẽ trend.</div>';
       return;
     }
     const pts = sessions.map((s, idx) => {
-      const tot = s.answers.length;
-      const noTrans = s.answers.filter(a => a.isCorrect && !a.usedTranslate).length;
-      const rate = tot ? Math.round(noTrans/tot*100) : 0;
+      const rate = Math.round(s.unassistedCorrect/s.unassistedTotal*100);
       return { x: (idx/Math.max(1,sessions.length-1))*320 + 40, y: 120 - (rate/100)*90, rate };
     });
     const path = pts.map((p,i) => (i?'L':'M') + ' ' + p.x + ' ' + p.y).join(' ');
@@ -1002,19 +1403,73 @@ class PMPApp {
 
   /* ---- PRACTICE ---- */
   initPracticeSession(force) {
-    const domain = document.getElementById('practice-filter-domain').value;
-    if (!force && this.currentSession && this.currentSession.domain === domain) {
+    const domainFilter = document.getElementById('practice-filter-domain');
+    const modeFilter = document.getElementById('practice-filter-mode');
+    const saved = this.getStorage('current_practice');
+    const run = saved && (this.getStorage('practice_runs') || []).find(item => item.id === saved.id);
+    if (!force && saved && run && run.status === 'IN_PROGRESS') {
+      domainFilter.value = saved.domain || 'ALL';
+      modeFilter.value = saved.mode || 'all';
+    }
+    const domain = domainFilter.value;
+    const mode = modeFilter.value;
+    if (!force && this.currentSession && this.currentSession.domain === domain &&
+        this.currentSession.practiceMode === mode) {
       this.renderQuestionCard('practice-card-container');
       return;
     }
-    let qs = this.getQuestions();
-    if (domain !== 'ALL') qs = qs.filter(q => q.domain === domain);
-    this.palettePage = 1;
-    this.currentSession = {
-      mode: 'PRACTICE', domain, questions: qs,
-      currentIndex: 0, answers: {}, flags: {}, confidence: {}, usedTranslate: {}
-    };
-    this.renderQuestionCard('practice-card-container');
+    if (!force && saved && run && run.status === 'IN_PROGRESS' &&
+        saved.domain === domain && saved.mode === mode) {
+      const bank = new Map(this.getQuestions().map(question => [question.id, question]));
+      const questions = saved.qIds.map(id => bank.get(id)).filter(Boolean);
+      if (questions.length) {
+          const savedAnswers = saved.answers || {};
+          Object.keys(savedAnswers).forEach(id => { if (!questions.some(question => question.id === id)) delete savedAnswers[id]; });
+          if (run.planned !== questions.length) {
+            run.planned = questions.length;
+            this.setStorage('practice_runs', (this.getStorage('practice_runs') || []).map(item => item.id === run.id ? run : item));
+          }
+            this.currentSession = {
+          id: saved.id, mode: 'PRACTICE', practiceMode: saved.mode, domain: saved.domain,
+          startedAt: saved.startedAt, questions,
+          currentIndex: Math.min(saved.currentIndex || 0, questions.length - 1),
+          answers: savedAnswers, flags: saved.flags || {},
+          confidence: saved.confidence || {}, usedTranslate: saved.usedTranslate || {},
+          currentQuestionStartedAt: Date.now()
+        };
+        this.palettePage = 1;
+        this.renderQuestionCard('practice-card-container');
+        return;
+      }
+    }
+
+    let questions = this.getReviewQuestionIds(mode);
+    if (domain !== 'ALL') questions = questions.filter(question => question.domain === domain);
+    if (mode === 'adaptive') questions = questions.slice(0, 20);
+    else if (mode !== 'all') questions = questions.slice(0, 30);
+    if (!questions.length) {
+      if (this.currentSession && this.currentSession.id) {
+        const runs = this.getStorage('practice_runs') || [];
+        const previous = runs.find(item => item.id === this.currentSession.id);
+        if (previous && previous.status === 'IN_PROGRESS') {
+          previous.status = 'ENDED_EARLY';
+          previous.completedAt = Date.now();
+          this.setStorage('practice_runs', runs);
+        }
+        this.setStorage('current_practice', null);
+      }
+      this.currentSession = null;
+      this.renderQuestionCard('practice-card-container');
+      document.getElementById('practice-card-container').innerHTML = `
+        <div style="padding:2rem; text-align:center;">
+          <h3 style="margin-bottom:.5rem;">Chưa có câu phù hợp với bộ lọc này</h3>
+          <p class="insight-meta">Trả lời thêm câu hỏi, đánh dấu câu cần xem lại hoặc hoàn thành một lượt luyện trước.</p>
+          <button class="btn btn-outline" style="margin-top:.75rem;" onclick="app.startTargetedPractice('all')">Luyện toàn bộ ngân hàng</button>
+        </div>`;
+      document.getElementById('practice-sidebar').innerHTML = '';
+      return;
+    }
+    this.startPracticeRun(questions, mode, domain);
   }
 
   /* ---- EXAM ---- */
@@ -1030,6 +1485,7 @@ class PMPApp {
     if (saved && saved.status === 'IN_PROGRESS' && saved.questions && saved.questions.length > 0) {
       this.currentExam = saved;
       if (!this.currentExam.startTime) this.currentExam.startTime = Date.now();
+      if (!this.currentExam.currentQuestionStartedAt) this.currentExam.currentQuestionStartedAt = Date.now();
       this.palettePage = 1;
 
       document.getElementById('btn-submit-exam').style.display = 'inline-flex';
@@ -1058,8 +1514,8 @@ class PMPApp {
 
   renderExamSetup() {
     const avail = this.getQuestions().length;
-    const defaultSize = Math.min(30, avail);
-    const defaultMins = Math.ceil(defaultSize * 75 / 60);
+    const defaultSize = Math.min(180, avail);
+    const defaultMins = defaultSize >= 180 ? 230 : Math.ceil(defaultSize * 230 / 180);
     
     document.getElementById('exam-header-title').textContent = '⏱️ Thiết lập bài thi';
     document.getElementById('exam-card-container').innerHTML = `
@@ -1069,7 +1525,7 @@ class PMPApp {
         <div style="margin-bottom: 1.5rem;">
           <label style="font-weight:600; display:block; margin-bottom:0.5rem;">Số câu hỏi:</label>
           <div style="display:flex; align-items:center; gap:0.5rem;">
-            <input type="number" id="setup-q-count" value="${defaultSize}" min="5" max="${avail}" style="width: 100px; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
+            <input type="number" id="setup-q-count" value="${defaultSize}" min="1" max="${avail}" style="width: 100px; padding: 8px; border: 1px solid var(--border); border-radius: 4px;">
             <span style="color:var(--text-muted);">/ ${avail} câu có sẵn</span>
           </div>
         </div>
@@ -1080,7 +1536,7 @@ class PMPApp {
         </div>
 
         <div style="background: var(--info-bg); color: var(--info); padding: 1rem; border-radius: 6px; font-size: 0.9rem; margin-bottom: 1.5rem;">
-          <strong>Lưu ý:</strong> Trong chế độ Exam, đáp án sẽ không hiện ngay. Nút dịch có thể bị khóa tùy theo ngày học.
+          <strong>Cấu hình mặc định của ứng dụng:</strong> 180 câu trong 230 phút. Ngân hàng hiện có ${avail} câu; bài thi dùng câu hỏi ngẫu nhiên, không lặp trong cùng lượt. Hãy đối chiếu cấu hình với thông tin PMI hiện hành; điểm số chỉ là chỉ báo luyện tập, không dự báo kết quả PMI.
         </div>
 
         <button class="btn" style="width: 100%; font-size: 1.1rem; padding: 1rem;" onclick="app.startNewExam(parseInt(document.getElementById('setup-q-count').value), parseInt(document.getElementById('setup-time').value))">🚀 Bắt đầu làm bài</button>
@@ -1093,14 +1549,22 @@ class PMPApp {
     `;
   }
 
-  startNewExam(size = 30, durationMins = 38) {
-    // Xử lý chống lỗi NaN nếu người dùng nhập sai
-    size = parseInt(size) || 30;
-    durationMins = parseInt(durationMins) || 38;
-
+  startNewExam(
+    size = Math.min(180, this.getQuestions().length),
+    durationMins = size >= 180 ? 230 : Math.ceil(size * 230 / 180)
+  ) {
     const all = shuffle(this.getQuestions());
+    size = Number(size);
+    durationMins = Number(durationMins);
+    if (!Number.isInteger(size) || size < 1 || size > all.length ||
+        !Number.isInteger(durationMins) || durationMins < 1 || durationMins > 300) {
+      this.showModal('Thông số mock exam không hợp lệ',
+        `<p>Chọn từ 1 đến ${all.length} câu và thời gian từ 1 đến 300 phút.</p>`,
+        [{ text: 'Đã hiểu', class: '', onClick: () => this.closeModal() }]);
+      return;
+    }
     this.palettePage = 1;
-    const actualSize = Math.max(1, Math.min(size, all.length));
+    const actualSize = size;
     const qs = all.slice(0, actualSize);
     
     if (qs.length === 0) {
@@ -1110,12 +1574,16 @@ class PMPApp {
 
     const durationMs = durationMins * 60 * 1000;
     
+    const startedAt = Date.now();
     this.currentExam = {
-      mode: 'EXAM', status: 'IN_PROGRESS',
-      startTime: Date.now(), durationMs,
+      id: this.createId('exam'), mode: 'EXAM', status: 'IN_PROGRESS',
+      startTime: startedAt, currentQuestionStartedAt: startedAt, durationMs,
       questions: qs, currentIndex: 0,
-      answers: {}, flags: {}, usedTranslate: {}, isPaused: false
+      answers: {}, responseTimes: {}, flags: Object.fromEntries(qs
+        .filter(question => (this.getStorage('flagged_questions') || []).includes(question.id))
+        .map(question => [question.id, true])), usedTranslate: {}, isPaused: false
     };
+    this.trackEvent('exam_started', { sessionId: this.currentExam.id, questionCount: actualSize, durationMins });
     this.saveCurrentExamState();
     
     document.getElementById('btn-submit-exam').style.display = 'inline-flex';
@@ -1137,7 +1605,9 @@ class PMPApp {
     
     if (this.currentExam.isPaused) {
       this.currentExam.isPaused = false;
-      this.currentExam.startTime += (Date.now() - this.currentExam.pauseStartTime);
+      const pausedFor = Date.now() - this.currentExam.pauseStartTime;
+      this.currentExam.startTime += pausedFor;
+      this.currentExam.currentQuestionStartedAt += pausedFor;
       delete this.currentExam.pauseStartTime;
       btn.textContent = '⏸ Tạm dừng';
       btn.className = 'btn btn-warning btn-sm';
@@ -1193,12 +1663,227 @@ class PMPApp {
 
   getActiveSession() { return window.location.hash === '#exam' ? this.currentExam : this.currentSession; }
 
+  getAnnotationTextNodes(scope) {
+    const walker = document.createTreeWalker(scope, NodeFilter.SHOW_TEXT, {
+      acceptNode: node => {
+        let parent = node.parentElement;
+        while (parent && parent !== scope) {
+          if (parent.matches('button, input, select, option, textarea')) return NodeFilter.FILTER_REJECT;
+          parent = parent.parentElement;
+        }
+        return NodeFilter.FILTER_ACCEPT;
+      }
+    });
+    const nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    return nodes;
+  }
+
+  getAnnotationOffset(scope, container, offset) {
+    let length = 0;
+    for (const node of this.getAnnotationTextNodes(scope)) {
+      if (node === container) return length + Math.min(offset, node.textContent.length);
+      length += node.textContent.length;
+    }
+    return null;
+  }
+
+  handleAnnotationSelectionChange() {
+    const button = document.getElementById('annotation-add-btn');
+    if (!button) {
+      this._pendingAnnotation = null;
+      return;
+    }
+    if (this._annotationActionPressed) return;
+
+    const selection = window.getSelection();
+    if (!selection || selection.isCollapsed || !selection.rangeCount) {
+      this._pendingAnnotation = null;
+      button.disabled = true;
+      return;
+    }
+
+    const range = selection.getRangeAt(0);
+    const startElement = range.startContainer.nodeType === Node.ELEMENT_NODE
+      ? range.startContainer
+      : range.startContainer.parentElement;
+    const endElement = range.endContainer.nodeType === Node.ELEMENT_NODE
+      ? range.endContainer
+      : range.endContainer.parentElement;
+    const startScope = startElement && startElement.closest('[data-note-scope]');
+    const endScope = endElement && endElement.closest('[data-note-scope]');
+    const session = this.getActiveSession();
+    const container = startScope && startScope.closest('.question-main');
+    const text = range.toString();
+    const start = startScope && this.getAnnotationOffset(startScope, range.startContainer, range.startOffset);
+    const end = endScope && this.getAnnotationOffset(endScope, range.endContainer, range.endOffset);
+
+    if (!startScope || startScope !== endScope || !container || !session ||
+        container.dataset.questionId !== session.questions[session.currentIndex]?.id ||
+        start === null || end === null || end <= start || !/[A-Za-z]/.test(text)) {
+      this._pendingAnnotation = null;
+      button.disabled = true;
+      return;
+    }
+
+    this._pendingAnnotation = {
+      qId: container.dataset.questionId,
+      scope: startScope.dataset.noteScope,
+      start,
+      end,
+      text
+    };
+    button.disabled = false;
+  }
+
+  getQuestionAnnotations(qId) {
+    const stored = this.getStorage('annotations');
+    return stored && typeof stored === 'object' && !Array.isArray(stored) && Array.isArray(stored[qId])
+      ? stored[qId].filter(note => note && typeof note.id === 'string' &&
+          typeof note.scope === 'string' && Number.isInteger(note.start) &&
+          Number.isInteger(note.end) && typeof note.text === 'string' &&
+          typeof note.note === 'string')
+      : [];
+  }
+
+  applyQuestionAnnotations(container, qId) {
+    const notes = this.getQuestionAnnotations(qId);
+    if (!notes.length) return;
+
+    const scopes = new Map(Array.from(container.querySelectorAll('[data-note-scope]'))
+      .map(scope => [scope.dataset.noteScope, scope]));
+    notes.forEach(note => {
+      const scope = scopes.get(note.scope);
+      if (!scope) return;
+      const nodes = this.getAnnotationTextNodes(scope);
+      const fullText = nodes.map(node => node.textContent).join('');
+      if (note.start < 0 || note.end > fullText.length ||
+          fullText.slice(note.start, note.end) !== note.text) return;
+
+      let position = 0;
+      const segments = [];
+      nodes.forEach(node => {
+        const nodeStart = position;
+        const nodeEnd = position + node.textContent.length;
+        const start = Math.max(note.start, nodeStart);
+        const end = Math.min(note.end, nodeEnd);
+        if (start < end) segments.push({ node, start: start - nodeStart, end: end - nodeStart });
+        position = nodeEnd;
+      });
+
+      segments.reverse().forEach(segment => {
+        const range = document.createRange();
+        range.setStart(segment.node, segment.start);
+        range.setEnd(segment.node, segment.end);
+        const mark = document.createElement('mark');
+        mark.className = 'study-highlight';
+        mark.title = note.note;
+        range.surroundContents(mark);
+      });
+    });
+  }
+
+  renderQuestionNotes(qId) {
+    const notes = this.getQuestionAnnotations(qId);
+    const entries = notes.length
+      ? notes.map(note => `
+          <div class="study-note">
+            <div><span class="study-note-quote">${escapeHtml(note.text)}</span></div>
+            <div style="margin-top:.25rem;">${escapeHtml(note.note)}</div>
+            <button class="btn btn-sm btn-outline" style="margin-top:.4rem;" onclick="app.deleteQuestionAnnotation('${escapeAttr(qId)}','${escapeAttr(note.id)}')">Xóa ghi chú</button>
+          </div>
+        `).join('')
+      : '<div style="font-size:.85rem; color:var(--text-muted);">Bôi đen cụm từ tiếng Anh trong câu hỏi hoặc đáp án, rồi nhấn “Ghi chú”.</div>';
+    return `<section class="study-notes" aria-label="Ghi chú câu hỏi">
+      <strong>📝 Ghi chú đã lưu (${notes.length})</strong>
+      ${entries}
+    </section>`;
+  }
+
+  addQuestionAnnotation() {
+    const pending = this._pendingAnnotation;
+    const session = this.getActiveSession();
+    if (!pending || !session || session.questions[session.currentIndex]?.id !== pending.qId) {
+      this._annotationActionPressed = false;
+      return;
+    }
+    this._annotationActionPressed = true;
+    this.showModal('🖍️ Ghi chú cụm từ', `
+      <p style="margin-bottom:.5rem;">Cụm từ được tô vàng:</p>
+      <p class="study-note-quote" style="display:inline-block; margin-bottom:.75rem;">${escapeHtml(pending.text)}</p>
+      <label for="annotation-note-input" style="display:block; font-weight:600; margin-bottom:.3rem;">Ghi chú của bạn</label>
+      <textarea id="annotation-note-input" rows="4" style="width:100%; padding:.6rem; border:1px solid var(--border); border-radius:6px; font:inherit;" placeholder="Nhập nghĩa, cách dùng hoặc điều cần nhớ..."></textarea>
+    `, [
+      { text: 'Hủy', class: 'btn-secondary', onClick: () => this.closeModal() },
+      { text: 'Lưu ghi chú', class: '', onClick: () => {
+        const noteText = document.getElementById('annotation-note-input').value.trim();
+        if (!noteText) {
+          document.getElementById('annotation-note-input').focus();
+          return;
+        }
+        if (this.saveQuestionAnnotation(noteText)) {
+          this.closeModal();
+          this.renderQuestionCard(session.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+        }
+      } }
+    ]);
+  }
+
+  saveQuestionAnnotation(noteText) {
+    const pending = this._pendingAnnotation;
+    const annotations = this.getStorage('annotations') || {};
+    if (!pending || typeof annotations !== 'object' || Array.isArray(annotations)) return false;
+    const notes = Array.isArray(annotations[pending.qId]) ? annotations[pending.qId] : [];
+    const overlaps = notes.some(note => note.scope === pending.scope &&
+      pending.start < note.end && note.start < pending.end);
+    if (overlaps) {
+      this.showModal('Đoạn này đã được ghi chú', '<p>Hãy xóa ghi chú cũ trước khi tạo ghi chú khác cho phần văn bản đang chọn.</p>', [
+        { text: 'Đã hiểu', class: '', onClick: () => this.closeModal() }
+      ]);
+      return false;
+    }
+
+    notes.push({
+      id: 'note_' + Date.now() + '_' + Math.random().toString(36).slice(2, 8),
+      scope: pending.scope,
+      start: pending.start,
+      end: pending.end,
+      text: pending.text,
+      note: noteText,
+      createdAt: Date.now()
+    });
+    annotations[pending.qId] = notes;
+    if (!this.setStorage('annotations', annotations)) {
+      this.showModal('Không thể lưu ghi chú', '<p>Trình duyệt không thể lưu dữ liệu. Hãy kiểm tra dung lượng lưu trữ rồi thử lại.</p>', [
+        { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+      ]);
+      return false;
+    }
+    this._pendingAnnotation = null;
+    return true;
+  }
+
+  deleteQuestionAnnotation(qId, noteId) {
+    const annotations = this.getStorage('annotations') || {};
+    if (!annotations[qId] || !Array.isArray(annotations[qId])) return;
+    annotations[qId] = annotations[qId].filter(note => note.id !== noteId);
+    if (!annotations[qId].length) delete annotations[qId];
+    if (!this.setStorage('annotations', annotations)) {
+      this.showModal('Không thể xóa ghi chú', '<p>Trình duyệt không thể cập nhật dữ liệu. Hãy thử lại.</p>', [
+        { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+      ]);
+      return;
+    }
+    this.renderQuestionCard(window.location.hash === '#exam' ? 'exam-card-container' : 'practice-card-container');
+  }
+
   /* ---- RENDER QUESTION ---- */
   renderQuestionCard(containerId) {
     const sess = this.getActiveSession();
     const container = document.getElementById(containerId);
     if (!sess || !sess.questions || sess.questions.length === 0) {
       container.innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">Không có câu hỏi nào. Vui lòng bắt đầu bài thi mới.</div>';
+      if (containerId === 'practice-card-container') document.getElementById('practice-sidebar').innerHTML = '';
       if (containerId === 'exam-card-container') this.renderExamSetup();
       return;
     }
@@ -1240,7 +1925,7 @@ class PMPApp {
             return `<div class="${c}" onclick="app.selectAnswer('${k}')">
               <div class="option-key">${k}</div>
               <div class="option-content">
-                <div>${escapeHtml(q.options[k])}</div>
+                <div data-note-scope="option-${escapeAttr(k)}">${escapeHtml(q.options[k])}</div>
                 ${showVi && q.options_vi && q.options_vi[k] ? `<div style="font-size:.85rem; color:#475569; margin-top:.2rem;">${escapeHtml(q.options_vi[k])}</div>` : ''}
               </div>
             </div>`;
@@ -1262,7 +1947,7 @@ class PMPApp {
             return `<div class="${c}" onclick="app.toggleMultiSelect('${k}')">
               <div class="option-key">${k}</div>
               <div class="option-content">
-                <div>${escapeHtml(q.options[k])}</div>
+                <div data-note-scope="option-${escapeAttr(k)}">${escapeHtml(q.options[k])}</div>
                 ${showVi && q.options_vi && q.options_vi[k] ? `<div style="font-size:.85rem; color:#475569; margin-top:.2rem;">${escapeHtml(q.options_vi[k])}</div>` : ''}
               </div>
             </div>`;
@@ -1280,7 +1965,7 @@ class PMPApp {
         </select>`;
         textHtml = textHtml.replace(`[${idx + 1}]`, selectHtml);
       });
-      interactionHtml = `<div class="q-text" style="font-size:1.1rem; line-height:2;">${textHtml}</div>`;
+      interactionHtml = `<div class="q-text" data-note-scope="question-dropdown" style="font-size:1.1rem; line-height:2;">${textHtml}</div>`;
     } else if (qType === "Matching" && q.matchingPairs) {
       let currentMatches = selected ? JSON.parse(selected) : {};
       interactionHtml = `
@@ -1290,14 +1975,14 @@ class PMPApp {
               const isMatched = Object.keys(currentMatches).includes(p.id);
               const matchedVal = currentMatches[p.id] || "";
               return `<div class="match-item ${isMatched ? 'matched' : ''} ${(sess.pendingMatch && sess.pendingMatch[q.id] === p.id) ? 'selected' : ''}" onclick="app.handleMatchClick('${q.id}', '${p.id}', 'left')" id="match-left-${p.id}">
-                <strong>${p.id}.</strong> ${escapeHtml(p.left)}
+                <strong>${p.id}.</strong> <span data-note-scope="match-left-${escapeAttr(p.id)}">${escapeHtml(p.left)}</span>
                 ${isMatched ? `<div style="font-size:0.85rem; color:var(--success); margin-top:0.3rem;">→ ${escapeHtml(matchedVal)}</div>` : ''}
               </div>`;
             }).join('')}
           </div>
           <div class="matching-col">
             ${q.matchingOptions.map(o => `<div class="match-item" onclick="app.handleMatchClick('${q.id}', '${o.key}', 'right')">
-              <strong>${o.key}.</strong> ${escapeHtml(o.text)}
+              <strong>${o.key}.</strong> <span data-note-scope="match-right-${escapeAttr(o.key)}">${escapeHtml(o.text)}</span>
             </div>`).join('')}
           </div>
         </div>
@@ -1315,6 +2000,7 @@ class PMPApp {
         <div style="display:flex; gap:0.5rem;">
           <button class="btn btn-sm ${flagged?'btn-warning':'btn-outline'}" onclick="app.toggleFlag()">${flagged?'⭐ Flagged':'☆ Flag'}</button>
           ${!isExam ? `<button class="btn btn-sm btn-outline" style="color:var(--danger); border-color:var(--danger);" onclick="app.deleteQuestion('${escapeAttr(q.id)}')">🗑️ Xóa</button>` : ''}
+          <button class="btn btn-sm btn-outline" id="annotation-add-btn" onclick="app.addQuestionAnnotation()" disabled>🖍️ Ghi chú (${this.getQuestionAnnotations(q.id).length})</button>
         </div>
       </div>
 
@@ -1323,7 +2009,7 @@ class PMPApp {
         if (q.scenario.length < 300) {
           return `
             <div style="font-size: 1rem; font-style: italic; color: #475569; margin-bottom: 1rem; padding-left: 0.75rem; border-left: 3px solid #cbd5e1;">
-              ${escapeHtml(q.scenario)}
+              <span data-note-scope="scenario">${escapeHtml(q.scenario)}</span>
               ${(!isExam && selected && q.scenario_vi) ? `<br><span style="color:var(--primary); font-style:normal;">🇻🇳 ${escapeHtml(q.scenario_vi)}</span>` : ''}
             </div>
           `;
@@ -1334,7 +2020,7 @@ class PMPApp {
               ${(sess.scenarioState?.[q.id] !== false) ? '📖 Ẩn Case Study Context' : '📖 Xem Case Study Context'}
             </button>
             ${(sess.scenarioState?.[q.id] !== false) ? `
-              <div class="scenario-text">${escapeHtml(q.scenario)}</div>
+              <div class="scenario-text" data-note-scope="scenario">${escapeHtml(q.scenario)}</div>
               ${(!isExam && selected && q.scenario_vi) ? `<div class="scenario-vi">🇻🇳 <strong>Bản dịch:</strong> ${escapeHtml(q.scenario_vi)}</div>` : ''}
             ` : ''}
           </div>
@@ -1342,10 +2028,12 @@ class PMPApp {
       })()}
       
       ${q.image ? `<img src="${escapeAttr(q.image)}" class="q-image" alt="Question Graphic">` : ''}
-      <div class="q-text">${escapeHtml(q.question)}</div>
+      <div class="q-text" data-note-scope="question">${escapeHtml(q.question)}</div>
       ${showVi ? `<div class="q-text-vi">🇻🇳 <strong>Dịch:</strong> ${escapeHtml(q.question_vi)}</div>` : ''}
       
       ${interactionHtml}
+
+      ${this.renderQuestionNotes(q.id)}
 
       <div style="margin-bottom:1rem;">
         ${(canTranslate || showVi)
@@ -1388,19 +2076,28 @@ class PMPApp {
         </div>
         <div style="margin-top:.75rem;">
           ${(this.prefExpLang==='VI'||this.prefExpLang==='VI_EN') ? `<div style="margin-bottom:.75rem;"><strong>[VI]:</strong> ${sanitizeRich(q.explanation.correct_vi)}</div>` : ''}
-          ${(this.prefExpLang==='EN'||this.prefExpLang==='VI_EN') ? `<div style="margin-bottom:.75rem; font-style:italic;"><strong>[EN]:</strong> ${escapeHtml(q.explanation.correct_en)}</div>` : ''}
+          ${(this.prefExpLang==='EN'||this.prefExpLang==='VI_EN') ? `<div style="margin-bottom:.75rem; font-style:italic;"><strong>[EN]:</strong> <span data-note-scope="explanation-en">${escapeHtml(q.explanation.correct_en)}</span></div>` : ''}
           <div style="font-size:.85rem; color:var(--text-muted);">📌 ${escapeHtml(q.reference)}</div>
         </div>
       </div>`;
     }
 
-    h += `<div style="display:flex; justify-content:space-between; margin-top:1.5rem;">
+    h += `<div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; margin-top:1.5rem;">
       <button class="btn btn-outline" onclick="app.navQuestion(-1)" ${sess.currentIndex===0?'disabled':''}>← Câu trước</button>
+      ${!isExam ? `<button class="btn btn-outline" onclick="app.finishPracticeSession()">Lưu & kết thúc lượt</button>` : ''}
       <button class="btn" onclick="app.navQuestion(1)" ${sess.currentIndex===sess.questions.length-1?'disabled':''}>Câu tiếp →</button>
     </div>`;
 
+    this._pendingAnnotation = null;
+    container.dataset.questionId = q.id;
     container.innerHTML = h;
+    this.applyQuestionAnnotations(container, q.id);
     this.bindKwClicks();
+    const annotationButton = document.getElementById('annotation-add-btn');
+    if (annotationButton) {
+      annotationButton.addEventListener('pointerdown', () => { this._annotationActionPressed = true; });
+      annotationButton.addEventListener('mousedown', () => { this._annotationActionPressed = true; });
+    }
 
     const sidebarId = isExam ? 'exam-sidebar' : 'practice-sidebar';
     this.renderSidebarPalette(sidebarId, sess);
@@ -1487,7 +2184,10 @@ class PMPApp {
     if (!q || q.type === 'MultipleResponse' || (q.type || 'MCQ') !== 'MCQ' || !q.options || !q.options[k]) return;
     if (sess.mode === 'PRACTICE' && sess.answers[q.id]) return;   // Practice: khóa đáp án sau khi đã chọn để thống kê không bị gian lận
     sess.answers[q.id] = k;
-    if (sess.mode === 'EXAM') this.saveCurrentExamState();
+    if (sess.mode === 'EXAM') {
+      this.recordExamResponse(sess, q);
+      this.saveCurrentExamState();
+    }
     else this.savePracticeAnswer(q, k, !!sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
   }
@@ -1497,7 +2197,14 @@ class PMPApp {
     if (!sess) return;
     const q = sess.questions[sess.currentIndex];
     sess.flags[q.id] = !sess.flags[q.id];
+    const flags = new Set(this.getStorage('flagged_questions') || []);
+    if (sess.flags[q.id]) flags.add(q.id); else flags.delete(q.id);
+    this.setStorage('flagged_questions', Array.from(flags));
+    this.trackEvent(sess.flags[q.id] ? 'question_flagged' : 'question_unflagged', {
+      sessionId: sess.id || null, qId: q.id, mode: sess.mode
+    });
     if (sess.mode === 'EXAM') this.saveCurrentExamState();
+    else this.saveCurrentPracticeState();
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
   }
     
@@ -1534,11 +2241,15 @@ class PMPApp {
     const sess = this.getActiveSession();
     if (!sess) return;
     sess.usedTranslate[qId] = !sess.usedTranslate[qId];
-    if (sess.usedTranslate[qId]) this.logTranslate(qId, sess.mode);
+    if (sess.usedTranslate[qId]) {
+      this.logTranslate(qId, sess.mode);
+      this.trackEvent('translation_used', { sessionId: sess.id || null, qId, mode: sess.mode });
+    }
     if (sess.mode === 'EXAM') this.saveCurrentExamState();
     else {
       const q = sess.questions[sess.currentIndex];
       if (sess.answers[q.id]) this.savePracticeAnswer(q, sess.answers[q.id], sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+      else this.saveCurrentPracticeState();
     }
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
   }
@@ -1549,6 +2260,7 @@ class PMPApp {
     const q = sess.questions[sess.currentIndex];
     sess.confidence[q.id] = level;
     if (sess.answers[q.id]) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id], level);
+    else this.saveCurrentPracticeState();
     this.renderQuestionCard('practice-card-container');
   }
 
@@ -1560,6 +2272,14 @@ class PMPApp {
     const n = sess.currentIndex + dir;
     if (n >= 0 && n < sess.questions.length) {
       sess.currentIndex = n;
+      if (sess.mode !== 'EXAM') {
+        sess.currentQuestionStartedAt = Date.now();
+        this.saveCurrentPracticeState();
+      }
+      else {
+        sess.currentQuestionStartedAt = Date.now();
+        this.saveCurrentExamState();
+      }
       this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
     }
   }
@@ -1572,6 +2292,14 @@ class PMPApp {
     this.palettePage = Math.floor(idx / ITEMS_PER_PAGE) + 1;
     
     sess.currentIndex = idx;
+    if (sess.mode !== 'EXAM') {
+      sess.currentQuestionStartedAt = Date.now();
+      this.saveCurrentPracticeState();
+    }
+    else {
+      sess.currentQuestionStartedAt = Date.now();
+      this.saveCurrentExamState();
+    }
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
   }
 
@@ -1610,17 +2338,19 @@ class PMPApp {
         const sel = sess.answers[q.id];
         const ok = isAnswerCorrect(q, sel);
         if (ok) correct++;
+        if (!ok) this.updateQuestionSRS(q.id, false, 'Unsure');
         return {
-          qId: q.id, domain: q.domain, task: q.task, methodology: q.methodology,
+          qId: q.id, domain: q.domain, task: q.task, knowledge_area: q.knowledge_area || null, methodology: q.methodology,
           difficulty: q.difficulty, english_level: q.english_level,
           selected: sel || '—', correctAnswer: q.correctAnswer, isCorrect: ok,
           usedTranslate: !!sess.usedTranslate[q.id], confidence: (sess.confidence && sess.confidence[q.id]) || 'Sure',
-          timestamp: Date.now()
+          flagged: !!sess.flags[q.id], responseTimeMs: (sess.responseTimes || {})[q.id] || null,
+          timestamp: Date.now(), source: 'mock_exam'
         };
       });
       
       const record = {
-        id: 'SESS_' + Date.now(), timestamp: Date.now(),
+        id: sess.id || this.createId('exam'), timestamp: Date.now(),
         score: correct, total: sess.questions.length,
         percentage: Math.round(correct/sess.questions.length*100),
         answers: answersList
@@ -1633,6 +2363,7 @@ class PMPApp {
       
       this.setStorage('current_exam', null);
       this.currentExam = null;
+      this.trackEvent('exam_submitted', { sessionId: record.id, questionCount: record.total, score: record.score, percentage: record.percentage });
       this.lastSubmittedSession = record;
       this.reviewSessId = null;
       
@@ -1660,12 +2391,12 @@ class PMPApp {
       document.getElementById('review-list').innerHTML = '';
       return;
     }
-    const pass = sess.percentage >= 70;
     const picker = sessions.length > 1 ? `<div style="margin-bottom:.75rem;"><label style="font-size:.85rem; color:var(--text-muted);">Chọn bài thi: </label><select onchange="app.pickReviewSession(this.value)" style="padding:.3rem; border:1px solid var(--border); border-radius:6px;">${sessions.slice().reverse().map(s => `<option value="${escapeAttr(s.id)}" ${s.id===sess.id?'selected':''}>${new Date(s.timestamp).toLocaleString('vi-VN')} — ${s.score}/${s.total} (${s.percentage}%)</option>`).join('')}</select></div>` : '';
     document.getElementById('review-summary').innerHTML = picker + `
-      <div class="card" style="background:${pass?'var(--success-bg)':'var(--danger-bg)'}; border-color:${pass?'var(--success)':'var(--danger)'}">
-        <h3 style="color:${pass?'var(--success)':'var(--danger)'}">${pass?'🎉 PASS!':'❌ FAIL — Cần cố gắng'}</h3>
-        <p style="font-size:1.2rem; font-weight:700; margin:.3rem 0;">${sess.score}/${sess.total} (${sess.percentage}%) — Ngưỡng: 70%</p>
+      <div class="card" style="background:var(--info-bg); border-color:var(--border)">
+        <h3 style="color:var(--primary)">Kết quả mock exam</h3>
+        <p style="font-size:1.2rem; font-weight:700; margin:.3rem 0;">Điểm luyện tập: ${sess.score}/${sess.total} (${sess.percentage}%)</p>
+        <p class="insight-meta">Điểm của bộ câu hỏi này, không phải kết quả PASS/FAIL hay dự báo điểm thi PMI.</p>
       </div>`;
 
     document.querySelectorAll('.rev-lang-btn').forEach(b => b.classList.toggle('active', b.dataset.val === this.reviewExpLang));
@@ -1740,6 +2471,7 @@ class PMPApp {
     cur.nextReview = todayISO(next);
     srs[qId] = cur;
     this.setStorage('srs', srs);
+    this.trackEvent(understood ? 'review_marked_known' : 'review_marked_again', { qId, interval: cur.interval });
     this.showModal('Cập nhật SRS', `<p>Câu ${qId}: lần ôn tiếp theo vào <strong>${cur.nextReview}</strong>.</p>`, [
       { text: 'OK', class: '', onClick: () => this.closeModal() }
     ]);
@@ -1749,55 +2481,81 @@ class PMPApp {
   renderGapAnalysis() {
     const answers = this.getAllAnswers();
     const kGaps = {}, lGaps = {}, kwGaps = {};
-    answers.forEach(a => {
-      if (!a.isCorrect) {
-        if (a.usedTranslate) lGaps[a.task] = (lGaps[a.task]||0)+1;
-        else kGaps[a.task] = (kGaps[a.task]||0)+1;
-      }
-    });
     const qs = this.getQuestions();
     const qMap = {};
     qs.forEach(q => qMap[q.id] = q);
     answers.forEach(a => {
       if (!a.isCorrect) {
+        const bucket = a.usedTranslate ? lGaps : kGaps;
+        const task = `${a.domain || 'Chưa phân loại'} · ${a.knowledge_area || a.task || 'Chưa phân loại'}`;
+        bucket[task] = (bucket[task] || 0) + 1;
         const q = qMap[a.qId];
         if (q && q.glossary) q.glossary.forEach(g => { kwGaps[g.en] = (kwGaps[g.en]||0)+1; });
       }
     });
 
-    const fmt = (obj, colorClass, recommend) => {
+    const fmt = obj => {
       const sorted = Object.entries(obj).sort((a,b) => b[1]-a[1]).slice(0,3);
-      if (!sorted.length) return `<p style="color:var(--success);">Chưa ghi nhận lỗ hổng đáng kể.</p>`;
+      if (!sorted.length) return `<p style="color:var(--success);">Chưa ghi nhận câu sai trong nhóm này.</p>`;
       return sorted.map(([t,c]) => `<div style="padding:.4rem 0; border-bottom:1px solid var(--border);">
-        <strong>${escapeHtml(t)}</strong>: ${c} câu sai.
-        <div style="font-size:.8rem; color:${colorClass};">→ ${recommend}</div>
+        <strong>${escapeHtml(t)}</strong>: ${c} lượt sai.
+        <div class="insight-meta">Dùng như tín hiệu để chọn nội dung ôn; chưa chứng minh nguyên nhân lỗi.</div>
       </div>`).join('');
     };
-    document.getElementById('gap-knowledge-list').innerHTML = fmt(kGaps, 'var(--danger)', 'Đọc lại PMBOK 7 / APG.');
-    document.getElementById('gap-language-list').innerHTML = fmt(lGaps, 'var(--info)', 'Ôn Glossary + Shadow Reading.');
+    document.getElementById('gap-knowledge-list').innerHTML = fmt(kGaps);
+    document.getElementById('gap-language-list').innerHTML = fmt(lGaps);
 
     const kwSorted = Object.entries(kwGaps).sort((a,b) => b[1]-a[1]).slice(0,5);
     document.getElementById('gap-keywords-list').innerHTML = kwSorted.length
-      ? kwSorted.map(([k,c]) => `<div style="display:flex; justify-content:space-between; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>🔑 <span data-action="open-kw" data-term="${escapeAttr(k)}" style="color:var(--primary); cursor:pointer; font-weight:600;">${escapeHtml(k)}</span></span><span class="tag tag-people">${c}</span></div>`).join('')
+      ? kwSorted.map(([k,c]) => `<div style="display:flex; justify-content:space-between; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>🔑 <span data-action="open-kw" data-term="${escapeAttr(k)}" style="color:var(--primary); cursor:pointer; font-weight:600;">${escapeHtml(k)}</span></span><span class="tag tag-people">${c} lượt sai</span></div>`).join('')
       : '<p style="color:var(--text-muted);">Chưa có keyword sai.</p>';
+    const storedAnnotations = this.getStorage('annotations') || {};
+    const notes = Object.entries(storedAnnotations).flatMap(([qId, items]) =>
+      Array.isArray(items) ? items.map(item => ({ qId, ...item })) : []
+    );
+    document.getElementById('annotation-review-list').innerHTML = notes.length
+      ? notes.slice(-10).reverse().map(note => `<div class="history-row"><div><strong>${escapeHtml(note.text)}</strong><div>${escapeHtml(note.note)}</div><span class="insight-meta">Câu ${escapeHtml(note.qId)}</span></div><button class="btn btn-sm btn-outline" onclick="app.jumpToSavedNote('${escapeAttr(note.qId)}')">Mở câu</button></div>`).join('')
+      : '<p class="insight-meta">Chưa có cụm từ ghi chú. Khi gặp từ khó, bôi đen cụm từ trong bài và lưu ghi chú.</p>';
 
-    this.renderGapHeatmap(kGaps, lGaps);
+    const taskLabels = new Set(qs.map(q => q.task).filter(Boolean));
+    const domainTasks = new Set(qs.map(q => `${q.domain || 'Chưa phân loại'}|${q.knowledge_area || q.task || 'Chưa phân loại'}`));
+    const knowledgeAreaCount = qs.filter(q => q.knowledge_area).length;
+    document.getElementById('taxonomy-quality').innerHTML = `
+      <strong>Chất lượng phân loại dữ liệu</strong>
+      <p class="insight-meta" style="margin-top:.25rem;">${qs.length} câu · ${domainTasks.size} cặp domain/task · ${knowledgeAreaCount} câu có knowledge area chính thức. Ngân hàng hiện dùng ${taskLabels.size} nhãn task khác nhau; nhãn trùng/khác chuẩn có thể làm phân tích vỡ nhỏ.</p>
+      <p class="insight-meta">Khi thiếu knowledge area, báo cáo chỉ kết luận ở domain/task, không tự suy diễn mapping PMP.</p>`;
+    this.renderGapHeatmap(this.getWeaknessStats());
   }
 
-  renderGapHeatmap(kGaps, lGaps) {
-    const tasks = Array.from(new Set([...Object.keys(kGaps), ...Object.keys(lGaps)])).slice(0, 10);
-    if (!tasks.length) { document.getElementById('chart-gap-heatmap').innerHTML = '<p style="font-size:.85rem; color:var(--text-muted);">Chưa đủ dữ liệu.</p>'; return; }
-    let h = `<svg viewBox="0 0 500 ${tasks.length*35+40}" width="100%">
-      <text x="150" y="20" font-size="12" font-weight="700" fill="#dc2626">Knowledge</text>
-      <text x="320" y="20" font-size="12" font-weight="700" fill="#0284c7">Language</text>`;
-    tasks.forEach((t, i) => {
-      const y = i*35+40, k = kGaps[t]||0, l = lGaps[t]||0;
-      const label = t.length > 20 ? t.substring(0,20)+'…' : t;
-      h += `<text x="0" y="${y+15}" font-size="10" fill="#334155">${escapeHtml(label)}</text>
-        <rect x="150" y="${y}" width="${Math.min(120, k*25)}" height="20" rx="4" fill="#dc2626" opacity=".8"/>
-        <text x="${155+Math.min(120,k*25)}" y="${y+14}" font-size="10">${k}</text>
-        <rect x="320" y="${y}" width="${Math.min(120, l*25)}" height="20" rx="4" fill="#0284c7" opacity=".8"/>
-        <text x="${325+Math.min(120,l*25)}" y="${y+14}" font-size="10">${l}</text>`;
+  jumpToSavedNote(qId) {
+    const questionIndex = this.getQuestions().findIndex(question => question.id === qId);
+    if (questionIndex < 0) return;
+    document.getElementById('practice-filter-domain').value = 'ALL';
+    document.getElementById('practice-filter-mode').value = 'all';
+    this.initPracticeSession(true);
+    const sessionIndex = this.currentSession.questions.findIndex(question => question.id === qId);
+    if (sessionIndex >= 0) {
+      this.currentSession.currentIndex = sessionIndex;
+      this.saveCurrentPracticeState();
+      this.renderQuestionCard('practice-card-container');
+      window.location.hash = '#practice';
+    }
+  }
+
+  renderGapHeatmap(weaknesses) {
+    const tasks = weaknesses.slice(0, 10);
+    if (!tasks.length) { document.getElementById('chart-gap-heatmap').innerHTML = '<p class="insight-meta">Chưa có câu trả lời để phân tích task.</p>'; return; }
+    let h = `<svg viewBox="0 0 600 ${tasks.length*42+35}" width="100%">
+      <text x="0" y="18" font-size="11" font-weight="700" fill="#334155">Domain · Task</text>
+      <text x="430" y="18" font-size="11" font-weight="700" fill="#334155">Lượt sai / tổng</text>`;
+    tasks.forEach((stat, i) => {
+      const y = i*42+40, label = `${stat.domain} · ${stat.task}`;
+      const clipped = label.length > 54 ? label.substring(0, 51) + '…' : label;
+      const width = Math.round(stat.wrong / stat.attempts * 180);
+      h += `<text x="0" y="${y+13}" font-size="10" fill="#334155">${escapeHtml(clipped)}</text>
+        <rect x="400" y="${y}" width="180" height="16" rx="4" fill="#e2e8f0"/>
+        <rect x="400" y="${y}" width="${width}" height="16" rx="4" fill="${stat.accuracy < 70 ? '#dc2626' : '#d97706'}"/>
+        <text x="400" y="${y+31}" font-size="10" fill="#64748b">${stat.wrong}/${stat.attempts} sai · ${stat.confidence}</text>`;
     });
     h += '</svg>';
     document.getElementById('chart-gap-heatmap').innerHTML = h;
@@ -1806,13 +2564,27 @@ class PMPApp {
   /* ---- PLAN ---- */
   render14DayPlan() {
     const cur = this.getCurrentStudyDay();
+    const dueCount = Object.values(this.getStorage('srs') || {}).filter(item => item.nextReview <= todayISO()).length;
+    const weakness = this.getWeaknessStats()[0];
+    const focus = dueCount
+      ? `Ôn ${dueCount} câu đến hạn trước, sau đó làm 10 câu luyện thích ứng.`
+      : weakness
+        ? `Luyện lại domain ${weakness.domain} · ${weakness.task} (${100 - weakness.accuracy}% sai trong ${weakness.attempts} lượt).`
+        : 'Làm một lượt luyện thích ứng để tạo dữ liệu và xác định điểm cần ưu tiên.';
+    document.getElementById('plan-recommendation').innerHTML = `
+      <div class="insight-card">
+        <h3>🎯 Trọng tâm hôm nay · Ngày ${cur}</h3>
+        <p>${escapeHtml(focus)}</p>
+        <p class="insight-meta" style="margin-top:.35rem;">Gợi ý thay đổi theo câu trả lời, câu sai và lịch ôn; số ngày trong lộ trình không tự chứng minh mức sẵn sàng thi.</p>
+        <div class="study-actions"><button class="btn btn-sm" onclick="app.startTargetedPractice('${dueCount ? 'due' : weakness ? 'weak' : 'adaptive'}')">Bắt đầu nội dung ưu tiên</button></div>
+      </div>`;
     const days = [];
     for (let d = 1; d <= 14; d++) {
       let title, desc;
-      if (d === 1) { title = `Ngày 1: Diagnostic Test`; desc = 'Làm 50 câu practice, mở dịch tự do.'; }
-      else if (d <= 7) { title = `Ngày ${d}: Practice 2 Set × 25 câu`; desc = 'Dịch tự do, nạp kiến thức.'; }
-      else if (d <= 11) { title = `Ngày ${d}: Mock Exam 30-60 câu`; desc = 'Soft lock dịch 20 lần/ngày, đọc EN nhiều hơn.'; }
-      else { title = `Ngày ${d}: Exam Hard Lock (Khóa dịch)`; desc = 'Thi thử như thi thật. Không dịch trong exam.'; }
+      if (d === 1) { title = `Ngày 1: Chẩn đoán`; desc = 'Làm một lượt 20 câu; xem lại mọi câu sai và ghi chú thuật ngữ chưa hiểu.'; }
+      else if (d <= 7) { title = `Ngày ${d}: Củng cố nền tảng`; desc = 'Ôn câu đến hạn, sau đó luyện thích ứng theo domain/task yếu.'; }
+      else if (d <= 11) { title = `Ngày ${d}: Tăng sức bền`; desc = 'Kết hợp câu hỏi mới, câu sai và mock exam; xem lại lý do chọn đáp án.'; }
+      else { title = `Ngày ${d}: Mô phỏng & rà soát`; desc = 'Làm mock exam có thời gian và xử lý các điểm yếu còn lặp lại.'; }
       days.push({ day: d, title, desc });
     }
     const done = this.getStorage('plan_done') || {};
@@ -1843,13 +2615,19 @@ class PMPApp {
     const filt = document.getElementById('glossary-filter-status').value;
     const status = this.getStorage('glossary_status') || {};
     const answers = this.getAllAnswers();
-    const wrongQ = new Set(answers.filter(a => !a.isCorrect).map(a => a.qId));
+    const questionMap = new Map(qs.map(q => [q.id, q]));
+    const wrongTerms = {};
+    answers.filter(answer => !answer.isCorrect).forEach(answer => {
+      const question = questionMap.get(answer.qId);
+      (question && question.glossary || []).forEach(term => {
+        wrongTerms[term.en] = (wrongTerms[term.en] || 0) + 1;
+      });
+    });
 
     const map = {};
     qs.forEach(q => {
       if (q.glossary) q.glossary.forEach(g => {
-        if (!map[g.en]) map[g.en] = { ...g, wrongCount: 0 };
-        if (wrongQ.has(q.id)) map[g.en].wrongCount++;
+        if (!map[g.en]) map[g.en] = { ...g, wrongCount: wrongTerms[g.en] || 0 };
       });
     });
 
@@ -1905,6 +2683,7 @@ class PMPApp {
     const status = this.getStorage('glossary_status') || {};
     status[term] = status[term] === 'MASTERED' ? 'LEARNING' : 'MASTERED';
     this.setStorage('glossary_status', status);
+    this.trackEvent('glossary_status_changed', { term, status: status[term] });
     this.renderGlossary();
   }
 
@@ -1944,6 +2723,7 @@ class PMPApp {
     const status = this.getStorage('glossary_status') || {};
     status[t.en] = known ? 'MASTERED' : 'LEARNING';
     this.setStorage('glossary_status', status);
+    this.trackEvent('flashcard_reviewed', { term: t.en, known });
     st.idx++; st.flipped = false;
     this.renderFlashcard();
   }
