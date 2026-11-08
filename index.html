@@ -149,6 +149,16 @@
     .reading-rating { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
     .reading-rating button.selected { background: var(--success); color: #fff; border-color: var(--success); }
     .dashboard-list-scroll { max-height: 18rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding-right: .4rem; }
+    .mistake-controls { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: .65rem; margin: .75rem 0; }
+    .mistake-controls label { display: grid; gap: .25rem; font-size: .82rem; font-weight: 600; }
+    .mistake-controls select { width: 100%; min-width: 0; padding: .5rem; border: 1px solid var(--border); border-radius: 6px; background: #fff; font: inherit; }
+    .mistake-item { padding: .7rem 0; border-bottom: 1px solid var(--border); }
+    .mistake-item:last-child { border-bottom: 0; }
+    .mistake-severity { display: inline-flex; align-items: center; border-radius: 999px; padding: .1rem .5rem; font-size: .75rem; font-weight: 700; white-space: nowrap; }
+    .mistake-severity-high { background: var(--danger-bg); color: var(--danger); }
+    .mistake-severity-medium { background: #fff7ed; color: #c2410c; }
+    .mistake-severity-low { background: #f1f5f9; color: #475569; }
+    .mistake-group-title { margin: .9rem 0 .25rem; font-size: .95rem; color: var(--primary); }
     .review-list-scroll { max-height: 70vh; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: .25rem .5rem .25rem 0; }
     .list-pagination { display: flex; align-items: center; justify-content: center; gap: .5rem; margin: .75rem 0; }
     @media (max-width: 600px) { .question-form .option-row { grid-template-columns: 1fr; } }
@@ -262,12 +272,12 @@
     <div class="grid-3">
       <div class="metric-box"><div class="metric-lbl">Độ chính xác các lượt trả lời</div><div class="metric-val" id="m-accuracy">0%</div><div class="metric-lbl" id="m-total-q">0 lượt trả lời đã lưu</div></div>
       <div class="metric-box"><div class="metric-lbl">Khái niệm đã củng cố</div><div class="metric-val" id="m-mastery">0/0</div><div class="metric-lbl">Đã làm đúng ít nhất 2 lần</div></div>
-      <div class="metric-box"><div class="metric-lbl">Hôm nay cần ôn (SRS)</div><div class="metric-val" id="m-srs-count">0</div><div class="metric-lbl" id="m-srs-sub">0 câu</div><button class="btn btn-sm" id="btn-srs-practice" style="margin-top:.5rem; display:none;" onclick="app.startSrsPractice()">▶ Ôn ngay</button></div>
+      <div class="metric-box"><div class="metric-lbl">Hôm nay cần ôn (SRS)</div><div class="metric-val" id="m-srs-count">0</div><div class="metric-lbl" id="m-srs-sub">0 câu đến hạn còn trong ngân hàng</div><button class="btn btn-sm" id="btn-srs-practice" style="margin-top:.5rem; display:none;" onclick="app.startSrsPractice()">▶ Ôn ngay</button></div>
     </div>
     <div class="insight-card" id="readiness-card" aria-live="polite"></div>
     <div class="grid-2">
       <div class="card"><h3>📊 Độ chính xác theo Domain</h3><div class="chart-container" id="chart-domain"></div><div class="insight-meta">Mẫu số là lượt trả lời; luyện lại cùng câu vẫn được tính là lượt mới.</div></div>
-      <div class="card"><h3>⚠️ Điểm yếu cần ưu tiên</h3><div id="top-weak-topics" style="margin-top:.5rem;">Chưa đủ dữ liệu.</div><div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('weak')">Ôn điểm yếu</button><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện câu sai</button><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('flagged')">Câu đã đánh dấu</button></div></div>
+      <div class="card"><h3>⚠️ Điểm yếu cần ưu tiên</h3><div id="top-weak-topics" style="margin-top:.5rem;">Chưa đủ dữ liệu.</div><p class="insight-meta" style="margin-top:.5rem;">Điểm yếu: nhóm Task/Knowledge area có ít nhất 2 lượt và độ chính xác dưới 70%; hàng đợi gồm các câu thuộc nhóm đó. “Câu sai” gồm câu từng sai ít nhất một lần, kể cả nếu lần sau đã làm đúng.</p><div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('weak')">Ôn điểm yếu</button><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện câu sai</button><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('flagged')">Câu đã đánh dấu</button></div></div>
     </div>
     <div class="grid-2">
       <div class="card">
@@ -276,10 +286,10 @@
         <div id="daily-practice-stats" style="margin-top:.5rem;"></div>
       </div>
       <div class="card">
-        <h3>🔁 Câu sai lặp lại nhiều nhất</h3>
-        <p class="insight-meta" style="margin-top:.25rem;">Số lần sai / tổng lượt trả lời cho từng câu luyện.</p>
-        <div id="frequent-mistakes" class="dashboard-list-scroll" style="margin-top:.5rem;"></div>
-        <div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện lại các câu đã sai</button><a class="btn btn-sm btn-outline" href="#review">Xem tất cả trong Review</a></div>
+        <h3>🔁 Top 3 câu sai cần ưu tiên</h3>
+        <p class="insight-meta" style="margin-top:.25rem;">Ưu tiên theo số lần sai; nhãn: 3+ lần là ưu tiên cao, 2 lần cần củng cố, 1 lần cần theo dõi.</p>
+        <div id="frequent-mistakes" style="margin-top:.5rem;"></div>
+        <div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện lại các câu đã sai</button><button class="btn btn-sm btn-outline" onclick="app.openMistakeManager()">Xem tất cả / Quản lý câu sai</button></div>
       </div>
     </div>
     <div class="grid-2">
@@ -424,6 +434,23 @@
       </div>
       <div id="review-summary" style="margin:1rem 0;"></div>
       <div id="review-coach"></div>
+      <div class="card">
+        <h3>🔁 Câu sai lặp lại · mọi phiên Practice &amp; Exam</h3>
+        <p class="insight-meta">Top 3 câu cần ưu tiên, gộp từ lịch sử đã lưu. Mở quản lý để lọc theo Domain/Task, sắp xếp và xem từng trang.</p>
+        <div id="review-frequent-top"></div>
+        <button id="mistake-manager-toggle" type="button" class="btn btn-sm btn-outline" style="margin-top:.5rem;" onclick="app.toggleMistakeManager()">Quản lý tất cả câu sai</button>
+        <div id="mistake-manager" hidden>
+          <div class="mistake-controls">
+            <label>Nhóm theo<select id="mistake-group" onchange="app.setMistakeView('group', this.value)"><option value="none">Không gom nhóm</option><option value="domain">Domain</option><option value="task">Task</option></select></label>
+            <label>Domain<select id="mistake-domain" onchange="app.setMistakeView('domain', this.value)"><option value="all">Tất cả Domain</option></select></label>
+            <label>Task<select id="mistake-task" onchange="app.setMistakeView('task', this.value)"><option value="all">Tất cả Task</option></select></label>
+            <label>Sắp xếp<select id="mistake-sort" onchange="app.setMistakeView('sort', this.value)"><option value="frequent">Sai nhiều nhất</option><option value="recent">Sai gần đây nhất</option></select></label>
+          </div>
+          <div id="mistake-manager-summary" class="insight-meta" aria-live="polite"></div>
+          <div id="mistake-manager-list"></div>
+          <div id="mistake-manager-pagination" class="list-pagination"></div>
+        </div>
+      </div>
       <div class="grid-2">
         <div class="card"><h4>Domain</h4><div id="chart-review-domain"></div></div>
         <div class="card"><h4>EN Level</h4><div id="chart-review-level"></div></div>
@@ -823,9 +850,17 @@ class PMPApp {
     this.examTimerInterval = null;
     this.lastSubmittedSession = null;
     this.reviewPage = 1;
+    this.mistakePage = 1;
+    this.mistakeSort = 'frequent';
+    this.mistakeGroup = 'none';
+    this.mistakeDomain = 'all';
+    this.mistakeTask = 'all';
+    this.mistakeManagerOpen = false;
     this._pendingAnnotation = null;
     this._annotationActionPressed = false;
     this.practiceLimit = null;
+    this._forcePracticeQueue = false;
+    this._pendingReviewQuestionId = null;
     this._flashState = null;
     this.palettePage = 1; 
 
@@ -919,13 +954,21 @@ class PMPApp {
   getQuestionPerformance() {
     const byQuestion = {};
     this.getAllAnswers().forEach(answer => {
+      if (!answer.qId) return;
       const stat = byQuestion[answer.qId] || (byQuestion[answer.qId] = {
-        attempts: 0, wrong: 0, lastCorrect: null, lastTimestamp: 0
+        attempts: 0, wrong: 0, correct: 0, lastCorrect: null, lastTimestamp: 0,
+        lastWrongAt: 0, wrongSources: { practice: 0, exam: 0 }
       });
       stat.attempts++;
-      if (!answer.isCorrect) stat.wrong++;
-      if ((answer.timestamp || 0) >= stat.lastTimestamp) {
-        stat.lastTimestamp = answer.timestamp || 0;
+      const timestamp = Number(answer.timestamp) || 0;
+      if (answer.isCorrect) stat.correct++;
+      else {
+        stat.wrong++;
+        stat.lastWrongAt = Math.max(stat.lastWrongAt, timestamp);
+        stat.wrongSources[answer.source === 'practice' ? 'practice' : 'exam']++;
+      }
+      if (timestamp >= stat.lastTimestamp) {
+        stat.lastTimestamp = timestamp;
         stat.lastCorrect = !!answer.isCorrect;
       }
     });
@@ -934,10 +977,13 @@ class PMPApp {
 
   getWeaknessStats() {
     const byTask = {};
+    const questions = new Map(this.getQuestions().map(question => [question.id, question]));
     this.getAllAnswers().forEach(answer => {
-      const domain = answer.domain || 'Chưa phân loại';
-      const task = answer.knowledge_area || answer.task || 'Chưa phân loại';
-      const taxonomy = answer.knowledge_area ? 'Knowledge area' : 'Task';
+      const question = questions.get(answer.qId);
+      const domain = question && question.domain || answer.domain || 'Chưa phân loại';
+      const knowledgeArea = question ? question.knowledge_area : answer.knowledge_area;
+      const task = knowledgeArea || question && question.task || answer.task || 'Chưa phân loại';
+      const taxonomy = knowledgeArea ? 'Knowledge area' : 'Task';
       const key = domain + '|' + taxonomy + '|' + task;
       const stat = byTask[key] || (byTask[key] = { domain, task, taxonomy, attempts: 0, wrong: 0, questionIds: new Set() });
       stat.attempts++;
@@ -953,30 +999,82 @@ class PMPApp {
     );
   }
 
+  getDueSrsQuestionIds(asOf = todayISO()) {
+    const questionIds = new Set(this.getQuestions().map(question => question.id));
+    const srs = this.getStorage('srs') || {};
+    return new Set(Object.entries(srs)
+      .filter(([qId, item]) => questionIds.has(qId) && item && typeof item.nextReview === 'string' &&
+        /^\d{4}-\d{2}-\d{2}$/.test(item.nextReview) &&
+        todayISO(new Date(`${item.nextReview}T00:00:00`)) === item.nextReview &&
+        item.nextReview <= asOf)
+      .map(([qId]) => qId));
+  }
+
+  getReviewQueueReason(question, mode, context = {}) {
+    const performance = (context.performance || this.getQuestionPerformance())[question.id] || {
+      attempts: 0, wrong: 0, correct: 0, lastCorrect: null, lastTimestamp: 0,
+      lastWrongAt: 0, wrongSources: { practice: 0, exam: 0 }
+    };
+    const srs = (this.getStorage('srs') || {})[question.id];
+    const asDate = value => value ? new Date(value).toLocaleDateString('vi-VN') : 'chưa có';
+    const outcome = performance.lastCorrect === false
+      ? 'Lần gần nhất bạn trả lời sai'
+      : performance.lastCorrect === true ? 'Lần gần nhất bạn trả lời đúng' : 'Chưa có lịch sử trả lời';
+    if (mode === 'due') {
+      return `Đến hạn ôn ${srs && srs.nextReview || 'hôm nay'} · ${srs && srs.lapses || 0} lần quên · ôn gần nhất: ${asDate(srs && srs.lastReviewed)}.`;
+    }
+    if (mode === 'wrong') {
+      return `Bạn từng trả lời sai ${performance.wrong}/${performance.attempts} lượt (Practice ${performance.wrongSources.practice}, Exam ${performance.wrongSources.exam}); sai gần nhất: ${asDate(performance.lastWrongAt)}. ${outcome}.`;
+    }
+    if (mode === 'weak') {
+      const questionTopic = question.knowledge_area || question.task || 'Chưa phân loại';
+      const questionTaxonomy = question.knowledge_area ? 'Knowledge area' : 'Task';
+      const weakness = (context.weaknesses || this.getWeaknessStats()).find(stat => stat.attempts >= 2 && stat.accuracy < 70 &&
+        stat.domain === (question.domain || 'Chưa phân loại') &&
+        stat.taxonomy === questionTaxonomy && stat.task === questionTopic);
+      if (weakness) {
+        const individualHistory = performance.attempts
+          ? `Câu này: sai ${performance.wrong}/${performance.attempts} lượt (Practice ${performance.wrongSources.practice}, Exam ${performance.wrongSources.exam}).`
+          : 'Câu này chưa có lịch sử riêng; được đưa vào để ôn nhóm chủ đề.';
+        return `Thuộc nhóm ${weakness.domain} · ${weakness.taxonomy}: ${weakness.task} — sai ${weakness.wrong}/${weakness.attempts} lượt (${weakness.accuracy}% đúng, tối thiểu 2 lượt). ${individualHistory}`;
+      }
+      return `Thuộc nhóm ${question.domain} · ${question.knowledge_area || question.task}; nhóm này đang có tỷ lệ đúng dưới 70% sau ít nhất 2 lượt.`;
+    }
+    if (mode === 'flagged') return 'Bạn đã tự đánh dấu câu này để xem lại.';
+    if (mode === 'adaptive') {
+      const reasons = [];
+      if ((context.due || this.getDueSrsQuestionIds()).has(question.id)) reasons.push('đến hạn SRS');
+      if (performance.wrong) reasons.push(`từng sai ${performance.wrong}/${performance.attempts} lượt`);
+      if (performance.lastCorrect === false) reasons.push('lần gần nhất trả lời sai');
+      return reasons.length ? `Được ưu tiên vì ${reasons.join(' · ')}.` : 'Được chọn từ ngân hàng để luyện thích ứng.';
+    }
+    return mode === 'all' ? 'Được chọn từ toàn bộ ngân hàng câu hỏi.' : 'Được chọn theo bộ lọc luyện tập hiện tại.';
+  }
+
   getReviewQuestionIds(mode) {
     const performance = this.getQuestionPerformance();
-    const srs = this.getStorage('srs') || {};
-    const today = todayISO();
-    const flags = new Set(this.getStorage('flagged_questions') || []);
+    const due = this.getDueSrsQuestionIds();
+    const bankIds = new Set(this.getQuestions().map(question => question.id));
+    const flags = new Set((this.getStorage('flagged_questions') || []).filter(qId => bankIds.has(qId)));
     if (this.currentSession) Object.keys(this.currentSession.flags || {}).forEach(id => {
-      if (this.currentSession.flags[id]) flags.add(id);
+      if (this.currentSession.flags[id] && bankIds.has(id)) flags.add(id);
     });
     if (this.currentExam) Object.keys(this.currentExam.flags || {}).forEach(id => {
-      if (this.currentExam.flags[id]) flags.add(id);
+      if (this.currentExam.flags[id] && bankIds.has(id)) flags.add(id);
     });
     const weakTasks = new Set(this.getWeaknessStats()
       .filter(stat => stat.accuracy < 70 && stat.attempts >= 2)
-    .map(stat => stat.domain + '|' + stat.taxonomy + '|' + stat.task));
+      .map(stat => stat.domain + '|' + stat.taxonomy + '|' + stat.task));
 
     const questions = this.getQuestions().filter(question => {
       const stat = performance[question.id];
-    const questionTopic = question.knowledge_area || question.task || 'Chưa phân loại';
-    const questionTaxonomy = question.knowledge_area ? 'Knowledge area' : 'Task';
-    const taskIsWeak = weakTasks.has((question.domain || 'Chưa phân loại') + '|' + questionTaxonomy + '|' + questionTopic);
-    if (mode === 'flagged') return flags.has(question.id);
-    if (mode === 'due') return !!srs[question.id] && srs[question.id].nextReview <= today;
-    if (mode === 'wrong') return !!stat && stat.wrong > 0;
-    if (mode === 'weak') return taskIsWeak || (!!stat && stat.wrong > 0);
+      const questionTopic = question.knowledge_area || question.task || 'Chưa phân loại';
+      const questionTaxonomy = question.knowledge_area ? 'Knowledge area' : 'Task';
+      const taskIsWeak = weakTasks.has((question.domain || 'Chưa phân loại') + '|' + questionTaxonomy + '|' + questionTopic);
+      if (mode === 'flagged') return flags.has(question.id);
+      if (mode === 'due') return due.has(question.id);
+      if (mode === 'wrong') return !!stat && stat.wrong > 0;
+      if (mode === 'weak') return taskIsWeak;
       if (mode === 'adaptive') return true;
       return true;
     });
@@ -984,12 +1082,39 @@ class PMPApp {
     return questions.sort((a, b) => {
       const aStat = performance[a.id] || { wrong: 0, attempts: 0, lastCorrect: true };
       const bStat = performance[b.id] || { wrong: 0, attempts: 0, lastCorrect: true };
-      const aDue = srs[a.id] && srs[a.id].nextReview <= today ? 1 : 0;
-      const bDue = srs[b.id] && srs[b.id].nextReview <= today ? 1 : 0;
+      const aDue = due.has(a.id) ? 1 : 0;
+      const bDue = due.has(b.id) ? 1 : 0;
       const aPriority = aDue * 100 + aStat.wrong * 10 + (aStat.lastCorrect === false ? 5 : 0) - aStat.attempts;
       const bPriority = bDue * 100 + bStat.wrong * 10 + (bStat.lastCorrect === false ? 5 : 0) - bStat.attempts;
-      return bPriority - aPriority;
+      return bPriority - aPriority || (bStat.lastTimestamp || 0) - (aStat.lastTimestamp || 0);
     });
+  }
+
+  getSrsSchedule(current, understood) {
+    const intervals = [1, 3, 7, 14, 30];
+    const previous = current && typeof current === 'object' ? current : {};
+    if (!understood) {
+      return {
+        ...previous, interval: 0, repetitions: 0,
+        lapses: (Number(previous.lapses) || 0) + 1,
+        nextReview: todayISO(), lastReviewed: Date.now()
+      };
+    }
+    let repetitions = Number.isInteger(previous.repetitions) && previous.repetitions >= 0
+      ? previous.repetitions : 0;
+    if (previous.repetitions == null && Number(previous.interval) > 0) {
+      intervals.forEach((interval, index) => {
+        if (Number(previous.interval) >= interval) repetitions = index + 1;
+      });
+    }
+    repetitions = Math.min(repetitions + 1, intervals.length);
+    const interval = intervals[repetitions - 1];
+    const next = new Date();
+    next.setDate(next.getDate() + interval);
+    return {
+      ...previous, interval, repetitions, lapses: Number(previous.lapses) || 0,
+      nextReview: todayISO(next), lastReviewed: Date.now()
+    };
   }
 
   startTargetedPractice(mode, limit) {
@@ -999,11 +1124,22 @@ class PMPApp {
     domain.value = 'ALL';
     filter.value = mode;
     this.practiceLimit = Number.isInteger(limit) && limit > 0 ? limit : null;
-    if (window.location.hash === '#practice') this.initPracticeSession(true);
+    this._forcePracticeQueue = true;
+    if (window.location.hash === '#practice') {
+      this._forcePracticeQueue = false;
+      this.initPracticeSession(true);
+    }
     else window.location.hash = '#practice';
   }
 
-  startPracticeRun(questions, mode, domain, limit) {
+  startQuestionReview(qId) {
+    const question = this.getQuestions().find(item => item.id === qId);
+    if (!question || !this.getQuestionPerformance()[qId]?.wrong) return;
+    this._pendingReviewQuestionId = qId;
+    this.startTargetedPractice('wrong', 1);
+  }
+
+  startPracticeRun(questions, mode, domain, limit, reviewReasons) {
     if (this.currentSession && this.currentSession.id) {
       const previousRuns = this.getStorage('practice_runs') || [];
       const previous = previousRuns.find(item => item.id === this.currentSession.id);
@@ -1020,7 +1156,8 @@ class PMPApp {
     this.currentSession = {
       id: sessionId, mode: 'PRACTICE', practiceMode: mode, domain,
       startedAt: now, questions, currentIndex: 0, answers: {}, flags,
-      usedTranslate: {}, readingLevel: {}, limit: limit || null, currentQuestionStartedAt: now
+      usedTranslate: {}, readingLevel: {}, limit: limit || null, currentQuestionStartedAt: now,
+      reviewReasons: reviewReasons || {}
     };
     const runs = this.getStorage('practice_runs') || [];
     runs.push({
@@ -1031,7 +1168,8 @@ class PMPApp {
     this.setStorage('current_practice', {
       id: sessionId, mode, domain, startedAt: now,
       qIds: questions.map(question => question.id), currentIndex: 0,
-      answers: {}, flags, usedTranslate: {}, readingLevel: {}, limit: limit || null, currentQuestionStartedAt: now
+      answers: {}, flags, usedTranslate: {}, readingLevel: {}, limit: limit || null,
+      currentQuestionStartedAt: now, reviewReasons: reviewReasons || {}
     });
     this.trackEvent('practice_started', { sessionId, mode, questionCount: questions.length, domain });
     this.palettePage = 1;
@@ -1039,10 +1177,10 @@ class PMPApp {
   }
 
   startSrsPractice() {
-    const today = todayISO(), srs = this.getStorage('srs') || {};
-    const due = new Set(Object.keys(srs).filter(k => srs[k].nextReview <= today));
-    const qs = this.getQuestions().filter(q => due.has(q.id));
-    if (!qs.length) { this.showModal('Không có câu đến hạn', '<p>Hiện không có câu nào cần ôn lại.</p>', [{text:'OK', class:'', onClick:()=>this.closeModal()}]); return; }
+    if (!this.getDueSrsQuestionIds().size) {
+      this.showModal('Không có câu đến hạn', '<p>Hiện không có câu nào trong ngân hàng đến hạn ôn lại.</p>', [{text:'OK', class:'', onClick:()=>this.closeModal()}]);
+      return;
+    }
     this.startTargetedPractice('due');
   }
 
@@ -1231,7 +1369,11 @@ class PMPApp {
     if (nav) nav.classList.add('active');
 
     if (pageId === 'dashboard') this.renderDashboard();
-    else if (pageId === 'practice') this.initPracticeSession(this.practiceLimit !== null);
+    else if (pageId === 'practice') {
+      const forceQueue = this._forcePracticeQueue || this.practiceLimit !== null;
+      this._forcePracticeQueue = false;
+      this.initPracticeSession(forceQueue);
+    }
     else if (pageId === 'add-question') this.updateWrongReasonFields();
     else if (pageId === 'exam') this.checkOrInitExam();
     else if (pageId === 'review') this.renderReviewPage();
@@ -1907,23 +2049,7 @@ class PMPApp {
 
   updateQuestionSRS(qId, isCorrect) {
     const srs = this.getStorage('srs') || {};
-    const current = srs[qId] || { interval: 0, repetitions: 0, lapses: 0 };
-    if (!isCorrect) {
-      current.interval = 0;
-      current.repetitions = 0;
-      current.lapses = (current.lapses || 0) + 1;
-      current.nextReview = todayISO();
-    } else {
-      const intervals = [1, 3, 7, 14, 30];
-      const repetition = Math.min((current.repetitions || 0) + 1, intervals.length);
-      current.repetitions = repetition;
-      current.interval = intervals[repetition - 1];
-      const next = new Date();
-      next.setDate(next.getDate() + current.interval);
-      current.nextReview = todayISO(next);
-    }
-    current.lastReviewed = Date.now();
-    srs[qId] = current;
+    srs[qId] = this.getSrsSchedule(srs[qId], isCorrect);
     this.setStorage('srs', srs);
   }
 
@@ -1936,7 +2062,8 @@ class PMPApp {
       qIds: sess.questions.map(question => question.id), currentIndex: sess.currentIndex,
       answers: sess.answers, flags: sess.flags,
       usedTranslate: sess.usedTranslate, readingLevel: sess.readingLevel || {},
-      limit: sess.limit || null, currentQuestionStartedAt: sess.currentQuestionStartedAt
+      limit: sess.limit || null, currentQuestionStartedAt: sess.currentQuestionStartedAt,
+      reviewReasons: sess.reviewReasons || {}
     });
   }
 
@@ -2029,11 +2156,9 @@ class PMPApp {
     ).length;
     document.getElementById('m-mastery').textContent = `${mastered}/${this.getQuestions().length}`;
 
-    const srs = this.getStorage('srs') || {};
-    const today = todayISO();
-    const dueCount = Object.values(srs).filter(v => v.nextReview <= today).length;
+    const dueCount = this.getDueSrsQuestionIds().size;
     document.getElementById('m-srs-count').textContent = dueCount;
-    document.getElementById('m-srs-sub').textContent = dueCount + ' mục cần ôn';
+    document.getElementById('m-srs-sub').textContent = dueCount + ' câu đến hạn còn trong ngân hàng';
     document.getElementById('btn-srs-practice').style.display = dueCount ? 'inline-flex' : 'none';
 
     const activityDays = new Set(this.getAllAnswers().map(answer =>
@@ -2055,9 +2180,9 @@ class PMPApp {
 
     this.renderDomainChart(m.domainStats);
 
-    const weak = m.weaknesses.slice(0, 3);
+    const weak = m.weaknesses.filter(stat => stat.attempts >= 2 && stat.accuracy < 70).slice(0, 3);
     document.getElementById('top-weak-topics').innerHTML = weak.length
-      ? weak.map(stat => `<div style="display:flex; justify-content:space-between; gap:.5rem; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>⚠️ ${escapeHtml(stat.domain)} · ${escapeHtml(stat.taxonomy)}: ${escapeHtml(stat.task)}<small class="insight-meta" style="display:block;">${stat.attempts} lượt · ${stat.questionIds.length} câu</small></span><strong style="color:var(--danger);">${100 - stat.accuracy}% sai</strong></div>`).join('')
+      ? weak.map(stat => `<div style="display:flex; justify-content:space-between; gap:.5rem; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>⚠️ ${escapeHtml(stat.domain)} · ${escapeHtml(stat.taxonomy)}: ${escapeHtml(stat.task)}<small class="insight-meta" style="display:block;">${stat.attempts} lượt trả lời · ${stat.questionIds.length} câu đã làm · độ chính xác ${stat.accuracy}%</small></span><strong style="color:var(--danger);">${100 - stat.accuracy}% sai</strong></div>`).join('')
       : '<span style="color:var(--text-muted);">Chưa có đủ dữ liệu để xác định điểm yếu. Hãy bắt đầu bằng bài luyện ngắn.</span>';
 
     this.renderVocabWidget();
@@ -2147,37 +2272,7 @@ class PMPApp {
         </table>`
       : '<p class="insight-meta">Chưa có câu trả lời luyện tập được lưu trong 7 ngày gần nhất.</p>';
 
-    const questionStats = new Map();
-    allAnswers.forEach(answer => {
-      if (!answer.qId) return;
-      const stat = questionStats.get(answer.qId) || { attempts: 0, wrong: 0, lastWrongAt: 0, wrongSources: { practice: 0, exam: 0 } };
-      stat.attempts++;
-      const source = answer.source === 'practice' ? 'practice' : 'exam';
-      if (!answer.isCorrect) {
-        stat.wrong++;
-        stat.wrongSources[source]++;
-        stat.lastWrongAt = Math.max(stat.lastWrongAt, Number(answer.timestamp) || 0);
-      }
-      questionStats.set(answer.qId, stat);
-    });
-    const questionById = new Map(this.getQuestions().map(question => [question.id, question]));
-    const frequentMistakes = Array.from(questionStats, ([qId, stat]) => ({ qId, ...stat }))
-      .filter(stat => stat.wrong > 0)
-      .sort((a, b) => b.wrong - a.wrong ||
-        (b.wrong / b.attempts) - (a.wrong / a.attempts) ||
-        b.lastWrongAt - a.lastWrongAt)
-      .slice(0, 5);
-    document.getElementById('frequent-mistakes').innerHTML = frequentMistakes.length
-      ? frequentMistakes.slice(0, 5).map(stat => {
-          const question = questionById.get(stat.qId);
-          const label = question ? question.question : `Câu ${stat.qId}`;
-          const wrongRate = Math.round(stat.wrong / stat.attempts * 100);
-          return `<div style="padding:.65rem 0; border-bottom:1px solid var(--border);">
-            <div style="font-weight:600; overflow-wrap:anywhere;">${escapeHtml(label)}</div>
-            <div class="insight-meta">${escapeHtml(question?.domain || 'Chưa phân loại')} · Sai ${stat.wrong}/${stat.attempts} lượt (${wrongRate}%) · Sai trong <span class="tag tag-process">Practice ${stat.wrongSources.practice}</span> <span class="tag tag-predictive">Exam ${stat.wrongSources.exam}</span>${stat.lastWrongAt ? ` · Sai gần nhất ${new Date(stat.lastWrongAt).toLocaleDateString('vi-VN')}` : ''}</div>
-          </div>`;
-        }).join('')
-      : '<p class="insight-meta">Chưa có câu sai nào được ghi nhận trong phần luyện tập.</p>';
+    this.renderFrequentMistakes('frequent-mistakes', 3);
   }
 
   renderReadiness() {
@@ -2438,7 +2533,7 @@ class PMPApp {
           answers: savedAnswers, flags: saved.flags || {},
           usedTranslate: saved.usedTranslate || {},
             readingLevel: saved.readingLevel || {}, limit: saved.limit || null,
-            currentQuestionStartedAt: Date.now()
+            currentQuestionStartedAt: Date.now(), reviewReasons: saved.reviewReasons || {}
         };
         this.palettePage = 1;
         this.renderQuestionCard('practice-card-container');
@@ -2448,19 +2543,13 @@ class PMPApp {
 
     let questions = this.getReviewQuestionIds(mode);
     if (domain !== 'ALL') questions = questions.filter(question => question.domain === domain);
-    const limit = this.practiceLimit;
+    const requestedQuestionId = this._pendingReviewQuestionId;
+    this._pendingReviewQuestionId = null;
+    if (requestedQuestionId) questions = questions.filter(question => question.id === requestedQuestionId);
+    const limit = requestedQuestionId ? 1 : this.practiceLimit;
     this.practiceLimit = null;
-    if (limit && mode !== 'due' && mode !== 'flagged' && questions.length < limit) {
-      const selectedIds = new Set(questions.map(question => question.id));
-      const targetDomain = questions[0] && questions[0].domain;
-      const additional = this.getReviewQuestionIds('adaptive')
-        .filter(question => !selectedIds.has(question.id) && (domain === 'ALL' || question.domain === domain));
-      additional.sort((a, b) => Number(b.domain === targetDomain) - Number(a.domain === targetDomain));
-      questions = questions.concat(additional.slice(0, limit - questions.length));
-    }
     if (limit) questions = questions.slice(0, limit);
     else if (mode === 'adaptive') questions = questions.slice(0, 20);
-    else if (mode !== 'all') questions = questions.slice(0, 30);
     if (!questions.length) {
       if (this.currentSession && this.currentSession.id) {
         const runs = this.getStorage('practice_runs') || [];
@@ -2483,7 +2572,15 @@ class PMPApp {
       document.getElementById('practice-sidebar').innerHTML = '';
       return;
     }
-    this.startPracticeRun(questions, mode, domain, limit);
+    const reasonContext = {
+      performance: this.getQuestionPerformance(),
+      weaknesses: this.getWeaknessStats(),
+      due: this.getDueSrsQuestionIds()
+    };
+    const reviewReasons = Object.fromEntries(questions.map(question => [
+      question.id, this.getReviewQueueReason(question, mode, reasonContext)
+    ]));
+    this.startPracticeRun(questions, mode, domain, limit, reviewReasons);
   }
 
   /* ---- EXAM ---- */
@@ -2972,6 +3069,13 @@ class PMPApp {
     
     const qType = q.type || "MCQ";
     const isAnswered = this._complete(q, selected);
+    const practiceReason = !isExam
+      ? (sess.reviewReasons || {})[q.id] || this.getReviewQueueReason(q, sess.practiceMode || 'all')
+      : '';
+    const practiceModeLabels = {
+      due: 'Ôn đến hạn SRS', weak: 'Ôn chủ đề yếu', wrong: 'Luyện câu từng sai',
+      flagged: 'Câu đã đánh dấu', adaptive: 'Luyện thích ứng', all: 'Toàn bộ ngân hàng'
+    };
     let interactionHtml = "";
     
     if (qType === "MCQ" && q.options) {
@@ -3095,6 +3199,10 @@ class PMPApp {
     }
 
     let h = `
+      ${!isExam ? `<div class="insight-card" style="margin-bottom:1rem; padding:.75rem 1rem; background:#f8fafc;">
+        <strong>Vì sao câu này có trong lượt ${escapeHtml(practiceModeLabels[sess.practiceMode] || 'luyện tập')}?</strong>
+        <p class="insight-meta" style="margin:.3rem 0 0;">Câu ${sess.currentIndex + 1}/${sess.questions.length} · ${escapeHtml(practiceReason)}</p>
+      </div>` : ''}
       <div class="q-header">
         <div>
           <span style="font-weight:700; margin-right:.5rem;">Câu ${sess.currentIndex+1}/${sess.questions.length}</span>
@@ -3492,6 +3600,7 @@ class PMPApp {
   renderReviewPage() {
     const records = this.getReviewRecords();
     const sess = records.find(record => record.reviewKey === this.reviewSessId || record.id === this.reviewSessId) || records[0];
+    this.renderReviewFrequentMistakes();
     if (!sess) {
       document.getElementById('review-summary').innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">Chưa có lượt Practice hoặc Exam đã lưu để xem lại. Hãy hoàn thành ít nhất một câu Practice hoặc nộp bài thi thử.</div>';
       document.getElementById('review-coach').innerHTML = '';
@@ -3585,20 +3694,149 @@ class PMPApp {
     this.bindKwClicks();
   }
 
+  getFrequentMistakes(sort = this.mistakeSort) {
+    const questions = new Map(this.getQuestions().map(question => [question.id, question]));
+    const mistakes = Object.entries(this.getQuestionPerformance())
+      .filter(([qId, stat]) => stat.wrong > 0 && questions.has(qId))
+      .map(([qId, stat]) => ({ qId, stat, question: questions.get(qId) }));
+    return mistakes.sort((a, b) => sort === 'recent'
+      ? b.stat.lastWrongAt - a.stat.lastWrongAt || b.stat.wrong - a.stat.wrong
+      : b.stat.wrong - a.stat.wrong ||
+        (b.stat.wrong / b.stat.attempts) - (a.stat.wrong / a.stat.attempts) ||
+        b.stat.lastWrongAt - a.stat.lastWrongAt);
+  }
+
+  renderMistakeRows(mistakes, groupBy = 'none') {
+    if (!mistakes.length) return '<p class="insight-meta">Không có câu sai phù hợp với bộ lọc này.</p>';
+    const groups = new Map();
+    mistakes.forEach(item => {
+      const label = groupBy === 'domain'
+        ? item.question.domain || 'Chưa phân loại'
+        : groupBy === 'task'
+          ? item.question.knowledge_area || item.question.task || 'Chưa phân loại'
+          : '';
+      if (!groups.has(label)) groups.set(label, []);
+      groups.get(label).push(item);
+    });
+    return Array.from(groups, ([label, items]) => `${label
+      ? `<h4 class="mistake-group-title">${escapeHtml(label)} <span class="insight-meta">· ${items.length} câu</span></h4>`
+      : ''}${items.map(({ qId, stat, question }) => {
+        const wrongRate = Math.round(stat.wrong / stat.attempts * 100);
+        const severity = stat.wrong >= 3
+          ? ['high', 'Ưu tiên cao']
+          : stat.wrong >= 2
+            ? ['medium', 'Cần củng cố']
+            : ['low', 'Theo dõi'];
+        const latest = stat.lastWrongAt
+          ? new Date(stat.lastWrongAt).toLocaleDateString('vi-VN')
+          : 'chưa rõ';
+        return `<div class="mistake-item">
+          <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:.5rem;">
+            <strong style="overflow-wrap:anywhere;">${escapeHtml(question.question)}</strong>
+            <span class="mistake-severity mistake-severity-${severity[0]}">${severity[1]}</span>
+          </div>
+          <div class="insight-meta">${escapeHtml(question.domain || 'Chưa phân loại')} · ${escapeHtml(question.knowledge_area || question.task || 'Chưa phân loại')} · Sai ${stat.wrong}/${stat.attempts} lượt (${wrongRate}%) · Practice ${stat.wrongSources.practice} · Exam ${stat.wrongSources.exam} · Sai gần nhất ${latest}</div>
+          <button type="button" class="btn btn-sm btn-outline" style="margin-top:.4rem;" onclick="app.startQuestionReview(${escapeAttr(JSON.stringify(qId))})">Ôn câu này</button>
+        </div>`;
+      }).join('')}`).join('');
+  }
+
+  renderFrequentMistakes(containerId, limit) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    const mistakes = this.getFrequentMistakes('frequent').slice(0, limit);
+    container.innerHTML = mistakes.length
+      ? this.renderMistakeRows(mistakes)
+      : '<p class="insight-meta">Chưa có câu sai nào được ghi nhận.</p>';
+  }
+
+  renderReviewFrequentMistakes() {
+    const mistakes = this.getFrequentMistakes();
+    const top = document.getElementById('review-frequent-top');
+    const manager = document.getElementById('mistake-manager');
+    const toggle = document.getElementById('mistake-manager-toggle');
+    if (!top || !manager || !toggle) return;
+    top.innerHTML = mistakes.length
+      ? this.renderMistakeRows(mistakes.slice(0, 3))
+      : '<p class="insight-meta">Chưa có câu trả lời sai trong lịch sử đã lưu.</p>';
+    manager.hidden = !this.mistakeManagerOpen;
+    toggle.textContent = this.mistakeManagerOpen ? 'Thu gọn danh sách' : `Quản lý tất cả câu sai (${mistakes.length})`;
+    if (!this.mistakeManagerOpen) return;
+
+    const domainSelect = document.getElementById('mistake-domain');
+    const taskSelect = document.getElementById('mistake-task');
+    const domains = Array.from(new Set(mistakes.map(item => item.question.domain || 'Chưa phân loại'))).sort();
+    domainSelect.innerHTML = '<option value="all">Tất cả Domain</option>' +
+      domains.map(value => `<option value="${escapeAttr(value)}">${escapeHtml(value)}</option>`).join('');
+    if (!domains.includes(this.mistakeDomain)) this.mistakeDomain = 'all';
+    domainSelect.value = this.mistakeDomain;
+    const domainMistakes = this.mistakeDomain === 'all'
+      ? mistakes
+      : mistakes.filter(item => (item.question.domain || 'Chưa phân loại') === this.mistakeDomain);
+    const tasks = Array.from(new Set(domainMistakes.map(item =>
+      item.question.knowledge_area || item.question.task || 'Chưa phân loại'
+    ))).sort();
+    taskSelect.innerHTML = '<option value="all">Tất cả Task</option>' +
+      tasks.map(value => `<option value="${escapeAttr(value)}">${escapeHtml(value)}</option>`).join('');
+    if (!tasks.includes(this.mistakeTask)) this.mistakeTask = 'all';
+    taskSelect.value = this.mistakeTask;
+    document.getElementById('mistake-group').value = this.mistakeGroup;
+    document.getElementById('mistake-sort').value = this.mistakeSort;
+
+    const filtered = domainMistakes.filter(item =>
+      this.mistakeTask === 'all' ||
+      (item.question.knowledge_area || item.question.task || 'Chưa phân loại') === this.mistakeTask
+    );
+    const pageSize = 10;
+    const pageCount = Math.max(1, Math.ceil(filtered.length / pageSize));
+    this.mistakePage = Math.min(Math.max(1, this.mistakePage), pageCount);
+    const pageItems = filtered.slice((this.mistakePage - 1) * pageSize, this.mistakePage * pageSize);
+    document.getElementById('mistake-manager-summary').textContent =
+      `${filtered.length} câu phù hợp · Trang ${this.mistakePage}/${pageCount} · tối đa ${pageSize} câu/trang`;
+    document.getElementById('mistake-manager-list').innerHTML = this.renderMistakeRows(pageItems, this.mistakeGroup);
+    document.getElementById('mistake-manager-pagination').innerHTML = filtered.length > pageSize
+      ? `<button class="btn btn-sm btn-outline" onclick="app.setMistakePage(${this.mistakePage - 1})" ${this.mistakePage === 1 ? 'disabled' : ''}>← Trước</button><span>Trang ${this.mistakePage}/${pageCount}</span><button class="btn btn-sm btn-outline" onclick="app.setMistakePage(${this.mistakePage + 1})" ${this.mistakePage === pageCount ? 'disabled' : ''}>Sau →</button>`
+      : '';
+  }
+
+  toggleMistakeManager() {
+    this.mistakeManagerOpen = !this.mistakeManagerOpen;
+    this.renderReviewFrequentMistakes();
+  }
+
+  openMistakeManager() {
+    this.mistakeManagerOpen = true;
+    window.location.hash = '#review';
+    if (window.location.hash === '#review') this.renderReviewFrequentMistakes();
+  }
+
+  setMistakeView(key, value) {
+    if (key === 'group') this.mistakeGroup = value;
+    else if (key === 'domain') { this.mistakeDomain = value; this.mistakeTask = 'all'; }
+    else if (key === 'task') this.mistakeTask = value;
+    else if (key === 'sort') this.mistakeSort = value;
+    this.mistakePage = 1;
+    this.renderReviewFrequentMistakes();
+  }
+
+  setMistakePage(page) {
+    this.mistakePage = page;
+    this.renderReviewFrequentMistakes();
+  }
+
   setReviewPage(page) { this.reviewPage = page; this.renderReviewPage(); }
   pickReviewSession(id) { this.reviewSessId = id; this.reviewPage = 1; this.renderReviewPage(); }
 
   updateSRS(qId, understood) {
     const srs = this.getStorage('srs') || {};
-    const cur = srs[qId] || { interval: 1, nextReview: todayISO() };
-    cur.interval = understood ? cur.interval * 2 : 1;
-    const next = new Date();
-    next.setDate(next.getDate() + cur.interval);
-    cur.nextReview = todayISO(next);
-    srs[qId] = cur;
+    const current = srs[qId];
+    const updated = this.getSrsSchedule(current, understood);
+    srs[qId] = updated;
     this.setStorage('srs', srs);
-    this.trackEvent(understood ? 'review_marked_known' : 'review_marked_again', { qId, interval: cur.interval });
-    this.showModal('Cập nhật SRS', `<p>Câu ${qId}: lần ôn tiếp theo vào <strong>${cur.nextReview}</strong>.</p>`, [
+    this.trackEvent(understood ? 'review_marked_known' : 'review_marked_again', {
+      qId, interval: updated.interval, repetitions: updated.repetitions, lapses: updated.lapses
+    });
+    this.showModal('Cập nhật SRS', `<p>Câu ${qId}: lần ôn tiếp theo vào <strong>${updated.nextReview}</strong>.</p>`, [
       { text: 'OK', class: '', onClick: () => this.closeModal() }
     ]);
   }
