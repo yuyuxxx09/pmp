@@ -223,4 +223,8 @@ Các câu hỏi cũ không có `pmp_mindset_vi` vẫn được tải bình thư�
 
 ## Dashboard và Review
 
-Dashboard giữ các danh sách dài trong vùng cuộn; Review gộp các phiên Practice đã trả lời với các bài Exam đã nộp, hiển thị nhãn nguồn và phân trang 10 câu/lượt. Trường `mode` được bổ sung vào dữ liệu trả lời mới (`practice`/`exam`); bản ghi cũ vẫn được đọc bằng `source` và cấu trúc hiện tại.
+Dashboard chỉ hiển thị Top 3 câu sai lặp lại; Review cũng có Top 3 và khu **Quản lý tất cả câu sai**. Khu quản lý lọc theo Domain/Task, gom nhóm tùy chọn, sắp xếp theo số lần sai hoặc thời điểm sai gần nhất, và phân trang tối đa 10 câu. Mỗi câu có nhãn mức độ ưu tiên và nút **Ôn câu này** để mở câu riêng trong Practice. Review gộp các phiên Practice đã trả lời với các bài Exam đã nộp, hiển thị nhãn nguồn và phân trang 10 câu/lượt. Trường `mode` được bổ sung vào dữ liệu trả lời mới (`practice`/`exam`); bản ghi cũ vẫn được đọc bằng `source` và cấu trúc hiện tại.
+
+### SRS và hàng đợi luyện tập
+
+SRS dùng cùng lịch ở Practice và thao tác **Đã hiểu / Cần ôn lại** trong Review: trả lời đúng tăng các mốc 1, 3, 7, 14, tối đa 30 ngày; trả lời sai đưa câu về hạn hôm nay, đặt lại số lần nhớ liên tiếp và tăng số lần quên. Bộ đếm và nút **Ôn ngay** chỉ xét ngày hợp lệ của câu còn tồn tại trong ngân hàng. **Luyện câu sai** là các câu từng sai ít nhất một lần (kể cả nếu gần đây đã đúng); **Ôn điểm yếu** là tất cả câu thuộc Task/Knowledge area có ít nhất 2 lượt và độ chính xác dưới 70%, nên có thể gồm câu chưa từng sai riêng lẻ; **Câu đã đánh dấu** chỉ gồm câu người học đã đánh dấu. Ba nút mở chung màn hình Practice nhưng luôn khởi tạo hàng đợi tương ứng, không khôi phục nhầm lượt đang làm dở. Mỗi câu hiển thị lý do được chọn cùng số lượt phù hợp. Review có danh sách lỗi gộp mọi lượt, số lần sai/tổng lượt và nguồn Practice/Exam; **Ôn câu này** mở riêng câu đó.
