@@ -141,6 +141,16 @@
     .question-form .option-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: .75rem; }
     .question-form .correct-answer-choice { display: inline-flex; align-items: center; gap: .35rem; margin: .5rem .75rem 0 0; }
     .question-form .correct-answer-choice label { margin: 0; }
+    .coach-action { background: linear-gradient(120deg, #eff6ff, #f0fdf4); border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
+    .coach-action h3 { color: #1d4ed8; margin-bottom: .35rem; }
+    .coach-action p { margin-bottom: .75rem; }
+    .coach-progress { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .coach-progress progress { width: min(320px, 100%); height: 16px; accent-color: var(--success); }
+    .reading-rating { display: flex; gap: .5rem; flex-wrap: wrap; margin-top: .75rem; }
+    .reading-rating button.selected { background: var(--success); color: #fff; border-color: var(--success); }
+    .dashboard-list-scroll { max-height: 18rem; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding-right: .4rem; }
+    .review-list-scroll { max-height: 70vh; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: .25rem .5rem .25rem 0; }
+    .list-pagination { display: flex; align-items: center; justify-content: center; gap: .5rem; margin: .75rem 0; }
     @media (max-width: 600px) { .question-form .option-row { grid-template-columns: 1fr; } }
     .chart-container { width: 100%; overflow-x: auto; margin: 1rem 0; }
     svg { display: block; max-width: 100%; height: auto; }
@@ -248,9 +258,10 @@
         </div>
       </div>
     </div>
+    <div class="coach-action" id="next-best-action" aria-live="polite"></div>
     <div class="grid-3">
       <div class="metric-box"><div class="metric-lbl">Độ chính xác các lượt trả lời</div><div class="metric-val" id="m-accuracy">0%</div><div class="metric-lbl" id="m-total-q">0 lượt trả lời đã lưu</div></div>
-      <div class="metric-box"><div class="metric-lbl">Độ chính xác khi không dịch</div><div class="metric-val" id="m-comprehension">—</div><div class="metric-lbl" id="m-comprehension-sample">Chỉ tính câu trả lời không dùng bản dịch</div></div>
+      <div class="metric-box"><div class="metric-lbl">Khái niệm đã củng cố</div><div class="metric-val" id="m-mastery">0/0</div><div class="metric-lbl">Đã làm đúng ít nhất 2 lần</div></div>
       <div class="metric-box"><div class="metric-lbl">Hôm nay cần ôn (SRS)</div><div class="metric-val" id="m-srs-count">0</div><div class="metric-lbl" id="m-srs-sub">0 câu</div><button class="btn btn-sm" id="btn-srs-practice" style="margin-top:.5rem; display:none;" onclick="app.startSrsPractice()">▶ Ôn ngay</button></div>
     </div>
     <div class="insight-card" id="readiness-card" aria-live="polite"></div>
@@ -267,15 +278,15 @@
       <div class="card">
         <h3>🔁 Câu sai lặp lại nhiều nhất</h3>
         <p class="insight-meta" style="margin-top:.25rem;">Số lần sai / tổng lượt trả lời cho từng câu luyện.</p>
-        <div id="frequent-mistakes" style="margin-top:.5rem;"></div>
-        <div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện lại các câu đã sai</button></div>
+        <div id="frequent-mistakes" class="dashboard-list-scroll" style="margin-top:.5rem;"></div>
+        <div class="study-actions"><button class="btn btn-sm btn-outline" onclick="app.startTargetedPractice('wrong')">Luyện lại các câu đã sai</button><a class="btn btn-sm btn-outline" href="#review">Xem tất cả trong Review</a></div>
       </div>
     </div>
     <div class="grid-2">
-      <div class="card"><h3>🔤 Widget: Từ Vựng Cần Học</h3><div id="widget-vocab-list">Chưa có dữ liệu.</div></div>
-      <div class="card"><h3>📈 English Comprehension Trend</h3><div id="widget-trend-desc" style="font-size:.9rem; color:var(--text-muted); margin-bottom:.5rem;">Tỷ lệ đúng KHÔNG bấm dịch.</div><div class="chart-container" id="chart-comprehension"></div></div>
+      <div class="card"><h3>🔤 Từ vựng trong câu bạn đã làm sai</h3><div id="widget-vocab-list" class="dashboard-list-scroll">Chưa có dữ liệu.</div><div id="keyword-scanning" style="margin-top:1rem;"></div></div>
+      <div class="card"><h3>📖 Tự đánh giá mức độ hiểu đề</h3><p class="insight-meta">Chọn mức hiểu sau khi trả lời Practice; đây là tín hiệu tự đánh giá, không phải điểm năng lực tiếng Anh.</p><div class="chart-container" id="chart-comprehension"></div></div>
     </div>
-    <div class="card"><h3>🗓️ Lịch sử luyện gần đây</h3><div id="study-history" style="margin-top:.5rem;"></div></div>
+    <div class="card"><h3>🗓️ Lịch sử luyện gần đây</h3><div id="study-history" class="dashboard-list-scroll" style="margin-top:.5rem;"></div><a class="btn btn-sm btn-outline" style="margin-top:.5rem;" href="#review">Mở lịch sử Practice &amp; Exam</a></div>
   </section>
 
     <!-- PRACTICE -->
@@ -314,8 +325,20 @@
   <section id="add-question" class="page">
     <div class="card">
       <h2>➕ Thêm câu hỏi mới</h2>
-      <p class="insight-meta" style="margin:.35rem 0 1rem;">Câu hỏi được lưu trong ngân hàng trên trình duyệt này (localStorage: <code>pmp_questions</code>). Các trường song ngữ và giải thích đều cần được điền.</p>
+      <p class="insight-meta" style="margin:.35rem 0 1rem;">Câu hỏi lưu trên trình duyệt này (localStorage: <code>pmp_questions</code>). Form chỉ hiện trường cần cho dạng đã chọn; các cấu hình nâng cao có JSON mẫu.</p>
       <form id="add-question-form" class="question-form">
+        <div><label for="new-question-type">Dạng câu hỏi</label>
+          <select id="new-question-type" name="question_type" required>
+            <option value="single_choice">Trắc nghiệm một đáp án</option>
+            <option value="multiple_response">Trắc nghiệm nhiều đáp án</option>
+            <option value="case_scenario">Case / Scenario (câu hỏi gắn tình huống)</option>
+            <option value="graphic_based">Graphic-Based (câu hỏi kèm hình)</option>
+            <option value="matching">Matching (ghép cặp)</option>
+            <option value="enhanced_matching">Enhanced Matching (kéo/thả hoặc bấm để ghép)</option>
+            <option value="hotspot">Point and Click — Hotspot</option>
+            <option value="pull_down_list">Pull-down List</option>
+          </select>
+        </div>
         <div class="grid-2">
           <div><label for="new-question-en">Câu hỏi (English)</label><textarea id="new-question-en" name="question_en" required></textarea></div>
           <div><label for="new-question-vi">Câu hỏi (Tiếng Việt)</label><textarea id="new-question-vi" name="question_vi" required></textarea></div>
@@ -328,24 +351,47 @@
           </div>
           <div><label for="new-question-task">Task / Chủ đề</label><input id="new-question-task" name="task" type="text" required placeholder="Ví dụ: Task 1: Manage conflict"></div>
         </div>
-        <fieldset>
-          <legend>4 lựa chọn (English &amp; Tiếng Việt)</legend>
+        <fieldset id="case-fields" hidden>
+          <legend>Tình huống dùng chung cho nhóm câu</legend>
+          <label for="new-case-id">Case ID (dùng lại ID này cho câu cùng case)</label><input id="new-case-id" name="case_id" type="text" placeholder="Để trống để tự tạo một case">
+          <label for="new-case-response-type">Dạng trả lời của câu này trong case</label>
+          <select id="new-case-response-type" name="case_response_type">
+            <option value="MCQ">Một đáp án</option><option value="MultipleResponse">Nhiều đáp án</option>
+          </select>
+          <div class="grid-2">
+            <div><label for="new-scenario-en">Tình huống (English)</label><textarea id="new-scenario-en" name="scenario"></textarea></div>
+            <div><label for="new-scenario-vi">Tình huống (Tiếng Việt)</label><textarea id="new-scenario-vi" name="scenario_vi"></textarea></div>
+          </div>
+        </fieldset>
+        <fieldset id="graphic-fields" hidden>
+          <legend>Hình ảnh / biểu đồ</legend>
+          <label for="new-question-image">URL hoặc đường dẫn tương đối</label><input id="new-question-image" name="image" type="text" maxlength="2048" placeholder="assets/chart.png">
+          <label for="new-question-image-alt">Mô tả ảnh (accessibility)</label><input id="new-question-image-alt" name="image_alt" type="text">
+        </fieldset>
+        <fieldset id="choice-fields">
+          <legend id="choice-legend">4 lựa chọn (English &amp; Tiếng Việt)</legend>
           <div class="option-row"><div><label for="new-option-A-en">Option A (English)</label><input id="new-option-A-en" name="optionAEn" type="text" required></div><div><label for="new-option-A-vi">Option A (Tiếng Việt)</label><input id="new-option-A-vi" name="optionAVi" type="text" required></div></div>
           <div class="option-row"><div><label for="new-option-B-en">Option B (English)</label><input id="new-option-B-en" name="optionBEn" type="text" required></div><div><label for="new-option-B-vi">Option B (Tiếng Việt)</label><input id="new-option-B-vi" name="optionBVi" type="text" required></div></div>
           <div class="option-row"><div><label for="new-option-C-en">Option C (English)</label><input id="new-option-C-en" name="optionCEn" type="text" required></div><div><label for="new-option-C-vi">Option C (Tiếng Việt)</label><input id="new-option-C-vi" name="optionCVi" type="text" required></div></div>
           <div class="option-row"><div><label for="new-option-D-en">Option D (English)</label><input id="new-option-D-en" name="optionDEn" type="text" required></div><div><label for="new-option-D-vi">Option D (Tiếng Việt)</label><input id="new-option-D-vi" name="optionDVi" type="text" required></div></div>
           <div style="margin-top:1rem;"><strong>Chọn đáp án đúng</strong><div>
-            <span class="correct-answer-choice"><input id="new-correct-A" type="radio" name="correctAnswer" value="A"><label for="new-correct-A">A</label></span>
-            <span class="correct-answer-choice"><input id="new-correct-B" type="radio" name="correctAnswer" value="B"><label for="new-correct-B">B</label></span>
-            <span class="correct-answer-choice"><input id="new-correct-C" type="radio" name="correctAnswer" value="C"><label for="new-correct-C">C</label></span>
-            <span class="correct-answer-choice"><input id="new-correct-D" type="radio" name="correctAnswer" value="D" checked><label for="new-correct-D">D</label></span>
+            <span class="correct-answer-choice"><input id="new-correct-A" type="checkbox" name="correctAnswers" value="A"><label for="new-correct-A">A đúng</label></span>
+            <span class="correct-answer-choice"><input id="new-correct-B" type="checkbox" name="correctAnswers" value="B"><label for="new-correct-B">B đúng</label></span>
+            <span class="correct-answer-choice"><input id="new-correct-C" type="checkbox" name="correctAnswers" value="C"><label for="new-correct-C">C đúng</label></span>
+            <span class="correct-answer-choice"><input id="new-correct-D" type="checkbox" name="correctAnswers" value="D"><label for="new-correct-D">D đúng</label></span>
           </div></div>
+        </fieldset>
+        <fieldset id="structured-fields" hidden>
+          <legend id="structured-legend">Cấu hình tương tác</legend>
+          <p id="structured-help" class="insight-meta"></p>
+          <label id="structured-label" for="new-structured-data">JSON cấu hình</label>
+          <textarea id="new-structured-data" name="structured_data" spellcheck="false"></textarea>
         </fieldset>
         <div class="grid-2">
           <div><label for="new-explanation-vi">Giải thích đáp án đúng (Tiếng Việt)</label><textarea id="new-explanation-vi" name="correct_vi" required></textarea></div>
           <div><label for="new-explanation-en">Giải thích đáp án đúng (English)</label><textarea id="new-explanation-en" name="correct_en" required></textarea></div>
         </div>
-        <fieldset>
+        <fieldset id="why-wrong-fields">
           <legend>Tại sao các lựa chọn còn lại sai? (Tiếng Việt)</legend>
           <div id="why-wrong-A" class="wrong-reason-field"><label for="new-why-wrong-A">Lựa chọn A sai vì</label><textarea id="new-why-wrong-A" name="whyWrongA"></textarea></div>
           <div id="why-wrong-B" class="wrong-reason-field"><label for="new-why-wrong-B">Lựa chọn B sai vì</label><textarea id="new-why-wrong-B" name="whyWrongB"></textarea></div>
@@ -386,12 +432,14 @@
         <h2>📑 Kết Quả & Xem Lại</h2>
       </div>
       <div id="review-summary" style="margin:1rem 0;"></div>
+      <div id="review-coach"></div>
       <div class="grid-2">
         <div class="card"><h4>Domain</h4><div id="chart-review-domain"></div></div>
         <div class="card"><h4>EN Level</h4><div id="chart-review-level"></div></div>
       </div>
       <h3>Danh Sách Câu Hỏi</h3>
-      <div id="review-list"></div>
+      <div id="review-pagination" class="list-pagination"></div>
+      <div id="review-list" class="review-list-scroll"></div>
     </div>
   </section>
 
@@ -573,11 +621,52 @@ function isAnswerCorrect(q, sel) {
       const ansArr = String(q.correctAnswer).split(',').map(s=>s.trim()).filter(Boolean).sort();
       return selArr.length === ansArr.length && selArr.every((v,i) => v === ansArr[i]);
     }
+    if (type === 'EnhancedMatching') {
+      const selected = typeof sel === 'string' ? JSON.parse(sel) : sel;
+      const expected = q.enhanced_matching.answer_map;
+      const keys = Object.keys(expected);
+      return keys.length === Object.keys(selected).length && keys.every(key => selected[key] === expected[key]);
+    }
+    if (type === 'Hotspot') {
+      const selected = String(sel).split(',').filter(Boolean).sort();
+      const expected = (q.hotspot.correct_region_ids || []).slice().sort();
+      return selected.length === expected.length && selected.every((id, index) => id === expected[index]);
+    }
   } catch (e) { return false; }
   return sel === q.correctAnswer;
 }
+function getQuestionType(q) {
+  const legacy = q.type || 'MCQ';
+  const fromLegacy = { MCQ: 'single_choice', MultipleResponse: 'multiple_response', Matching: 'matching', Dropdown: 'pull_down_list', EnhancedMatching: 'enhanced_matching', Hotspot: 'hotspot' };
+  return q.question_type || fromLegacy[legacy] || 'single_choice';
+}
 function normalizeQuestion(q) {
-  q.id = String(q.id); q.type = q.type || 'MCQ';
+  const typeMap = {
+    single_choice: 'MCQ', multiple_response: 'MultipleResponse',
+    case_scenario: 'MCQ', graphic_based: 'MCQ',
+    matching: 'Matching', enhanced_matching: 'EnhancedMatching',
+    hotspot: 'Hotspot', pull_down_list: 'Dropdown'
+  };
+  q.id = String(q.id); q.type = q.type || typeMap[q.question_type] || 'MCQ';
+  if (q.question_type === 'matching' && q.matching) {
+    q.matchingPairs = q.matchingPairs || (q.matching.prompts || []).map(prompt => ({
+      id: prompt.id, left: typeof prompt.text === 'string' ? prompt.text : prompt.text && prompt.text.en,
+      left_vi: prompt.text && typeof prompt.text === 'object' ? prompt.text.vi : ''
+    }));
+    q.matchingOptions = q.matchingOptions || (q.matching.choices || []).map(choice => ({
+      key: choice.id, text: typeof choice.text === 'string' ? choice.text : choice.text && choice.text.en,
+      text_vi: choice.text && typeof choice.text === 'object' ? choice.text.vi : ''
+    }));
+    q.correctAnswer = q.correctAnswer || JSON.stringify(q.matching.answer_map || {});
+  }
+  if (q.question_type === 'hotspot' && q.hotspot) {
+    q.image = q.image || q.hotspot.image;
+    q.image_alt = q.image_alt || q.hotspot.image_alt || '';
+    q.correctAnswer = q.correctAnswer || (q.hotspot.correct_region_ids || []).join(',');
+  }
+  if (q.question_type === 'pull_down_list' && q.dropdowns) {
+    if (Array.isArray(q.correctAnswer)) q.correctAnswer = q.correctAnswer.join(',');
+  }
   q.domain = String(q.domain || 'Process').replace(/\s+/g,'');
   if (!['People','Process','BusinessEnvironment'].includes(q.domain)) q.domain = 'Process';
   q.task = q.task || 'Imported';
@@ -742,8 +831,10 @@ class PMPApp {
     this.currentExam = null;
     this.examTimerInterval = null;
     this.lastSubmittedSession = null;
+    this.reviewPage = 1;
     this._pendingAnnotation = null;
     this._annotationActionPressed = false;
+    this.practiceLimit = null;
     this._flashState = null;
     this.palettePage = 1; 
 
@@ -910,17 +1001,18 @@ class PMPApp {
     });
   }
 
-  startTargetedPractice(mode) {
+  startTargetedPractice(mode, limit) {
     const domain = document.getElementById('practice-filter-domain');
     const filter = document.getElementById('practice-filter-mode');
     if (!domain || !filter) return;
     domain.value = 'ALL';
     filter.value = mode;
+    this.practiceLimit = Number.isInteger(limit) && limit > 0 ? limit : null;
     if (window.location.hash === '#practice') this.initPracticeSession(true);
     else window.location.hash = '#practice';
   }
 
-  startPracticeRun(questions, mode, domain) {
+  startPracticeRun(questions, mode, domain, limit) {
     if (this.currentSession && this.currentSession.id) {
       const previousRuns = this.getStorage('practice_runs') || [];
       const previous = previousRuns.find(item => item.id === this.currentSession.id);
@@ -937,7 +1029,7 @@ class PMPApp {
     this.currentSession = {
       id: sessionId, mode: 'PRACTICE', practiceMode: mode, domain,
       startedAt: now, questions, currentIndex: 0, answers: {}, flags,
-      usedTranslate: {}, currentQuestionStartedAt: now
+      usedTranslate: {}, readingLevel: {}, limit: limit || null, currentQuestionStartedAt: now
     };
     const runs = this.getStorage('practice_runs') || [];
     runs.push({
@@ -948,7 +1040,7 @@ class PMPApp {
     this.setStorage('current_practice', {
       id: sessionId, mode, domain, startedAt: now,
       qIds: questions.map(question => question.id), currentIndex: 0,
-      answers: {}, flags, usedTranslate: {}, currentQuestionStartedAt: now
+      answers: {}, flags, usedTranslate: {}, readingLevel: {}, limit: limit || null, currentQuestionStartedAt: now
     });
     this.trackEvent('practice_started', { sessionId, mode, questionCount: questions.length, domain });
     this.palettePage = 1;
@@ -987,6 +1079,61 @@ class PMPApp {
       cur[sess.pendingMatch[q.id]] = key; sess.pendingMatch[q.id] = null;
     } else return;
     if (Object.keys(cur).length) sess.answers[q.id] = JSON.stringify(cur); else delete sess.answers[q.id];
+    this._afterPartialAnswer(sess, q);
+  }
+  chooseEnhancedItem(itemId) {
+    const sess = this.getActiveSession();
+    const q = sess && sess.questions[sess.currentIndex];
+    if (!sess || !q || q.type !== 'EnhancedMatching' || (sess.mode === 'PRACTICE' && this._complete(q, sess.answers[q.id]))) return;
+    sess.pendingEnhancedItem = itemId;
+    this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
+  }
+  chooseEnhancedTarget(targetId) {
+    const sess = this.getActiveSession();
+    const q = sess && sess.questions[sess.currentIndex];
+    if (!sess || !q || q.type !== 'EnhancedMatching' || !sess.pendingEnhancedItem) return;
+    this.assignEnhancedItem(targetId, sess.pendingEnhancedItem);
+  }
+  dragEnhancedItem(event, itemId) {
+    if (event.dataTransfer) event.dataTransfer.setData('text/plain', itemId);
+  }
+  dropEnhancedItem(event, targetId) {
+    event.preventDefault();
+    const itemId = event.dataTransfer && event.dataTransfer.getData('text/plain');
+    if (itemId) this.assignEnhancedItem(targetId, itemId);
+  }
+  assignEnhancedItem(targetId, itemId) {
+    const sess = this.getActiveSession();
+    const q = sess && sess.questions[sess.currentIndex];
+    const config = q && q.enhanced_matching;
+    if (!sess || !q || q.type !== 'EnhancedMatching' || !config ||
+        !(config.targets || []).some(target => target.id === targetId) ||
+        !(config.items || []).some(item => item.id === itemId) ||
+        (sess.mode === 'EXAM' && sess.isPaused) ||
+        (sess.mode === 'PRACTICE' && this._complete(q, sess.answers[q.id]))) return;
+    const matches = sess.answers[q.id] ? JSON.parse(sess.answers[q.id]) : {};
+    Object.keys(matches).forEach(key => { if (matches[key] === itemId || key === targetId) delete matches[key]; });
+    matches[targetId] = itemId;
+    sess.pendingEnhancedItem = null;
+    sess.answers[q.id] = JSON.stringify(matches);
+    this._afterPartialAnswer(sess, q);
+  }
+  selectHotspotRegion(regionId) {
+    const sess = this.getActiveSession();
+    const q = sess && sess.questions[sess.currentIndex];
+    if (!sess || !q || q.type !== 'Hotspot' || !(q.hotspot.regions || []).some(region => region.id === regionId) ||
+        (sess.mode === 'EXAM' && sess.isPaused) ||
+        (sess.mode === 'PRACTICE' && this._complete(q, sess.answers[q.id]))) return;
+    const selected = new Set(String(sess.answers[q.id] || '').split(',').filter(Boolean));
+    if (q.hotspot.selection_mode === 'multiple') {
+      if (selected.has(regionId)) selected.delete(regionId);
+      else selected.add(regionId);
+    } else {
+      selected.clear();
+      selected.add(regionId);
+    }
+    if (selected.size) sess.answers[q.id] = Array.from(selected).sort().join(',');
+    else delete sess.answers[q.id];
     this._afterPartialAnswer(sess, q);
   }
   toggleMultiSelect(key) {
@@ -1030,6 +1177,20 @@ class PMPApp {
           Object.prototype.hasOwnProperty.call(matches, pair.id) && String(matches[pair.id]).trim() !== ''
         );
       } catch (e) { return false; }
+    }
+    if (type === 'EnhancedMatching') {
+      try {
+        const matches = JSON.parse(sel);
+        const targets = q.enhanced_matching && q.enhanced_matching.targets || [];
+        return targets.length > 0 && targets.every(target =>
+          Object.prototype.hasOwnProperty.call(matches, target.id) && String(matches[target.id]).trim() !== ''
+        );
+      } catch (e) { return false; }
+    }
+    if (type === 'Hotspot') {
+      const selected = String(sel).split(',').filter(Boolean);
+      const expected = q.hotspot && q.hotspot.correct_region_ids || [];
+      return selected.length > 0 && selected.length === expected.length && new Set(selected).size === selected.length;
     }
     if (type === 'MultipleResponse') {
       const answers = this._parseAnswerKeys(sel);
@@ -1079,7 +1240,7 @@ class PMPApp {
     if (nav) nav.classList.add('active');
 
     if (pageId === 'dashboard') this.renderDashboard();
-    else if (pageId === 'practice') this.initPracticeSession(false);
+    else if (pageId === 'practice') this.initPracticeSession(this.practiceLimit !== null);
     else if (pageId === 'add-question') this.updateWrongReasonFields();
     else if (pageId === 'exam') this.checkOrInitExam();
     else if (pageId === 'review') this.renderReviewPage();
@@ -1128,8 +1289,20 @@ class PMPApp {
     const addQuestionForm = document.getElementById('add-question-form');
     if (addQuestionForm) {
       addQuestionForm.addEventListener('change', event => {
-        if (event.target.name === 'correctAnswer') this.updateWrongReasonFields();
+        if (event.target.name === 'correctAnswers') {
+          const type = addQuestionForm.elements.question_type.value;
+          const multi = type === 'multiple_response' ||
+            (type === 'case_scenario' && addQuestionForm.elements.case_response_type.value === 'MultipleResponse');
+          if (event.target.checked && !multi) {
+            addQuestionForm.querySelectorAll('input[name="correctAnswers"]').forEach(input => {
+              if (input !== event.target) input.checked = false;
+            });
+          }
+          this.updateWrongReasonFields();
+        }
+        if (event.target.name === 'question_type' || event.target.name === 'case_response_type') this.updateQuestionTypeFields();
       });
+      this.updateQuestionTypeFields();
       addQuestionForm.addEventListener('submit', event => {
         event.preventDefault();
         this.addQuestionFromForm(addQuestionForm);
@@ -1201,15 +1374,184 @@ class PMPApp {
   updateWrongReasonFields() {
     const form = document.getElementById('add-question-form');
     if (!form) return;
-    const correctAnswer = new FormData(form).get('correctAnswer');
+    const type = form.elements.question_type.value;
+    const correctAnswers = new Set(new FormData(form).getAll('correctAnswers'));
+    const usesChoices = ['single_choice', 'multiple_response', 'case_scenario', 'graphic_based'].includes(type);
     ['A', 'B', 'C', 'D'].forEach(key => {
       const field = document.getElementById(`why-wrong-${key}`);
       const input = form.elements[`whyWrong${key}`];
-      const isCorrect = correctAnswer === key;
-      field.hidden = isCorrect;
-      input.required = !isCorrect;
-      if (isCorrect) input.value = '';
+      const isCorrect = correctAnswers.has(key);
+      field.hidden = !usesChoices || isCorrect;
+      input.required = usesChoices && !isCorrect;
+      if (!usesChoices || isCorrect) input.value = '';
     });
+  }
+
+  updateQuestionTypeFields() {
+    const form = document.getElementById('add-question-form');
+    if (!form) return;
+    const type = form.elements.question_type.value;
+    const choiceTypes = ['single_choice', 'multiple_response', 'case_scenario', 'graphic_based'];
+    document.getElementById('why-wrong-fields').hidden = !choiceTypes.includes(type);
+    const multi = type === 'multiple_response' ||
+      (type === 'case_scenario' && form.elements.case_response_type.value === 'MultipleResponse');
+    if (!multi) {
+      const selectedAnswers = Array.from(form.querySelectorAll('input[name="correctAnswers"]:checked'));
+      selectedAnswers.slice(1).forEach(input => { input.checked = false; });
+    }
+    const structuredTypes = ['matching', 'enhanced_matching', 'hotspot', 'pull_down_list'];
+    const choiceFields = document.getElementById('choice-fields');
+    choiceFields.hidden = !choiceTypes.includes(type);
+    document.getElementById('case-fields').hidden = type !== 'case_scenario';
+    document.getElementById('graphic-fields').hidden = type !== 'graphic_based';
+    const structured = document.getElementById('structured-fields');
+    structured.hidden = !structuredTypes.includes(type);
+    const structuredConfig = {
+      matching: {
+        title: 'Matching · dữ liệu ghép cặp',
+        help: 'Nhập JSON theo mẫu. answer_map liên kết ID bên trái với ID lựa chọn bên phải.',
+        example: '{"prompts":[{"id":"P1","text":{"en":"Find a win-win solution","vi":"Tìm giải pháp đôi bên cùng có lợi"}}],"choices":[{"id":"C1","text":{"en":"Collaborate","vi":"Hợp tác"}}],"answer_map":{"P1":"C1"},"reuse_choices":false}'
+      },
+      enhanced_matching: {
+        title: 'Enhanced Matching · vùng đích, thẻ kéo và đáp án',
+        help: 'Kéo thẻ vào vùng đích hoặc bấm thẻ rồi bấm vùng. Mỗi target phải có một đáp án.',
+        example: '{"targets":[{"id":"T1","text":{"en":"People","vi":"Con người"}}],"items":[{"id":"I1","text":{"en":"Coach the team","vi":"Huấn luyện nhóm"}}],"answer_map":{"T1":"I1"}}'
+      },
+      hotspot: {
+        title: 'Hotspot · ảnh, vùng và đáp án',
+        help: 'Tọa độ chuẩn hóa 0–1000. rect dùng [x,y,width,height]; polygon dùng danh sách [x,y].',
+        example: '{"image":"assets/chart.png","image_alt":"Control chart","selection_mode":"single","regions":[{"id":"R1","shape":"rect","coords":[100,100,200,150],"label":"Point A"},{"id":"R2","shape":"polygon","coords":[[400,200],[600,200],[550,400]],"label":"Point B"}],"correct_region_ids":["R2"]}'
+      },
+      pull_down_list: {
+        title: 'Pull-down List · các danh sách và đáp án theo thứ tự',
+        help: 'Câu hỏi phải có [1], [2]... theo thứ tự. correctAnswer là key đúng cho từng ô.',
+        example: '{"dropdowns":[{"options":[{"key":"A","text":"Avoid","text_vi":"Tránh"},{"key":"B","text":"Mitigate","text_vi":"Giảm thiểu"}]},{"options":[{"key":"A","text":"Accept","text_vi":"Chấp nhận"},{"key":"B","text":"Transfer","text_vi":"Chuyển giao"}]}],"correctAnswer":["B","A"]}'
+      }
+    };
+    if (structuredTypes.includes(type)) {
+      const config = structuredConfig[type];
+      document.getElementById('structured-legend').textContent = config.title;
+      document.getElementById('structured-help').textContent = config.help;
+      if (form.dataset.configType !== type) document.getElementById('new-structured-data').value = config.example;
+    }
+    form.dataset.configType = type;
+    const imageInput = form.elements.image;
+    imageInput.required = type === 'graphic_based';
+    const imageAlt = form.elements.image_alt;
+    imageAlt.required = type === 'graphic_based';
+    form.elements.scenario.required = type === 'case_scenario';
+    form.elements.scenario_vi.required = type === 'case_scenario';
+    document.getElementById('choice-legend').textContent =
+      multi ? 'Các lựa chọn (chọn tất cả đáp án đúng)' : '4 lựa chọn (English & Tiếng Việt)';
+    this.updateWrongReasonFields();
+  }
+
+  validateQuestion(question) {
+    const errors = [];
+    const required = (value, label) => { if (!String(value || '').trim()) errors.push(`${label} không được để trống`); };
+    const validImage = value => typeof value === 'string' && value.length <= 2048 &&
+      !/^\s*(data:|javascript:)/i.test(value) && !!value.trim();
+    required(question.question, 'Câu hỏi tiếng Anh');
+    required(question.question_vi, 'Câu hỏi tiếng Việt');
+    required(question.task, 'Task / Chủ đề');
+    required(question.explanation && question.explanation.correct_vi, 'Giải thích tiếng Việt');
+    required(question.explanation && question.explanation.correct_en, 'Giải thích tiếng Anh');
+    required(question.explanation && question.explanation.pmp_mindset_vi, 'PMP Mindset');
+
+    const type = question.question_type;
+    if (['single_choice', 'multiple_response', 'case_scenario', 'graphic_based'].includes(type)) {
+      const options = question.options || {};
+      if (['A', 'B', 'C', 'D'].some(key => !String(options[key] || '').trim())) errors.push('Cần điền đủ bốn lựa chọn tiếng Anh');
+      if (['A', 'B', 'C', 'D'].some(key => !String((question.options_vi || {})[key] || '').trim())) errors.push('Cần điền đủ bốn lựa chọn tiếng Việt');
+      const answers = this._parseAnswerKeys(question.correctAnswer);
+      const multi = type === 'multiple_response' || (type === 'case_scenario' && question.type === 'MultipleResponse');
+      const expected = multi ? answers.length >= 2 : answers.length === 1;
+      if (!expected || new Set(answers).size !== answers.length || answers.some(key => !Object.prototype.hasOwnProperty.call(options, key))) errors.push('Số đáp án đúng không phù hợp với dạng câu hỏi');
+      answers.forEach(key => { if (!question.explanation.whyWrong_vi || question.explanation.whyWrong_vi[key]) errors.push(`Đáp án đúng ${key} không được có lý do sai`); });
+      ['A', 'B', 'C', 'D'].filter(key => !answers.includes(key)).forEach(key => {
+        required(question.explanation.whyWrong_vi && question.explanation.whyWrong_vi[key], `Lý do lựa chọn ${key} sai`);
+      });
+    }
+    if (type === 'case_scenario') {
+      if (!['MCQ', 'MultipleResponse'].includes(question.type)) errors.push('Dạng trả lời Case chỉ hỗ trợ một hoặc nhiều đáp án');
+      required(question.case_id, 'Case ID');
+      if (question.case_id && !/^[A-Za-z0-9_-]+$/.test(question.case_id)) errors.push('Case ID chỉ được chứa chữ, số, dấu gạch dưới và gạch nối');
+      required(question.scenario, 'Tình huống tiếng Anh');
+      required(question.scenario_vi, 'Tình huống tiếng Việt');
+    }
+    if (type === 'graphic_based') {
+      required(question.image, 'Ảnh / biểu đồ');
+      required(question.image_alt, 'Mô tả ảnh');
+      if (!validImage(question.image)) errors.push('Ảnh phải là URL/đường dẫn hợp lệ, tối đa 2048 ký tự; không hỗ trợ data URL');
+    }
+    if (type === 'matching') {
+      const matching = question.matching || {};
+      const prompts = matching.prompts || [];
+      const choices = matching.choices || [];
+      const promptIds = prompts.map(item => String(item && item.id || ''));
+      const choiceIds = choices.map(item => String(item && item.id || ''));
+      if (!prompts.length || !choices.length) errors.push('Matching cần ít nhất một prompt và một lựa chọn');
+      if (promptIds.some(id => !/^[A-Za-z0-9_-]+$/.test(id)) || new Set(promptIds).size !== promptIds.length) errors.push('ID prompt không hợp lệ hoặc bị trùng');
+      if (choiceIds.some(id => !/^[A-Za-z0-9_-]+$/.test(id)) || new Set(choiceIds).size !== choiceIds.length) errors.push('ID lựa chọn không hợp lệ hoặc bị trùng');
+      if (!matching.answer_map || promptIds.length !== Object.keys(matching.answer_map).length ||
+          promptIds.some(id => !choiceIds.includes(String(matching.answer_map[id])))) errors.push('answer_map phải ghép mỗi prompt với một lựa chọn tồn tại');
+      prompts.forEach((item, index) => required(typeof item.text === 'string' ? item.text : item.text && item.text.en, `Nội dung prompt ${index + 1}`));
+      choices.forEach((item, index) => required(typeof item.text === 'string' ? item.text : item.text && item.text.en, `Nội dung lựa chọn ${index + 1}`));
+      if (matching.reuse_choices === false && new Set(Object.values(matching.answer_map || {}).map(String)).size !== promptIds.length) errors.push('Không thể dùng lại lựa chọn khi reuse_choices là false');
+    }
+    if (type === 'enhanced_matching') {
+      const matching = question.enhanced_matching || {};
+      const targets = matching.targets || [];
+      const items = matching.items || [];
+      const targetIds = targets.map(item => String(item && item.id || ''));
+      const itemIds = items.map(item => String(item && item.id || ''));
+      if (!targets.length || !items.length) errors.push('Enhanced Matching cần ít nhất một target và một item');
+      if (targetIds.some(id => !/^[A-Za-z0-9_-]+$/.test(id)) || new Set(targetIds).size !== targetIds.length) errors.push('ID target không hợp lệ hoặc bị trùng');
+      if (itemIds.some(id => !/^[A-Za-z0-9_-]+$/.test(id)) || new Set(itemIds).size !== itemIds.length) errors.push('ID item không hợp lệ hoặc bị trùng');
+      if (!matching.answer_map || targetIds.length !== Object.keys(matching.answer_map).length ||
+          targetIds.some(id => !itemIds.includes(String(matching.answer_map[id])))) errors.push('answer_map phải ghép mỗi target với một item tồn tại');
+      targets.forEach((item, index) => required(typeof item.text === 'string' ? item.text : item.text && item.text.en, `Nội dung target ${index + 1}`));
+      items.forEach((item, index) => required(typeof item.text === 'string' ? item.text : item.text && item.text.en, `Nội dung item ${index + 1}`));
+      if (new Set(Object.values(matching.answer_map || {}).map(String)).size !== targetIds.length) errors.push('Mỗi target phải ghép với một item khác nhau');
+    }
+    if (type === 'hotspot') {
+      const hotspot = question.hotspot || {};
+      required(hotspot.image, 'Ảnh hotspot');
+      if (!validImage(hotspot.image)) errors.push('Ảnh hotspot phải là URL/đường dẫn hợp lệ, tối đa 2048 ký tự; không hỗ trợ data URL');
+      if (!['single', 'multiple'].includes(hotspot.selection_mode)) errors.push('selection_mode phải là single hoặc multiple');
+      const regions = hotspot.regions || [];
+      const ids = regions.map(region => String(region && region.id || ''));
+      if (!regions.length || ids.some(id => !/^[A-Za-z0-9_-]+$/.test(id)) || new Set(ids).size !== ids.length) errors.push('Hotspot cần các vùng có ID hợp lệ và không trùng');
+      regions.forEach(region => {
+        const coords = region && region.coords;
+        const valid = region && region.shape === 'rect'
+          ? Array.isArray(coords) && coords.length === 4 && coords.every(value => Number.isFinite(value) && value >= 0 && value <= 1000) && coords[2] > 0 && coords[3] > 0 && coords[0] + coords[2] <= 1000 && coords[1] + coords[3] <= 1000
+          : region && region.shape === 'polygon' && Array.isArray(coords) && coords.length >= 3 &&
+            coords.every(point => Array.isArray(point) && point.length === 2 && point.every(value => Number.isFinite(value) && value >= 0 && value <= 1000));
+        if (!valid) errors.push(`Tọa độ vùng ${region && region.id || '?'} sai; dùng rect [x,y,w,h] hoặc polygon [[x,y],...] trong khoảng 0–1000`);
+      });
+      const correct = hotspot.correct_region_ids || [];
+      if (!correct.length || correct.some(id => !ids.includes(String(id))) ||
+          new Set(correct.map(String)).size !== correct.length ||
+          (hotspot.selection_mode === 'single' && correct.length !== 1)) errors.push('correct_region_ids không khớp vùng hoặc selection_mode');
+    }
+    if (type === 'pull_down_list') {
+      const dropdowns = question.dropdowns || [];
+      const answers = String(question.correctAnswer || '').split(',');
+      const placeholders = (question.question.match(/\[(\d+)\]/g) || []);
+      if (!dropdowns.length || placeholders.length !== dropdowns.length ||
+          placeholders.some((placeholder, index) => placeholder !== `[${index + 1}]`) ||
+          answers.length !== dropdowns.length) errors.push('Số dropdown, placeholder theo thứ tự [1]...[n] và đáp án phải khớp nhau');
+      dropdowns.forEach((dropdown, index) => {
+        const options = dropdown && dropdown.options || [];
+        const keys = options.map(option => String(option && option.key || ''));
+        if (!options.length || keys.some(key => !/^[A-Za-z0-9_-]+$/.test(key)) ||
+            new Set(keys).size !== keys.length ||
+            !options.some(option => String(option.key) === String(answers[index])) ||
+            options.some(option => !String(option.text || '').trim())) errors.push(`Danh sách ${index + 1} cần key duy nhất, nội dung và đáp án tồn tại`);
+      });
+    }
+    return errors;
   }
 
   createQuestionId(questions) {
@@ -1229,31 +1571,29 @@ class PMPApp {
     const values = new FormData(form);
     const read = name => String(values.get(name) || '').trim();
     const questions = this.getQuestions();
-    const correctAnswer = read('correctAnswer');
-    const options = {};
-    const optionsVi = {};
-    const whyWrong = {};
-    ['A', 'B', 'C', 'D'].forEach(key => {
-      options[key] = read(`option${key}En`);
-      optionsVi[key] = read(`option${key}Vi`);
-      if (key !== correctAnswer) whyWrong[key] = read(`whyWrong${key}`);
-    });
-    const requiredValues = [
-      read('question_en'), read('question_vi'), read('task'),
-      ...Object.values(options), ...Object.values(optionsVi),
-      read('correct_vi'), read('correct_en'), ...Object.values(whyWrong),
-      read('pmp_mindset_vi')
-    ];
-    if (!['A', 'B', 'C', 'D'].includes(correctAnswer) || requiredValues.some(value => !value)) {
-      this.showModal('Thiếu thông tin', '<p>Hãy điền đầy đủ nội dung song ngữ, giải thích cho đáp án đúng và từng lựa chọn sai trước khi lưu.</p>', [
+    const type = read('question_type');
+    const typeConfig = {
+      single_choice: 'MCQ',
+      multiple_response: 'MultipleResponse',
+      case_scenario: 'MCQ',
+      graphic_based: 'MCQ',
+      matching: 'Matching',
+      enhanced_matching: 'EnhancedMatching',
+      hotspot: 'Hotspot',
+      pull_down_list: 'Dropdown'
+    };
+    if (!Object.prototype.hasOwnProperty.call(typeConfig, type)) {
+      this.showModal('Dạng câu hỏi không hợp lệ', '<p>Hãy chọn một trong tám dạng được hỗ trợ.</p>', [
         { text: 'Đóng', class: '', onClick: () => this.closeModal() }
       ]);
       return;
     }
 
-    const question = normalizeQuestion({
+    const question = {
       id: this.createQuestionId(questions),
-      type: 'MCQ',
+      schema_version: 2,
+      question_type: type,
+      type: type === 'case_scenario' ? read('case_response_type') : typeConfig[type],
       domain: read('domain'),
       task: read('task'),
       enabler: 'User-created',
@@ -1262,19 +1602,99 @@ class PMPApp {
       english_level: 'B1',
       question: read('question_en'),
       question_vi: read('question_vi'),
-      options,
-      options_vi: optionsVi,
-      correctAnswer,
       explanation: {
         correct_vi: read('correct_vi'),
         correct_en: read('correct_en'),
-        whyWrong_vi: whyWrong,
+        whyWrong_vi: {},
         pmp_mindset_vi: read('pmp_mindset_vi')
       },
       keywords: [],
       glossary: [],
       reference: ''
-    });
+    };
+    const choiceTypes = ['single_choice', 'multiple_response', 'case_scenario', 'graphic_based'];
+    const correctAnswers = values.getAll('correctAnswers').map(String);
+    if (choiceTypes.includes(type)) {
+      question.options = {};
+      question.options_vi = {};
+      ['A', 'B', 'C', 'D'].forEach(key => {
+        question.options[key] = read(`option${key}En`);
+        question.options_vi[key] = read(`option${key}Vi`);
+        if (!correctAnswers.includes(key)) {
+          const reason = read(`whyWrong${key}`);
+          if (reason) question.explanation.whyWrong_vi[key] = reason;
+        }
+      });
+      question.correctAnswer = type === 'multiple_response' ||
+        (type === 'case_scenario' && read('case_response_type') === 'MultipleResponse')
+        ? correctAnswers.sort().join(',')
+        : correctAnswers[0] || '';
+    }
+    if (type === 'case_scenario') {
+      const caseId = read('case_id') || `CASE-${question.id}`;
+      question.case_id = caseId;
+      question.scenario = read('scenario');
+      question.scenario_vi = read('scenario_vi');
+      if (!/^[A-Za-z0-9_-]+$/.test(caseId)) {
+        this.showModal('Case ID không hợp lệ', '<p>Case ID chỉ được chứa chữ, số, dấu gạch dưới và gạch nối.</p>', [
+          { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+        ]);
+        return;
+      }
+      const existingCase = questions.find(item => item.case_id === caseId);
+      if (existingCase && (existingCase.scenario !== question.scenario || existingCase.scenario_vi !== question.scenario_vi)) {
+        this.showModal('Tình huống không khớp', '<p>Case ID này đã được dùng với nội dung tình huống khác. Dùng ID mới hoặc nhập đúng cùng một nội dung tình huống để liên kết câu hỏi.</p>', [
+          { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+        ]);
+        return;
+      }
+    }
+    if (type === 'graphic_based') {
+      question.image = read('image');
+      question.image_alt = read('image_alt');
+    }
+
+    let config = null;
+    if (['matching', 'enhanced_matching', 'hotspot', 'pull_down_list'].includes(type)) {
+      try { config = JSON.parse(read('structured_data')); }
+      catch (error) {
+        this.showModal('JSON cấu hình không hợp lệ', `<p>${escapeHtml(error.message)}</p><p>Kiểm tra cú pháp JSON trong vùng cấu hình của dạng câu hỏi đã chọn.</p>`, [
+          { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+        ]);
+        return;
+      }
+    }
+    if (type === 'matching') {
+      question.matching = config;
+      question.matchingPairs = (config.prompts || []).map(prompt => ({
+        id: prompt.id, left: typeof prompt.text === 'string' ? prompt.text : prompt.text && prompt.text.en,
+        left_vi: prompt.text && typeof prompt.text === 'object' ? prompt.text.vi : ''
+      }));
+      question.matchingOptions = (config.choices || []).map(choice => ({
+        key: choice.id, text: typeof choice.text === 'string' ? choice.text : choice.text && choice.text.en,
+        text_vi: choice.text && typeof choice.text === 'object' ? choice.text.vi : ''
+      }));
+      question.correctAnswer = JSON.stringify(config.answer_map || {});
+    } else if (type === 'enhanced_matching') {
+      question.enhanced_matching = config;
+    } else if (type === 'hotspot') {
+      question.hotspot = config;
+      question.image = config.image;
+      question.image_alt = config.image_alt || '';
+      question.correctAnswer = (config.correct_region_ids || []).join(',');
+    } else if (type === 'pull_down_list') {
+      question.dropdowns = config.dropdowns;
+      question.correctAnswer = Array.isArray(config.correctAnswer) ? config.correctAnswer.join(',') : '';
+    }
+
+    const validation = this.validateQuestion(question);
+    if (validation.length) {
+      this.showModal('Không thể lưu câu hỏi', `<p>Sửa các mục sau rồi thử lại:</p><ul>${validation.map(message => `<li>${escapeHtml(message)}</li>`).join('')}</ul>`, [
+        { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+      ]);
+      return;
+    }
+    normalizeQuestion(question);
 
     if (!this.setStorage('questions', [...questions, question])) {
       this.showModal('Không thể lưu câu hỏi', '<p>Trình duyệt không lưu được ngân hàng câu hỏi (có thể hết dung lượng). Hãy xuất backup hoặc giải phóng dung lượng rồi thử lại.</p>', [
@@ -1284,6 +1704,8 @@ class PMPApp {
     }
 
     form.reset();
+    delete form.dataset.configType;
+    this.updateQuestionTypeFields();
     this.updateWrongReasonFields();
     this.showModal('Đã lưu câu hỏi', `<p>Câu <strong>${escapeHtml(question.id)}</strong> đã được thêm vào ngân hàng <code>pmp_questions</code>. Câu hỏi sẽ xuất hiện khi bắt đầu lượt Practice mới.</p>`, [
       { text: 'Luyện câu hỏi', class: '', onClick: () => {
@@ -1366,17 +1788,21 @@ class PMPApp {
           ...a,
           timestamp: a.timestamp || s.timestamp,
           sessionId: a.sessionId || s.id,
-          source: a.source || 'mock_exam'
+          source: a.source || s.mode || 'mock_exam',
+          mode: a.mode || s.mode || 'exam'
         }));
       }
     });
-    
-    all.push(...practice);
+    all.push(...practice.map(answer => ({
+      ...answer,
+      source: answer.source || 'practice',
+      mode: answer.mode || 'practice'
+    })));
     all.sort((a,b) => (a.timestamp || 0) - (b.timestamp || 0));
     return all;
   }
 
-  savePracticeAnswer(q, selected, usedTranslate) {
+  savePracticeAnswer(q, selected, usedTranslate, readingLevel) {
     const log = this.getStorage('practice_log') || [];
     const sess = this.currentSession;
     if (!sess || !sess.id || !this._complete(q, selected)) return;
@@ -1386,7 +1812,8 @@ class PMPApp {
       difficulty: q.difficulty, english_level: q.english_level,
       selected, correctAnswer: q.correctAnswer, isCorrect,
       usedTranslate: !!usedTranslate,
-      timestamp: Date.now(), source: 'practice', sessionId: sess.id,
+      readingLevel: readingLevel || (sess.readingLevel || {})[q.id] || null,
+      timestamp: Date.now(), source: 'practice', mode: 'practice', sessionId: sess.id,
       runMode: sess.practiceMode || 'all',
       responseTimeMs: Math.max(0, Date.now() - (sess.currentQuestionStartedAt || Date.now()))
     };
@@ -1453,7 +1880,8 @@ class PMPApp {
       startedAt: sess.startedAt || Date.now(),
       qIds: sess.questions.map(question => question.id), currentIndex: sess.currentIndex,
       answers: sess.answers, flags: sess.flags,
-      usedTranslate: sess.usedTranslate, currentQuestionStartedAt: sess.currentQuestionStartedAt
+      usedTranslate: sess.usedTranslate, readingLevel: sess.readingLevel || {},
+      limit: sess.limit || null, currentQuestionStartedAt: sess.currentQuestionStartedAt
     });
   }
 
@@ -1523,21 +1951,16 @@ class PMPApp {
   /* ---- DASHBOARD ---- */
   updateDashboardMetrics() {
     const answers = this.getAllAnswers();
-    let correctQ = 0, correctNoTranslate = 0, noTranslateTotal = 0;
+    let correctQ = 0;
     const domainStats = { People:{t:0,c:0}, Process:{t:0,c:0}, BusinessEnvironment:{t:0,c:0} };
     answers.forEach(a => {
       if (a.isCorrect) correctQ++;
-      if (!a.usedTranslate) {
-        noTranslateTotal++;
-        if (a.isCorrect) correctNoTranslate++;
-      }
       if (domainStats[a.domain]) { domainStats[a.domain].t++; if (a.isCorrect) domainStats[a.domain].c++; }
     });
     return {
       totalQ: answers.length,
       accuracy: answers.length ? Math.round(correctQ/answers.length*100) : 0,
-      comprehension: noTranslateTotal ? Math.round(correctNoTranslate/noTranslateTotal*100) : null,
-      noTranslateTotal, domainStats, weaknesses: this.getWeaknessStats()
+      domainStats, weaknesses: this.getWeaknessStats()
     };
   }
 
@@ -1545,10 +1968,11 @@ class PMPApp {
     const m = this.updateDashboardMetrics();
     document.getElementById('m-accuracy').textContent = m.accuracy + '%';
     document.getElementById('m-total-q').textContent = m.totalQ + ' lượt trả lời đã lưu';
-    document.getElementById('m-comprehension').textContent = m.comprehension === null ? '—' : m.comprehension + '%';
-    document.getElementById('m-comprehension-sample').textContent = m.noTranslateTotal
-      ? `${m.noTranslateTotal} lượt không dùng bản dịch`
-      : 'Chưa có lượt trả lời không dùng bản dịch';
+    const performance = this.getQuestionPerformance();
+    const mastered = this.getQuestions().filter(question =>
+      performance[question.id] && performance[question.id].attempts >= 2 && performance[question.id].lastCorrect
+    ).length;
+    document.getElementById('m-mastery').textContent = `${mastered}/${this.getQuestions().length}`;
 
     const srs = this.getStorage('srs') || {};
     const today = todayISO();
@@ -1557,14 +1981,22 @@ class PMPApp {
     document.getElementById('m-srs-sub').textContent = dueCount + ' mục cần ôn';
     document.getElementById('btn-srs-practice').style.display = dueCount ? 'inline-flex' : 'none';
 
-    const activeDays = new Set(this.getAllAnswers().map(answer =>
-      answer.timestamp ? new Date(answer.timestamp).toDateString() : null
+    const activityDays = new Set(this.getAllAnswers().map(answer =>
+      answer.timestamp ? todayISO(new Date(answer.timestamp)) : null
     ).filter(Boolean));
+    const cursor = new Date();
+    if (!activityDays.has(todayISO(cursor))) cursor.setDate(cursor.getDate() - 1);
+    let streak = 0;
+    while (activityDays.has(todayISO(cursor))) {
+      streak++;
+      cursor.setDate(cursor.getDate() - 1);
+    }
     document.getElementById('dash-streak').textContent =
-      `${activeDays.size} ngày có hoạt động học được lưu | Ngày ${this.getCurrentStudyDay()} trong lộ trình`;
+      `${streak ? `🔥 ${streak} ngày học liên tiếp` : 'Bắt đầu chuỗi học hôm nay'} · Ngày ${this.getCurrentStudyDay()} trong lộ trình`;
 
     const savedExam = this.getStorage('current_exam');
     document.getElementById('btn-resume-exam').style.display = (savedExam && savedExam.status === 'IN_PROGRESS') ? 'inline-flex' : 'none';
+    this.renderNextBestAction(m.weaknesses, dueCount);
 
     this.renderDomainChart(m.domainStats);
 
@@ -1580,8 +2012,46 @@ class PMPApp {
     this.renderPracticeAnalytics();
   }
 
+  renderNextBestAction(weaknesses, dueCount) {
+    const savedPractice = this.getStorage('current_practice');
+    const savedRuns = this.getStorage('practice_runs') || [];
+    const activeRun = savedPractice && savedRuns.find(run =>
+      run.id === savedPractice.id && run.status === 'IN_PROGRESS'
+    );
+    const weak = weaknesses.find(stat => stat.attempts >= 2 && stat.accuracy < 70);
+    const container = document.getElementById('next-best-action');
+    if (activeRun) {
+      container.innerHTML = `
+        <h3>▶️ Học tiếp ở nơi bạn đã dừng</h3>
+        <p>Bạn đã trả lời ${activeRun.answered || 0}/${activeRun.planned || 0} câu. Tiếp tục lượt hiện tại; tiến độ vẫn được lưu trên thiết bị này.</p>
+        <button class="btn" onclick="location.hash='#practice'">Tiếp tục luyện</button>`;
+      return;
+    }
+    if (dueCount) {
+      container.innerHTML = `
+        <h3>🎯 Hành động tốt nhất · Ôn lại ${dueCount} câu đến hạn</h3>
+        <p>Ôn ngắn theo lịch lặp lại có khoảng cách giúp củng cố trí nhớ. Bắt đầu với tối đa 5 câu.</p>
+        <button class="btn" onclick="app.startTargetedPractice('due', 5)">Ôn 5 câu · khoảng 10 phút</button>`;
+      return;
+    }
+    if (weak) {
+      const question = this.getQuestions().find(item => weak.questionIds.includes(item.id));
+      const mindset = question && question.explanation && question.explanation.pmp_mindset_vi;
+      container.innerHTML = `
+        <h3>🎯 Hành động tốt nhất · Luyện 5 câu trong ${escapeHtml(weak.task)}</h3>
+        <p>${mindset ? escapeHtml(mindset) : 'Làm từng câu, đọc phần giải thích song ngữ và tập trung vào nguyên nhân trước khi chọn hành động.'} Bạn có thể hoàn thành một lượt ngắn trong khoảng 10 phút.</p>
+        <button class="btn" onclick="app.startTargetedPractice('weak', 5)">Bắt đầu 5 câu ngay</button>`;
+      return;
+    }
+    container.innerHTML = `
+      <h3>🎯 Hành động tốt nhất · Bắt đầu bằng một lượt nhỏ</h3>
+      <p>Chọn 5 câu, đọc giải thích sau mỗi câu và tự đánh giá xem bạn đã hiểu đề chưa.</p>
+      <button class="btn" onclick="app.startTargetedPractice('adaptive', 5)">Luyện 5 câu · khoảng 10 phút</button>`;
+  }
+
   renderPracticeAnalytics() {
-    const practiceAnswers = this.getStorage('practice_log') || [];
+    const allAnswers = this.getAllAnswers();
+    const practiceAnswers = allAnswers.filter(answer => answer.source === 'practice');
     const practiceRuns = this.getStorage('practice_runs') || [];
     const today = new Date();
     const days = [];
@@ -1623,12 +2093,14 @@ class PMPApp {
       : '<p class="insight-meta">Chưa có câu trả lời luyện tập được lưu trong 7 ngày gần nhất.</p>';
 
     const questionStats = new Map();
-    practiceAnswers.forEach(answer => {
+    allAnswers.forEach(answer => {
       if (!answer.qId) return;
-      const stat = questionStats.get(answer.qId) || { attempts: 0, wrong: 0, lastWrongAt: 0 };
+      const stat = questionStats.get(answer.qId) || { attempts: 0, wrong: 0, lastWrongAt: 0, wrongSources: { practice: 0, exam: 0 } };
       stat.attempts++;
+      const source = answer.source === 'practice' ? 'practice' : 'exam';
       if (!answer.isCorrect) {
         stat.wrong++;
+        stat.wrongSources[source]++;
         stat.lastWrongAt = Math.max(stat.lastWrongAt, Number(answer.timestamp) || 0);
       }
       questionStats.set(answer.qId, stat);
@@ -1641,13 +2113,13 @@ class PMPApp {
         b.lastWrongAt - a.lastWrongAt)
       .slice(0, 5);
     document.getElementById('frequent-mistakes').innerHTML = frequentMistakes.length
-      ? frequentMistakes.map(stat => {
+      ? frequentMistakes.slice(0, 5).map(stat => {
           const question = questionById.get(stat.qId);
           const label = question ? question.question : `Câu ${stat.qId}`;
           const wrongRate = Math.round(stat.wrong / stat.attempts * 100);
           return `<div style="padding:.65rem 0; border-bottom:1px solid var(--border);">
             <div style="font-weight:600; overflow-wrap:anywhere;">${escapeHtml(label)}</div>
-            <div class="insight-meta">${escapeHtml(question?.domain || 'Chưa phân loại')} · Sai ${stat.wrong}/${stat.attempts} lượt (${wrongRate}%)${stat.lastWrongAt ? ` · Sai gần nhất ${new Date(stat.lastWrongAt).toLocaleDateString('vi-VN')}` : ''}</div>
+            <div class="insight-meta">${escapeHtml(question?.domain || 'Chưa phân loại')} · Sai ${stat.wrong}/${stat.attempts} lượt (${wrongRate}%) · Sai trong <span class="tag tag-process">Practice ${stat.wrongSources.practice}</span> <span class="tag tag-predictive">Exam ${stat.wrongSources.exam}</span>${stat.lastWrongAt ? ` · Sai gần nhất ${new Date(stat.lastWrongAt).toLocaleDateString('vi-VN')}` : ''}</div>
           </div>`;
         }).join('')
       : '<p class="insight-meta">Chưa có câu sai nào được ghi nhận trong phần luyện tập.</p>';
@@ -1655,15 +2127,31 @@ class PMPApp {
 
   renderReadiness() {
     const readiness = this.getExamReadiness();
+    const performance = this.getQuestionPerformance();
+    const total = this.getQuestions().length;
+    const mastered = this.getQuestions().filter(question =>
+      performance[question.id] && performance[question.id].attempts >= 2 && performance[question.id].lastCorrect
+    ).length;
+    const progress = total ? Math.round(mastered / total * 100) : 0;
+    const weak = this.getWeaknessStats().find(stat => stat.attempts >= 2 && stat.accuracy < 70);
     document.getElementById('readiness-card').innerHTML = `
-      <h3>🧭 Mức sẵn sàng luyện thi</h3>
-      <div class="readiness-status">${escapeHtml(readiness.label)}</div>
-      <p>${escapeHtml(readiness.detail)}</p>
-      <p class="insight-meta" style="margin-top:.35rem;">Chỉ báo dựa trên dữ liệu mock exam của ứng dụng, không phải dự báo xác suất đỗ. Chỉ nên diễn giải khi ngân hàng câu hỏi đủ rộng và được kiểm định.</p>`;
+      <h3>🧭 Tiến độ củng cố kiến thức</h3>
+      <div class="coach-progress">
+        <strong>${mastered}/${total} câu đã làm đúng ít nhất 2 lần</strong>
+        <progress value="${progress}" max="100" aria-label="Tiến độ câu hỏi đã củng cố">${progress}%</progress>
+        <span>${progress}%</span>
+      </div>
+      <p style="margin-top:.5rem;">${weak ? `Bước tiếp theo: ôn ${escapeHtml(weak.task)} bằng một lượt ngắn.` : 'Mỗi câu được tính là đã củng cố sau ít nhất 2 lần trả lời đúng.'}</p>
+      <p class="readiness-status" style="margin-top:.5rem;">Mock exam: ${escapeHtml(readiness.label)}</p>
+      <p class="insight-meta">${escapeHtml(readiness.detail)} Đây là tiến độ học trong ngân hàng hiện tại, không phải xác suất đỗ PMI.</p>`;
   }
 
   renderStudyHistory() {
     const runs = (this.getStorage('practice_runs') || []).slice().sort((a, b) => b.startedAt - a.startedAt).slice(0, 5);
+    const lastPractice = runs[0];
+    const partialPractice = lastPractice &&
+      (lastPractice.status === 'ENDED_EARLY' || lastPractice.status === 'IN_PROGRESS') &&
+      lastPractice.planned > 5 && (lastPractice.answered || 0) < Math.ceil(lastPractice.planned / 2);
     const exams = (this.getStorage('sessions') || []).slice(-3).reverse().map(session => ({
       id: session.id, mode: 'Mock exam', startedAt: session.timestamp || 0,
       answered: session.total, planned: session.total, correct: session.score,
@@ -1677,10 +2165,15 @@ class PMPApp {
         run.mode === 'due' ? 'SRS đến hạn' : 'Luyện tự do'
     })).concat(exams).sort((a, b) => (b.startedAt || 0) - (a.startedAt || 0)).slice(0, 5);
     document.getElementById('study-history').innerHTML = entries.length
-      ? entries.map(entry => `<div class="history-row">
-          <div><strong>${escapeHtml(entry.mode)}</strong><div class="insight-meta">${entry.startedAt ? new Date(entry.startedAt).toLocaleString('vi-VN') : 'Ngày chưa được lưu ở dữ liệu cũ'} · ${entry.status === 'IN_PROGRESS' ? 'Đang làm dở' : entry.status === 'ENDED_EARLY' ? 'Kết thúc sớm' : 'Đã lưu'}</div></div>
+      ? `${partialPractice ? `<div class="insight-card" style="border-color:var(--info); background:var(--info-bg);">
+          <strong>Không cần hoàn thành cả ngân hàng trong một lần.</strong>
+          <p class="insight-meta" style="margin:.25rem 0 .5rem;">Lượt gần nhất dừng ở ${lastPractice.answered || 0}/${lastPractice.planned} câu. Thử 5 câu mỗi lượt để chia nhỏ thời gian học.</p>
+          <button class="btn btn-sm" onclick="app.startTargetedPractice('adaptive', 5)">Bắt đầu lượt 5 câu</button>
+        </div>` : ''}
+        ${entries.map(entry => `<div class="history-row">
+          <div>          <strong><span class="tag ${entry.mode === 'Mock exam' ? 'tag-predictive' : 'tag-process'}">${entry.mode === 'Mock exam' ? 'Exam' : 'Practice'}</span> ${escapeHtml(entry.mode)}</strong><div class="insight-meta">${entry.startedAt ? new Date(entry.startedAt).toLocaleString('vi-VN') : 'Ngày chưa được lưu ở dữ liệu cũ'} · ${entry.status === 'IN_PROGRESS' ? 'Đang làm dở' : entry.status === 'ENDED_EARLY' ? 'Kết thúc sớm' : 'Đã lưu'}</div></div>
           <strong>${entry.correct || 0}/${entry.answered || 0}${entry.planned ? ` · ${entry.planned} câu trong lượt` : ''}</strong>
-        </div>`).join('')
+        </div>`).join('')}`
       : '<p class="insight-meta">Lịch sử các lượt luyện sẽ xuất hiện tại đây sau khi bạn trả lời câu hỏi.</p>';
   }
 
@@ -1701,53 +2194,77 @@ class PMPApp {
 
   renderVocabWidget() {
     const qs = this.getQuestions();
-    const answers = this.getAllAnswers();
-    const wrongQIds = new Set(answers.filter(a => !a.isCorrect).map(a => a.qId));
-    const kw = {};
-    qs.forEach(q => {
-      if (wrongQIds.has(q.id) && q.glossary) {
-        q.glossary.forEach(g => {
-          kw[g.en] = kw[g.en] || { count: 0, vi: g.vi };
-          kw[g.en].count++;
-        });
-      }
+    const questions = new Map(qs.map(question => [question.id, question]));
+    const wrongAnswers = this.getAllAnswers().filter(answer => !answer.isCorrect && questions.has(answer.qId));
+    const vocab = new Map();
+    wrongAnswers.forEach(answer => {
+      const question = questions.get(answer.qId);
+      (question.glossary || []).forEach(term => {
+        const entry = vocab.get(term.en) || { ...term, count: 0, question, answer };
+        entry.count++;
+        if ((answer.timestamp || 0) >= (entry.answer.timestamp || 0)) {
+          entry.question = question;
+          entry.answer = answer;
+        }
+        vocab.set(term.en, entry);
+      });
     });
-    const top = Object.entries(kw).sort((a,b) => b[1].count - a[1].count).slice(0, 5);
+    const top = Array.from(vocab.values()).sort((a, b) => b.count - a.count).slice(0, 3);
     document.getElementById('widget-vocab-list').innerHTML = top.length
-      ? top.map(([k,v]) => `<div style="display:flex; justify-content:space-between; align-items:center; padding:.4rem 0; border-bottom:1px solid var(--border);">
-          <div><strong style="color:var(--primary); cursor:pointer;" data-action="open-kw" data-term="${escapeAttr(k)}">${escapeHtml(k)}</strong> <span style="font-size:.85rem; color:var(--text-muted);">- ${escapeHtml(v.vi)}</span></div>
-          <span class="tag tag-people">${v.count} sai</span>
-        </div>`).join('')
-      : '<span style="font-size:.9rem; color:var(--text-muted);">Chưa có từ vựng cần chú ý.</span>';
+      ? top.map(term => {
+          const question = term.question;
+          const wrongReason = question.explanation.whyWrong_vi[term.answer.selected];
+          return `<div style="padding:.65rem 0; border-bottom:1px solid var(--border);">
+            <div><strong style="color:var(--primary); cursor:pointer;" data-action="open-kw" data-term="${escapeAttr(term.en)}">${escapeHtml(term.en)}</strong> · ${escapeHtml(term.vi)} <button class="btn btn-sm btn-outline" data-action="speak" data-term="${escapeAttr(term.en)}" aria-label="Phát âm ${escapeAttr(term.en)}">🔊</button> <span class="insight-meta">(${term.count} lượt sai)</span></div>
+            <div style="font-size:.9rem; margin-top:.3rem;">Ngữ cảnh: ${escapeHtml(question.question)}</div>
+            <div class="insight-meta" style="margin-top:.2rem;"><span class="tag ${term.answer.source === 'practice' ? 'tag-process' : 'tag-predictive'}">${term.answer.source === 'practice' ? 'Practice' : 'Exam'}</span> ${escapeHtml(question.question_vi || 'Chưa có bản dịch câu hỏi.')}</div>
+            ${wrongReason ? `<div class="insight-meta" style="margin-top:.2rem;">Trong câu này: ${escapeHtml(wrongReason)}</div>` : ''}
+          </div>`;
+        }).join('')
+      : '<span style="font-size:.9rem; color:var(--text-muted);">Sau khi gặp câu sai, từ khóa sẽ xuất hiện cùng câu hỏi tiếng Anh/tiếng Việt để ôn theo ngữ cảnh.</span>';
+
+    const scanQuestion = wrongAnswers.length
+      ? questions.get(wrongAnswers[wrongAnswers.length - 1].qId)
+      : qs[0];
+    const scanSource = scanQuestion
+      ? [scanQuestion.question, ...Object.values(scanQuestion.options || {}), scanQuestion.explanation.correct_vi, scanQuestion.explanation.correct_en]
+        .join(' ').toLowerCase()
+      : '';
+    const scanTerms = scanQuestion && (scanQuestion.glossary || []).filter(term =>
+      term.en.split(/[\/\s-]+/).some(word => word.length > 3 && scanSource.includes(word.toLowerCase()))
+    ).slice(0, 4);
+    const questionClues = scanQuestion ? [
+      ['FIRST', 'trước tiên'], ['NEXT', 'tiếp theo'], ['BEST', 'tốt nhất'],
+      ['MOST', 'nhất'], ['EXCEPT', 'ngoại trừ'], ['NOT', 'không']
+    ].filter(([word]) => new RegExp(`\\b${word}\\b`, 'i').test(scanQuestion.question)) : [];
+    document.getElementById('keyword-scanning').innerHTML = scanQuestion
+      ? `<div class="insight-card" style="margin:0; background:#f8fafc;">
+          <strong>🔎 Quét keyword trong câu</strong>
+          <p style="margin-top:.35rem;">${escapeHtml(scanQuestion.question)}</p>
+          <p class="insight-meta" style="margin-top:.2rem;">${escapeHtml(scanQuestion.question_vi || 'Chưa có bản dịch câu hỏi.')}</p>
+          <div style="margin-top:.4rem;">${questionClues.map(([word, translation]) =>
+            `<span class="tag tag-process">${word} = ${translation}</span>`
+          ).join(' ')} ${scanTerms && scanTerms.length ? scanTerms.map(term =>
+            `<span class="tag tag-people" title="${escapeAttr(term.vi)}">${escapeHtml(term.en)} = ${escapeHtml(term.vi)}</span>`
+          ).join(' ') : ''}</div>
+        </div>`
+      : '';
   }
 
   renderComprehensionTrend() {
-    const sessions = (this.getStorage('sessions') || []).map(session => {
-      const answers = session.answers || [];
-      const unassisted = answers.filter(answer => !answer.usedTranslate);
-      return {
-        ...session,
-        unassistedTotal: unassisted.length,
-        unassistedCorrect: unassisted.filter(answer => answer.isCorrect).length
-      };
-    }).filter(session => session.unassistedTotal > 0).slice(-7);
-    if (sessions.length === 0) {
-      document.getElementById('chart-comprehension').innerHTML = '<div style="font-size:.85rem; color:var(--text-muted); padding:1rem; text-align:center;">Chưa đủ bài thi để vẽ trend.</div>';
-      return;
-    }
-    const pts = sessions.map((s, idx) => {
-      const rate = Math.round(s.unassistedCorrect/s.unassistedTotal*100);
-      return { x: (idx/Math.max(1,sessions.length-1))*320 + 40, y: 120 - (rate/100)*90, rate };
+    const ratings = { understood: 0, guessed: 0, unclear: 0 };
+    (this.getStorage('practice_log') || []).forEach(answer => {
+      if (Object.prototype.hasOwnProperty.call(ratings, answer.readingLevel)) ratings[answer.readingLevel]++;
     });
-    const path = pts.map((p,i) => (i?'L':'M') + ' ' + p.x + ' ' + p.y).join(' ');
-    let h = `<svg viewBox="0 0 400 140" width="100%">
-      <line x1="40" y1="30" x2="360" y2="30" stroke="#cbd5e1" stroke-dasharray="4"/>
-      <text x="5" y="34" font-size="10" fill="#94a3b8">100%</text>
-      <line x1="40" y1="120" x2="360" y2="120" stroke="#cbd5e1"/>
-      <path d="${path}" fill="none" stroke="#2563eb" stroke-width="3"/>
-      ${pts.map(p => `<circle cx="${p.x}" cy="${p.y}" r="5" fill="#2563eb"/><text x="${p.x-10}" y="${p.y-10}" font-size="10" font-weight="700" fill="#1e293b">${p.rate}%</text>`).join('')}
-    </svg>`;
-    document.getElementById('chart-comprehension').innerHTML = h;
+    const labels = { understood: 'Tôi hiểu đề', guessed: 'Tôi đã đoán', unclear: 'Tôi chưa hiểu' };
+    const total = Object.values(ratings).reduce((sum, count) => sum + count, 0);
+    document.getElementById('chart-comprehension').innerHTML = total
+      ? Object.entries(ratings).map(([key, count]) => `<div style="display:flex; align-items:center; gap:.5rem; margin:.5rem 0;">
+          <span style="width:9rem;">${labels[key]}</span>
+          <div style="flex:1; background:#e2e8f0; border-radius:4px; height:18px;"><div style="width:${Math.round(count / total * 100)}%; background:${key === 'understood' ? '#16a34a' : key === 'guessed' ? '#d97706' : '#0284c7'}; height:100%; border-radius:4px;"></div></div>
+          <strong style="min-width:3rem; text-align:right;">${count}</strong>
+        </div>`).join('')
+      : '<div class="insight-card" style="margin:0; background:#f8fafc;">Sau mỗi câu Practice, tự chọn “Tôi hiểu đề”, “Tôi đã đoán” hoặc “Tôi chưa hiểu”. Đây là tín hiệu để điều chỉnh cách học, không phải điểm số.</div>';
   }
 
   /* ---- PRACTICE ---- */
@@ -1772,7 +2289,7 @@ class PMPApp {
       const bank = new Map(this.getQuestions().map(question => [question.id, question]));
       const savedQuestionIds = Array.isArray(saved.qIds) ? saved.qIds : [];
       const questions = savedQuestionIds.map(id => bank.get(id)).filter(Boolean);
-      if (saved.mode === 'all') {
+      if (saved.mode === 'all' && !saved.limit) {
         const existingIds = new Set(questions.map(question => question.id));
         const additions = Array.from(bank.values()).filter(question =>
           (saved.domain === 'ALL' || question.domain === saved.domain) && !existingIds.has(question.id)
@@ -1798,7 +2315,8 @@ class PMPApp {
           currentIndex: Math.min(saved.currentIndex || 0, questions.length - 1),
           answers: savedAnswers, flags: saved.flags || {},
           usedTranslate: saved.usedTranslate || {},
-          currentQuestionStartedAt: Date.now()
+            readingLevel: saved.readingLevel || {}, limit: saved.limit || null,
+            currentQuestionStartedAt: Date.now()
         };
         this.palettePage = 1;
         this.renderQuestionCard('practice-card-container');
@@ -1808,7 +2326,18 @@ class PMPApp {
 
     let questions = this.getReviewQuestionIds(mode);
     if (domain !== 'ALL') questions = questions.filter(question => question.domain === domain);
-    if (mode === 'adaptive') questions = questions.slice(0, 20);
+    const limit = this.practiceLimit;
+    this.practiceLimit = null;
+    if (limit && mode !== 'due' && mode !== 'flagged' && questions.length < limit) {
+      const selectedIds = new Set(questions.map(question => question.id));
+      const targetDomain = questions[0] && questions[0].domain;
+      const additional = this.getReviewQuestionIds('adaptive')
+        .filter(question => !selectedIds.has(question.id) && (domain === 'ALL' || question.domain === domain));
+      additional.sort((a, b) => Number(b.domain === targetDomain) - Number(a.domain === targetDomain));
+      questions = questions.concat(additional.slice(0, limit - questions.length));
+    }
+    if (limit) questions = questions.slice(0, limit);
+    else if (mode === 'adaptive') questions = questions.slice(0, 20);
     else if (mode !== 'all') questions = questions.slice(0, 30);
     if (!questions.length) {
       if (this.currentSession && this.currentSession.id) {
@@ -1832,7 +2361,7 @@ class PMPApp {
       document.getElementById('practice-sidebar').innerHTML = '';
       return;
     }
-    this.startPracticeRun(questions, mode, domain);
+    this.startPracticeRun(questions, mode, domain, limit);
   }
 
   /* ---- EXAM ---- */
@@ -2186,6 +2715,30 @@ class PMPApp {
     `;
   }
 
+  renderReadingRating(q, session) {
+    const level = (session.readingLevel || {})[q.id] || '';
+    const choices = [
+      ['understood', 'Tôi hiểu đề'],
+      ['guessed', 'Tôi đã đoán'],
+      ['unclear', 'Tôi chưa hiểu']
+    ];
+    return `<div style="margin-top:.75rem;"><strong>Đọc hiểu của bạn (không tính điểm):</strong><div class="reading-rating">
+      ${choices.map(([value, label]) => `<button type="button" class="btn btn-sm btn-outline ${level === value ? 'selected' : ''}" onclick="app.setReadingLevel('${value}')">${label}</button>`).join('')}
+    </div></div>`;
+  }
+
+  setReadingLevel(level) {
+    const allowed = new Set(['understood', 'guessed', 'unclear']);
+    const session = this.currentSession;
+    if (!session || !allowed.has(level)) return;
+    const question = session.questions[session.currentIndex];
+    if (!question || !this._complete(question, session.answers[question.id])) return;
+    session.readingLevel = session.readingLevel || {};
+    session.readingLevel[question.id] = level;
+    this.savePracticeAnswer(question, session.answers[question.id], !!session.usedTranslate[question.id], level);
+    this.renderQuestionCard('practice-card-container');
+  }
+
   addQuestionAnnotation() {
     const pending = this._pendingAnnotation;
     const session = this.getActiveSession();
@@ -2351,7 +2904,7 @@ class PMPApp {
         const val = currentAnswers[idx] || "";
         let selectHtml = `<select class="dropdown-select" onchange="app.handleDropdownChange('${q.id}', ${idx}, this.value)">
           <option value="">-- Chọn --</option>
-          ${dd.options.map(opt => `<option value="${opt.key}" ${val === opt.key ? 'selected' : ''}>${escapeHtml(opt.text)}</option>`).join('')}
+          ${dd.options.map(opt => `<option value="${escapeAttr(opt.key)}" ${val === opt.key ? 'selected' : ''}>${escapeHtml(opt.text)}${showVi && opt.text_vi ? ` · ${escapeHtml(opt.text_vi)}` : ''}</option>`).join('')}
         </select>`;
         textHtml = textHtml.replace(`[${idx + 1}]`, selectHtml);
       });
@@ -2364,19 +2917,59 @@ class PMPApp {
             ${q.matchingPairs.map(p => {
               const isMatched = Object.keys(currentMatches).includes(p.id);
               const matchedVal = currentMatches[p.id] || "";
+              const matchedOption = (q.matchingOptions || []).find(option => option.key === matchedVal);
               return `<div class="match-item ${isMatched ? 'matched' : ''} ${(sess.pendingMatch && sess.pendingMatch[q.id] === p.id) ? 'selected' : ''}" onclick="app.handleMatchClick('${q.id}', '${p.id}', 'left')" id="match-left-${p.id}">
                 <strong>${p.id}.</strong> <span data-note-scope="match-left-${escapeAttr(p.id)}">${escapeHtml(p.left)}</span>
-                ${isMatched ? `<div style="font-size:0.85rem; color:var(--success); margin-top:0.3rem;">→ ${escapeHtml(matchedVal)}</div>` : ''}
+                ${showVi && p.left_vi ? `<div style="font-size:.85rem;color:#475569;">${escapeHtml(p.left_vi)}</div>` : ''}
+                ${isMatched ? `<div style="font-size:0.85rem; color:var(--success); margin-top:0.3rem;">→ ${escapeHtml(matchedOption ? matchedOption.text : matchedVal)}${showVi && matchedOption && matchedOption.text_vi ? ` · ${escapeHtml(matchedOption.text_vi)}` : ''}</div>` : ''}
               </div>`;
             }).join('')}
           </div>
           <div class="matching-col">
-            ${q.matchingOptions.map(o => `<div class="match-item" onclick="app.handleMatchClick('${q.id}', '${o.key}', 'right')">
-              <strong>${o.key}.</strong> <span data-note-scope="match-right-${escapeAttr(o.key)}">${escapeHtml(o.text)}</span>
+            ${q.matchingOptions.map(o => `<div class="match-item" onclick="app.handleMatchClick('${q.id}', '${escapeAttr(o.key)}', 'right')">
+              <strong>${escapeHtml(o.key)}.</strong> <span data-note-scope="match-right-${escapeAttr(o.key)}">${escapeHtml(o.text)}</span>
+              ${showVi && o.text_vi ? `<div style="font-size:.85rem;color:#475569;">${escapeHtml(o.text_vi)}</div>` : ''}
             </div>`).join('')}
           </div>
         </div>
       `;
+    } else if (qType === 'EnhancedMatching' && q.enhanced_matching) {
+      const currentMatches = selected ? JSON.parse(selected) : {};
+      const config = q.enhanced_matching;
+      const displayText = value => typeof value === 'string' ? value : value && (showVi ? value.vi || value.en : value.en || value.vi) || '';
+      interactionHtml = `
+        <p class="insight-meta">Kéo item vào target hoặc bấm item rồi bấm target để ghép.</p>
+        <div class="matching-container">
+          <div class="matching-col"><strong>Target</strong>
+            ${config.targets.map(target => `<button type="button" class="match-item ${currentMatches[target.id] ? 'matched' : ''}" ondragover="event.preventDefault()" ondrop="app.dropEnhancedItem(event,'${escapeAttr(target.id)}')" onclick="app.chooseEnhancedTarget('${escapeAttr(target.id)}')">
+              <span>${escapeHtml(displayText(target.text) || target.id)}</span>
+              ${currentMatches[target.id] ? `<div style="font-size:.85rem;color:var(--success);margin-top:.3rem;">→ ${escapeHtml(displayText((config.items || []).find(item => item.id === currentMatches[target.id])?.text) || currentMatches[target.id])}</div>` : ''}
+            </button>`).join('')}
+          </div>
+          <div class="matching-col"><strong>Items</strong>
+            ${config.items.map(item => `<button type="button" draggable="true" class="match-item ${sess.pendingEnhancedItem === item.id ? 'selected' : ''}" ondragstart="app.dragEnhancedItem(event,'${escapeAttr(item.id)}')" onclick="app.chooseEnhancedItem('${escapeAttr(item.id)}')">${escapeHtml(displayText(item.text) || item.id)}</button>`).join('')}
+          </div>
+        </div>`;
+    } else if (qType === 'Hotspot' && q.hotspot) {
+      const hotspot = q.hotspot;
+      const chosenRegions = new Set(String(selected || '').split(',').filter(Boolean));
+      const regionLabel = region => showVi && region.label_vi ? region.label_vi : (region.label || region.id);
+      const regionMarkup = (hotspot.regions || []).map(region => {
+        const active = chosenRegions.has(region.id);
+        const common = `fill="${active ? 'rgba(37,99,235,.35)' : 'rgba(14,165,233,.12)'}" stroke="${active ? '#1d4ed8' : '#0284c7'}" stroke-width="5" tabindex="0" role="button" aria-label="${escapeAttr(regionLabel(region))}" onclick="app.selectHotspotRegion('${escapeAttr(region.id)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();app.selectHotspotRegion('${escapeAttr(region.id)}')}"`;
+        if (region.shape === 'rect') {
+          const [x, y, width, height] = region.coords;
+          return `<rect x="${x}" y="${y}" width="${width}" height="${height}" ${common}/>`;
+        }
+        return `<polygon points="${region.coords.map(point => point.join(',')).join(' ')}" ${common}/>`;
+      }).join('');
+      interactionHtml = `
+        <p class="insight-meta">${hotspot.selection_mode === 'multiple' ? 'Chọn tất cả vùng phù hợp.' : 'Nhấp vào vùng phù hợp trong hình hoặc danh sách.'}</p>
+        <div style="position:relative;max-width:100%;margin-bottom:.75rem;">
+          <img src="${escapeAttr(hotspot.image)}" class="q-image" alt="${escapeAttr(hotspot.image_alt || 'Hotspot image')}" style="display:block;width:100%;margin:0;">
+          <svg viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-label="Hotspot regions" style="position:absolute;inset:0;width:100%;height:100%">${regionMarkup}</svg>
+        </div>
+        <div class="study-actions">${(hotspot.regions || []).map(region => `<button type="button" class="btn btn-sm ${chosenRegions.has(region.id) ? '' : 'btn-outline'}" aria-pressed="${chosenRegions.has(region.id)}" onclick="app.selectHotspotRegion('${escapeAttr(region.id)}')">${escapeHtml(regionLabel(region))}</button>`).join(' ')}</div>`;
     }
 
     let h = `
@@ -2385,7 +2978,7 @@ class PMPApp {
           <span style="font-weight:700; margin-right:.5rem;">Câu ${sess.currentIndex+1}/${sess.questions.length}</span>
           <span class="tag tag-${q.domain.toLowerCase()}">${escapeHtml(q.domain)}</span>
           <span class="tag tag-predictive">${escapeHtml(q.methodology)}</span>
-          <span class="tag">${qType}</span>
+          <span class="tag">${escapeHtml(getQuestionType(q))}</span>
         </div>
         <div style="display:flex; gap:0.5rem;">
           <button class="btn btn-sm ${flagged?'btn-warning':'btn-outline'}" onclick="app.toggleFlag()">${flagged?'⭐ Flagged':'☆ Flag'}</button>
@@ -2417,7 +3010,7 @@ class PMPApp {
         `;
       })()}
       
-      ${q.image ? `<img src="${escapeAttr(q.image)}" class="q-image" alt="Question Graphic">` : ''}
+      ${q.image && qType !== 'Hotspot' ? `<img src="${escapeAttr(q.image)}" class="q-image" alt="${escapeAttr(q.image_alt || 'Question Graphic')}">` : ''}
       <div class="q-text" data-note-scope="question">${escapeHtml(q.question)}</div>
       ${showVi ? `<div class="q-text-vi">🇻🇳 <strong>Dịch:</strong> ${escapeHtml(q.question_vi)}</div>` : ''}
       
@@ -2427,7 +3020,7 @@ class PMPApp {
 
       <div style="margin-bottom:1rem;">
         ${(canTranslate || showVi)
-          ? `<button class="btn btn-sm btn-outline" onclick="app.toggleTranslate('${q.id}')">🇻🇳 ${showVi?'Ẩn dịch':'Dịch câu hỏi'}</button>`
+          ? `<button class="btn btn-sm btn-outline" onclick="app.toggleTranslate('${q.id}')">🇻🇳 ${showVi?'Ẩn bản dịch':'Hiện bản dịch câu hỏi & đáp án'}</button>`
           : `<span style="font-size:.85rem; color:var(--danger); font-weight:600;">🔒 Đã khóa nút Dịch</span>`}
       </div>
     `;
@@ -2442,6 +3035,7 @@ class PMPApp {
           <h4 style="color:var(--primary); margin-bottom:.75rem;">💡 Giải thích · Song ngữ</h4>
           ${this.renderExplanationDetails(q)}
           ${q.reference ? `<div style="font-size:.85rem; color:var(--text-muted); margin-top:.75rem;">📌 ${escapeHtml(q.reference)}</div>` : ''}
+          ${this.renderReadingRating(q, sess)}
         </div>
       </div>`;
     }
@@ -2698,12 +3292,12 @@ class PMPApp {
           selected: sel || '—', correctAnswer: q.correctAnswer, isCorrect: ok,
           usedTranslate: !!sess.usedTranslate[q.id],
           flagged: !!sess.flags[q.id], responseTimeMs: (sess.responseTimes || {})[q.id] || null,
-          timestamp: Date.now(), source: 'mock_exam'
+          timestamp: Date.now(), source: 'mock_exam', mode: 'exam'
         };
       });
       
       const record = {
-        id: sess.id || this.createId('exam'), timestamp: Date.now(),
+        id: sess.id || this.createId('exam'), timestamp: Date.now(), mode: 'exam',
         score: correct, total: sess.questions.length,
         percentage: Math.round(correct/sess.questions.length*100),
         answers: answersList
@@ -2736,28 +3330,91 @@ class PMPApp {
   }
 
   /* ---- REVIEW ---- */
+  getReviewRecords() {
+    const records = (this.getStorage('sessions') || []).map(session => ({
+      ...session,
+      reviewKey: `exam:${session.id}`,
+      reviewMode: 'exam',
+      timestamp: session.timestamp || 0,
+      answers: Array.isArray(session.answers) ? session.answers : []
+    }));
+    const runs = new Map((this.getStorage('practice_runs') || []).map(run => [run.id, run]));
+    const practiceBySession = new Map();
+    (this.getStorage('practice_log') || []).forEach(answer => {
+      const sessionId = answer.sessionId || `legacy:${answer.qId}`;
+      if (!practiceBySession.has(sessionId)) practiceBySession.set(sessionId, []);
+      practiceBySession.get(sessionId).push(answer);
+    });
+    practiceBySession.forEach((answers, sessionId) => {
+      const run = runs.get(sessionId);
+      const correct = answers.filter(answer => answer.isCorrect).length;
+      const timestamp = Math.max(...answers.map(answer => Number(answer.timestamp) || 0));
+      records.push({
+        id: sessionId,
+        reviewKey: `practice:${sessionId}`,
+        reviewMode: 'practice',
+        mode: run && run.mode || answers[0].runMode || 'practice',
+        timestamp: run && run.startedAt || timestamp,
+        score: correct,
+        total: answers.length,
+        percentage: answers.length ? Math.round(correct / answers.length * 100) : 0,
+        answers: answers.slice().sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0))
+      });
+    });
+    if (this.lastSubmittedSession && !records.some(record => record.reviewKey === `exam:${this.lastSubmittedSession.id}`)) {
+      records.push({ ...this.lastSubmittedSession, reviewKey: `exam:${this.lastSubmittedSession.id}`, reviewMode: 'exam' });
+    }
+    return records.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+  }
+
   renderReviewPage() {
-    const sessions = this.getStorage('sessions') || [];
-    const sess = (this.reviewSessId && sessions.find(s => s.id === this.reviewSessId)) || this.lastSubmittedSession || (sessions.length ? sessions[sessions.length-1] : null);
+    const records = this.getReviewRecords();
+    const sess = records.find(record => record.reviewKey === this.reviewSessId || record.id === this.reviewSessId) || records[0];
     if (!sess) {
-      document.getElementById('review-summary').innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">Chưa có dữ liệu bài thi nào được lưu.</div>';
+      document.getElementById('review-summary').innerHTML = '<div style="padding:2rem; text-align:center; color:var(--text-muted);">Chưa có lượt Practice hoặc Exam đã lưu để xem lại. Hãy hoàn thành ít nhất một câu Practice hoặc nộp bài thi thử.</div>';
+      document.getElementById('review-coach').innerHTML = '';
       document.getElementById('review-list').innerHTML = '';
+      document.getElementById('review-pagination').innerHTML = '';
       return;
     }
-    const picker = sessions.length > 1 ? `<div style="margin-bottom:.75rem;"><label style="font-size:.85rem; color:var(--text-muted);">Chọn bài thi: </label><select onchange="app.pickReviewSession(this.value)" style="padding:.3rem; border:1px solid var(--border); border-radius:6px;">${sessions.slice().reverse().map(s => `<option value="${escapeAttr(s.id)}" ${s.id===sess.id?'selected':''}>${new Date(s.timestamp).toLocaleString('vi-VN')} — ${s.score}/${s.total} (${s.percentage}%)</option>`).join('')}</select></div>` : '';
+    this.reviewSessId = sess.reviewKey;
+    const picker = records.length > 1 ? `<div style="margin-bottom:.75rem;"><label style="font-size:.85rem; color:var(--text-muted);">Chọn lượt Practice/Exam: </label><select onchange="app.pickReviewSession(this.value)" style="padding:.3rem; border:1px solid var(--border); border-radius:6px;">${records.map(record => `<option value="${escapeAttr(record.reviewKey)}" ${record.reviewKey === sess.reviewKey ? 'selected' : ''}>${record.reviewMode === 'practice' ? '[Practice]' : '[Exam]'} ${new Date(record.timestamp).toLocaleString('vi-VN')} — ${record.score}/${record.total} (${record.percentage}%)</option>`).join('')}</select></div>` : '';
+    const modeLabel = sess.reviewMode === 'practice' ? 'Practice' : 'Exam';
     document.getElementById('review-summary').innerHTML = picker + `
       <div class="card" style="background:var(--info-bg); border-color:var(--border)">
-        <h3 style="color:var(--primary)">Kết quả mock exam</h3>
-        <p style="font-size:1.2rem; font-weight:700; margin:.3rem 0;">Điểm luyện tập: ${sess.score}/${sess.total} (${sess.percentage}%)</p>
-        <p class="insight-meta">Điểm của bộ câu hỏi này, không phải kết quả PASS/FAIL hay dự báo điểm thi PMI.</p>
+        <h3 style="color:var(--primary)">Kết quả <span class="tag ${sess.reviewMode === 'practice' ? 'tag-process' : 'tag-predictive'}">${modeLabel}</span></h3>
+        <p style="font-size:1.2rem; font-weight:700; margin:.3rem 0;">Điểm: ${sess.score}/${sess.total} (${sess.percentage}%)</p>
+        <p class="insight-meta">${sess.reviewMode === 'practice' ? 'Tổng hợp lượt trả lời Practice đã lưu trong phiên này.' : 'Điểm của bộ câu hỏi này, không phải kết quả PASS/FAIL hay dự báo điểm thi PMI.'}</p>
       </div>`;
 
     const qs = this.getQuestions();
     const qMap = {};
     qs.forEach(q => qMap[q.id] = q);
+    const answers = Array.isArray(sess.answers) ? sess.answers : [];
+    const wrongAnswers = answers.map((answer, index) => ({ answer, index, question: qMap[answer.qId] }))
+      .filter(item => !item.answer.isCorrect && item.question);
+    const wrongByTask = new Map();
+    wrongAnswers.forEach(item => {
+      const task = item.question.knowledge_area || item.question.task || 'Chưa phân loại';
+      wrongByTask.set(task, (wrongByTask.get(task) || 0) + 1);
+    });
+    const focusTask = Array.from(wrongByTask.entries()).sort((a, b) => b[1] - a[1])[0];
+    const focusQuestion = focusTask && wrongAnswers.find(item =>
+      (item.question.knowledge_area || item.question.task || 'Chưa phân loại') === focusTask[0]
+    ).question;
+    document.getElementById('review-coach').innerHTML = `
+      <div class="coach-action">
+        <h3>🧭 Bước ôn tập tiếp theo</h3>
+        <div style="display:flex; gap:.3rem; flex-wrap:wrap; margin:.6rem 0;" aria-label="Bản đồ câu trả lời">
+          ${answers.map((answer, index) => `<span title="Câu ${index + 1}: ${answer.isCorrect ? 'đúng' : 'cần xem lại'}" style="width:28px; height:28px; border-radius:5px; display:inline-flex; align-items:center; justify-content:center; background:${answer.isCorrect ? '#dcfce7' : '#fee2e2'}; color:${answer.isCorrect ? '#166534' : '#991b1b'};">${index + 1}</span>`).join('')}
+        </div>
+        ${focusTask ? `<p>Bắt đầu xem lại <strong>${focusTask[1]} câu về ${escapeHtml(focusTask[0])}</strong>. ${focusQuestion.explanation.pmp_mindset_vi ? escapeHtml(focusQuestion.explanation.pmp_mindset_vi) : 'Đọc giải thích từng câu và xác định điều đề bài thực sự yêu cầu trước khi chọn hành động.'}</p>` :
+          '<p>Bạn đã trả lời đúng toàn bộ câu hỏi trong lượt này. Hãy ôn các câu đến hạn để duy trì ghi nhớ.</p>'}
+        ${wrongAnswers.length ? `<button class="btn" onclick="app.startTargetedPractice('wrong', 5)">Ôn tối đa 5 câu cần xem lại</button>` : ''}
+      </div>`;
 
     const dom = {People:{t:0,c:0},Process:{t:0,c:0},BusinessEnvironment:{t:0,c:0}};
-    sess.answers.forEach(a => { if (dom[a.domain]) { dom[a.domain].t++; if (a.isCorrect) dom[a.domain].c++; } });
+    answers.forEach(a => { if (dom[a.domain]) { dom[a.domain].t++; if (a.isCorrect) dom[a.domain].c++; } });
     let ch = '<svg viewBox="0 0 400 140" width="100%">';
     Object.keys(dom).forEach((d, i) => {
       const pct = dom[d].t ? Math.round(dom[d].c/dom[d].t*100) : 0;
@@ -2769,16 +3426,24 @@ class PMPApp {
     ch += '</svg>';
     document.getElementById('chart-review-domain').innerHTML = ch;
     const lv = {};
-    sess.answers.forEach(a => { const k = a.english_level || '—'; lv[k] = lv[k] || {t:0,c:0}; lv[k].t++; if (a.isCorrect) lv[k].c++; });
+    answers.forEach(a => { const k = a.english_level || '—'; lv[k] = lv[k] || {t:0,c:0}; lv[k].t++; if (a.isCorrect) lv[k].c++; });
     document.getElementById('chart-review-level').innerHTML = Object.keys(lv).sort().map(k => { const p = Math.round(lv[k].c/lv[k].t*100); return `<div style="display:flex; align-items:center; gap:.5rem; margin:.4rem 0; font-size:.9rem;"><strong style="width:2.5rem;">${escapeHtml(k)}</strong><div style="flex:1; background:#e2e8f0; border-radius:4px; height:18px;"><div style="width:${p}%; background:${p>=70?'#16a34a':(p>=50?'#d97706':'#dc2626')}; height:100%; border-radius:4px;"></div></div><span style="width:5.5rem; text-align:right;">${p}% (${lv[k].c}/${lv[k].t})</span></div>`; }).join('');
 
-    document.getElementById('review-list').innerHTML = sess.answers.map((ans, idx) => {
+    const pageSize = 10;
+    const pageCount = Math.max(1, Math.ceil(answers.length / pageSize));
+    this.reviewPage = Math.min(Math.max(1, this.reviewPage || 1), pageCount);
+    const pageAnswers = answers.slice((this.reviewPage - 1) * pageSize, this.reviewPage * pageSize);
+    document.getElementById('review-pagination').innerHTML = answers.length > pageSize
+      ? `<button class="btn btn-sm btn-outline" onclick="app.setReviewPage(${this.reviewPage - 1})" ${this.reviewPage === 1 ? 'disabled' : ''}>← Trước</button><span>Trang ${this.reviewPage}/${pageCount} · ${answers.length} câu</span><button class="btn btn-sm btn-outline" onclick="app.setReviewPage(${this.reviewPage + 1})" ${this.reviewPage === pageCount ? 'disabled' : ''}>Sau →</button>`
+      : `<span class="insight-meta">${answers.length} câu${answers.length ? '' : ' đã trả lời'}</span>`;
+    document.getElementById('review-list').innerHTML = pageAnswers.map((ans, pageIdx) => {
+      const idx = (this.reviewPage - 1) * pageSize + pageIdx;
       const q = qMap[ans.qId];
       if (!q) return '';
       return `<div class="card" style="border-left:4px solid ${ans.isCorrect?'var(--success)':'var(--danger)'};">
         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:.5rem;">
           <strong>Câu ${idx+1}: ${q.id}</strong>
-          <span class="tag ${ans.isCorrect?'tag-businessenvironment':'tag-people'}">${ans.isCorrect?'ĐÚNG':'SAI'}</span>
+          <div><span class="tag ${sess.reviewMode === 'practice' ? 'tag-process' : 'tag-predictive'}">${modeLabel}</span> <span class="tag ${ans.isCorrect?'tag-businessenvironment':'tag-people'}">${ans.isCorrect?'ĐÚNG':'SAI'}</span></div>
         </div>
         <div style="margin-bottom:.5rem; font-style:italic;">${escapeHtml(q.question)}</div>
         <div style="font-size:.9rem; margin-bottom:.5rem;">
@@ -2798,7 +3463,8 @@ class PMPApp {
     this.bindKwClicks();
   }
 
-  pickReviewSession(id) { this.reviewSessId = id; this.renderReviewPage(); }
+  setReviewPage(page) { this.reviewPage = page; this.renderReviewPage(); }
+  pickReviewSession(id) { this.reviewSessId = id; this.reviewPage = 1; this.renderReviewPage(); }
 
   updateSRS(qId, understood) {
     const srs = this.getStorage('srs') || {};
@@ -3174,18 +3840,31 @@ class PMPApp {
           incoming = JSON.parse(text.replace(/,\s*([\]}])/g, '$1'));
         }
 
+        let caseStudies = [];
         if (!Array.isArray(incoming)) {
+          if (incoming.schema_version != null && incoming.schema_version !== 2)
+            throw new Error(`schema_version "${incoming.schema_version}" chưa được hỗ trợ.`);
+          caseStudies = Array.isArray(incoming.case_studies) ? incoming.case_studies : [];
           if (Array.isArray(incoming.questions)) incoming = incoming.questions;
           else if (incoming.pmp_questions) {
             incoming = typeof incoming.pmp_questions === 'string' ? JSON.parse(incoming.pmp_questions) : incoming.pmp_questions;
           }
         }
         if (!Array.isArray(incoming)) throw new Error('File phải là mảng câu hỏi.');
+        const caseById = new Map(caseStudies.filter(item => item && item.id).map(item => [String(item.id), item]));
+        incoming.forEach(question => {
+          if (!question || !question.case_id || !caseById.has(String(question.case_id))) return;
+          const caseStudy = caseById.get(String(question.case_id));
+          const scenario = caseStudy.scenario;
+          if (!question.scenario) question.scenario = typeof scenario === 'string' ? scenario : scenario && scenario.en || '';
+          if (!question.scenario_vi) question.scenario_vi = typeof scenario === 'object' && scenario ? scenario.vi || '' : caseStudy.scenario_vi || '';
+        });
 
         const errors = [];
         const importedIds = new Set();
         incoming.forEach((q, i) => {
           if (!q || typeof q !== 'object') { errors.push(`[${i}] không phải object`); return; }
+          if (q.question_type) normalizeQuestion(q);
           if (!q.id) errors.push(`[${i}] thiếu id`);
           else {
             const id = String(q.id);
@@ -3201,8 +3880,20 @@ class PMPApp {
               (typeof q.explanation.whyWrong_vi !== 'object' || Array.isArray(q.explanation.whyWrong_vi)))
             errors.push(`[${i}] ${q.id||'?'}: explanation.whyWrong_vi phải là object`);
             
-          const type = q.type || "MCQ";
-          if (!["MCQ", "MultipleResponse", "Dropdown", "Matching"].includes(type)) {
+          const type = q.type || ({
+            single_choice: 'MCQ', multiple_response: 'MultipleResponse',
+            case_scenario: 'MCQ', graphic_based: 'MCQ',
+            matching: 'Matching', enhanced_matching: 'EnhancedMatching',
+            hotspot: 'Hotspot', pull_down_list: 'Dropdown'
+          }[q.question_type] || 'MCQ');
+          if (q.schema_version != null && q.schema_version !== 2)
+            errors.push(`[${i}] ${q.id||'?'}: schema_version "${q.schema_version}" chưa được hỗ trợ`);
+          if (q.question_type && !['single_choice','multiple_response','case_scenario','graphic_based','matching','enhanced_matching','hotspot','pull_down_list'].includes(q.question_type))
+            errors.push(`[${i}] ${q.id||'?'}: question_type "${q.question_type}" chưa được hỗ trợ`);
+          if (q.schema_version === 2) {
+            this.validateQuestion(q).forEach(message => errors.push(`[${i}] ${q.id||'?'}: ${message}`));
+          }
+          if (!["MCQ", "MultipleResponse", "Dropdown", "Matching", "EnhancedMatching", "Hotspot"].includes(type)) {
             errors.push(`[${i}] ${q.id||'?'}: type "${type}" chưa được hỗ trợ`);
           } else if (type === "MCQ") {
             if (!q.options || Object.keys(q.options).length !== 4)
@@ -3254,7 +3945,23 @@ class PMPApp {
             } catch (e) {
               errors.push(`[${i}] ${q.id||'?'}: correctAnswer phải là chuỗi JSON object hợp lệ`);
             }
+          } else if (type === 'EnhancedMatching') {
+            if (!q.enhanced_matching || !Array.isArray(q.enhanced_matching.targets) || !Array.isArray(q.enhanced_matching.items))
+              errors.push(`[${i}] ${q.id||'?'}: cần enhanced_matching.targets và enhanced_matching.items`);
+          } else if (type === 'Hotspot') {
+            if (!q.hotspot || !Array.isArray(q.hotspot.regions) || !q.hotspot.regions.length)
+              errors.push(`[${i}] ${q.id||'?'}: cần hotspot.regions không rỗng`);
           }
+        });
+        const caseContent = new Map((this.getQuestions() || [])
+          .filter(question => question.case_id)
+          .map(question => [question.case_id, `${question.scenario || ''}\n${question.scenario_vi || ''}`]));
+        incoming.forEach((question, index) => {
+          if (!question || !question.case_id) return;
+          const content = `${question.scenario || ''}\n${question.scenario_vi || ''}`;
+          if (caseContent.has(question.case_id) && caseContent.get(question.case_id) !== content)
+            errors.push(`[${index}] ${question.id || '?'}: case_id "${question.case_id}" có nội dung tình huống không nhất quán`);
+          else caseContent.set(question.case_id, content);
         });
 
         if (errors.length) {
