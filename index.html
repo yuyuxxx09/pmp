@@ -138,7 +138,7 @@
     .question-form textarea { min-height: 84px; resize: vertical; }
     .question-form fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; min-width: 0; }
     .question-form legend { font-weight: 700; padding: 0 .35rem; }
-    .question-form .option-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: .75rem; }
+    .question-form .option-row { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto; gap: .75rem; margin-top: .75rem; align-items: end; }
     .question-form .correct-answer-choice { display: inline-flex; align-items: center; gap: .35rem; margin: .5rem .75rem 0 0; }
     .question-form .correct-answer-choice label { margin: 0; }
     .coach-action { background: linear-gradient(120deg, #eff6ff, #f0fdf4); border: 1px solid #bfdbfe; border-radius: var(--radius); padding: 1.25rem; margin-bottom: 1.25rem; }
@@ -369,17 +369,11 @@
           <label for="new-question-image-alt">Mô tả ảnh (accessibility)</label><input id="new-question-image-alt" name="image_alt" type="text">
         </fieldset>
         <fieldset id="choice-fields">
-          <legend id="choice-legend">4 lựa chọn (English &amp; Tiếng Việt)</legend>
-          <div class="option-row"><div><label for="new-option-A-en">Option A (English)</label><input id="new-option-A-en" name="optionAEn" type="text" required></div><div><label for="new-option-A-vi">Option A (Tiếng Việt)</label><input id="new-option-A-vi" name="optionAVi" type="text" required></div></div>
-          <div class="option-row"><div><label for="new-option-B-en">Option B (English)</label><input id="new-option-B-en" name="optionBEn" type="text" required></div><div><label for="new-option-B-vi">Option B (Tiếng Việt)</label><input id="new-option-B-vi" name="optionBVi" type="text" required></div></div>
-          <div class="option-row"><div><label for="new-option-C-en">Option C (English)</label><input id="new-option-C-en" name="optionCEn" type="text" required></div><div><label for="new-option-C-vi">Option C (Tiếng Việt)</label><input id="new-option-C-vi" name="optionCVi" type="text" required></div></div>
-          <div class="option-row"><div><label for="new-option-D-en">Option D (English)</label><input id="new-option-D-en" name="optionDEn" type="text" required></div><div><label for="new-option-D-vi">Option D (Tiếng Việt)</label><input id="new-option-D-vi" name="optionDVi" type="text" required></div></div>
-          <div style="margin-top:1rem;"><strong>Chọn đáp án đúng</strong><div>
-            <span class="correct-answer-choice"><input id="new-correct-A" type="checkbox" name="correctAnswers" value="A"><label for="new-correct-A">A đúng</label></span>
-            <span class="correct-answer-choice"><input id="new-correct-B" type="checkbox" name="correctAnswers" value="B"><label for="new-correct-B">B đúng</label></span>
-            <span class="correct-answer-choice"><input id="new-correct-C" type="checkbox" name="correctAnswers" value="C"><label for="new-correct-C">C đúng</label></span>
-            <span class="correct-answer-choice"><input id="new-correct-D" type="checkbox" name="correctAnswers" value="D"><label for="new-correct-D">D đúng</label></span>
-          </div></div>
+          <legend id="choice-legend">Lựa chọn (English &amp; Tiếng Việt)</legend>
+          <p class="insight-meta">Thêm hoặc xóa phương án nếu đề có số lựa chọn khác nhau; hỗ trợ từ 2 đến 26 lựa chọn.</p>
+          <div id="choice-options-list"></div>
+          <button id="add-choice-option" class="btn btn-outline btn-sm" type="button">＋ Thêm lựa chọn</button>
+          <div style="margin-top:1rem;"><strong>Chọn đáp án đúng</strong><div id="choice-correct-answers"></div></div>
         </fieldset>
         <fieldset id="structured-fields" hidden>
           <legend id="structured-legend">Cấu hình tương tác</legend>
@@ -393,10 +387,7 @@
         </div>
         <fieldset id="why-wrong-fields">
           <legend>Tại sao các lựa chọn còn lại sai? (Tiếng Việt)</legend>
-          <div id="why-wrong-A" class="wrong-reason-field"><label for="new-why-wrong-A">Lựa chọn A sai vì</label><textarea id="new-why-wrong-A" name="whyWrongA"></textarea></div>
-          <div id="why-wrong-B" class="wrong-reason-field"><label for="new-why-wrong-B">Lựa chọn B sai vì</label><textarea id="new-why-wrong-B" name="whyWrongB"></textarea></div>
-          <div id="why-wrong-C" class="wrong-reason-field"><label for="new-why-wrong-C">Lựa chọn C sai vì</label><textarea id="new-why-wrong-C" name="whyWrongC"></textarea></div>
-          <div id="why-wrong-D" class="wrong-reason-field"><label for="new-why-wrong-D">Lựa chọn D sai vì</label><textarea id="new-why-wrong-D" name="whyWrongD"></textarea></div>
+          <div id="why-wrong-options"></div>
         </fieldset>
         <div><label for="new-pmp-mindset">PMP Mindset (Tiếng Việt)</label><textarea id="new-pmp-mindset" name="pmp_mindset_vi" required placeholder="Pattern hoặc tư duy cốt lõi cần nhớ khi gặp dạng câu này"></textarea></div>
         <div><button class="btn" type="submit">💾 Lưu câu hỏi</button></div>
@@ -1288,6 +1279,23 @@ class PMPApp {
     }
     const addQuestionForm = document.getElementById('add-question-form');
     if (addQuestionForm) {
+      addQuestionForm.addEventListener('click', event => {
+        if (event.target.closest('#add-choice-option')) {
+          const entries = this.getChoiceFormEntries(addQuestionForm);
+          if (entries.length < 26) {
+            entries.push({ key: String.fromCharCode(65 + entries.length), en: '', vi: '', correct: false });
+            this.renderChoiceFormEntries(addQuestionForm, entries);
+          }
+        } else {
+          const removeButton = event.target.closest('[data-remove-choice]');
+          if (removeButton) {
+            const entries = this.getChoiceFormEntries(addQuestionForm)
+              .filter(entry => entry.key !== removeButton.dataset.removeChoice)
+              .map((entry, index) => ({ ...entry, key: String.fromCharCode(65 + index) }));
+            this.renderChoiceFormEntries(addQuestionForm, entries);
+          }
+        }
+      });
       addQuestionForm.addEventListener('change', event => {
         if (event.target.name === 'correctAnswers') {
           const type = addQuestionForm.elements.question_type.value;
@@ -1318,13 +1326,15 @@ class PMPApp {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
       if (e.ctrlKey || e.metaKey || e.altKey) return;
 
-      if (['1', '2', '3', '4'].includes(e.key)) {
+      if (/^[1-9]$/.test(e.key)) {
         const sess = this.getActiveSession();
         const q = sess?.questions[sess.currentIndex];
+        const key = q && Object.keys(q.options || {})[Number(e.key) - 1];
+        if (!key) return;
         if (q && q.type === 'MultipleResponse') {
-           this.toggleMultiSelect(['A', 'B', 'C', 'D'][parseInt(e.key) - 1]);
+           this.toggleMultiSelect(key);
         } else {
-           this.selectAnswer(['A', 'B', 'C', 'D'][parseInt(e.key) - 1]);
+           this.selectAnswer(key);
         }
       } else if (e.key === 'ArrowRight') {
         this.navQuestion(1);
@@ -1377,8 +1387,8 @@ class PMPApp {
     const type = form.elements.question_type.value;
     const correctAnswers = new Set(new FormData(form).getAll('correctAnswers'));
     const usesChoices = ['single_choice', 'multiple_response', 'case_scenario', 'graphic_based'].includes(type);
-    ['A', 'B', 'C', 'D'].forEach(key => {
-      const field = document.getElementById(`why-wrong-${key}`);
+    Array.from(form.querySelectorAll('[data-wrong-reason]')).forEach(field => {
+      const key = field.dataset.wrongReason;
       const input = form.elements[`whyWrong${key}`];
       const isCorrect = correctAnswers.has(key);
       field.hidden = !usesChoices || isCorrect;
@@ -1402,6 +1412,11 @@ class PMPApp {
     const structuredTypes = ['matching', 'enhanced_matching', 'hotspot', 'pull_down_list'];
     const choiceFields = document.getElementById('choice-fields');
     choiceFields.hidden = !choiceTypes.includes(type);
+    if (!document.getElementById('choice-options-list').children.length) {
+      this.renderChoiceFormEntries(form, ['A', 'B', 'C', 'D'].map(key => ({
+        key, en: '', vi: '', correct: false
+      })));
+    }
     document.getElementById('case-fields').hidden = type !== 'case_scenario';
     document.getElementById('graphic-fields').hidden = type !== 'graphic_based';
     const structured = document.getElementById('structured-fields');
@@ -1442,7 +1457,44 @@ class PMPApp {
     form.elements.scenario.required = type === 'case_scenario';
     form.elements.scenario_vi.required = type === 'case_scenario';
     document.getElementById('choice-legend').textContent =
-      multi ? 'Các lựa chọn (chọn tất cả đáp án đúng)' : '4 lựa chọn (English & Tiếng Việt)';
+      multi ? 'Các lựa chọn (chọn tất cả đáp án đúng)' : 'Các lựa chọn (English & Tiếng Việt)';
+    document.getElementById('add-choice-option').disabled =
+      document.getElementById('choice-options-list').children.length >= 26;
+    this.updateWrongReasonFields();
+  }
+
+  getChoiceFormEntries(form) {
+    return Array.from(form.querySelectorAll('[data-choice-key]')).map(row => {
+      const key = row.dataset.choiceKey;
+      return {
+        key,
+        en: row.querySelector(`[name="option${key}En"]`).value,
+        vi: row.querySelector(`[name="option${key}Vi"]`).value,
+        correct: form.querySelector(`[name="correctAnswers"][value="${key}"]`).checked,
+        whyWrong: form.elements[`whyWrong${key}`].value
+      };
+    });
+  }
+
+  renderChoiceFormEntries(form, entries) {
+    const optionList = document.getElementById('choice-options-list');
+    const answerList = document.getElementById('choice-correct-answers');
+    const wrongReasonList = document.getElementById('why-wrong-options');
+    optionList.innerHTML = entries.map(({ key, en, vi }) => `
+      <div class="option-row" data-choice-key="${key}">
+        <div><label for="new-option-${key}-en">Option ${key} (English)</label><input id="new-option-${key}-en" name="option${key}En" type="text" value="${escapeAttr(en)}" required></div>
+        <div><label for="new-option-${key}-vi">Option ${key} (Tiếng Việt)</label><input id="new-option-${key}-vi" name="option${key}Vi" type="text" value="${escapeAttr(vi)}" required></div>
+        <button class="btn btn-outline btn-sm" type="button" data-remove-choice="${key}" aria-label="Xóa lựa chọn ${key}" ${entries.length <= 2 ? 'disabled' : ''}>Xóa ${key}</button>
+      </div>`).join('');
+    answerList.innerHTML = entries.map(({ key, correct }) => `
+      <span class="correct-answer-choice"><input id="new-correct-${key}" type="checkbox" name="correctAnswers" value="${key}" ${correct ? 'checked' : ''}><label for="new-correct-${key}">${key} đúng</label></span>`).join('');
+    wrongReasonList.innerHTML = entries.map(({ key, whyWrong }) => `
+      <div class="wrong-reason-field" data-wrong-reason="${key}">
+        <label for="new-why-wrong-${key}">Lựa chọn ${key} sai vì</label>
+        <textarea id="new-why-wrong-${key}" name="whyWrong${key}">${escapeHtml(whyWrong || '')}</textarea>
+      </div>`).join('');
+    const addButton = document.getElementById('add-choice-option');
+    addButton.disabled = entries.length >= 26;
     this.updateWrongReasonFields();
   }
 
@@ -1461,14 +1513,16 @@ class PMPApp {
     const type = question.question_type;
     if (['single_choice', 'multiple_response', 'case_scenario', 'graphic_based'].includes(type)) {
       const options = question.options || {};
-      if (['A', 'B', 'C', 'D'].some(key => !String(options[key] || '').trim())) errors.push('Cần điền đủ bốn lựa chọn tiếng Anh');
-      if (['A', 'B', 'C', 'D'].some(key => !String((question.options_vi || {})[key] || '').trim())) errors.push('Cần điền đủ bốn lựa chọn tiếng Việt');
+      const optionKeys = Object.keys(options);
+      if (optionKeys.length < 2 || optionKeys.length > 26) errors.push('Cần có từ 2 đến 26 lựa chọn');
+      if (optionKeys.some(key => !/^[A-Z]$/.test(key) || !String(options[key] || '').trim())) errors.push('Mỗi lựa chọn tiếng Anh cần có nhãn A-Z và nội dung');
+      if (optionKeys.some(key => !String((question.options_vi || {})[key] || '').trim())) errors.push('Cần điền tiếng Việt cho mọi lựa chọn');
       const answers = this._parseAnswerKeys(question.correctAnswer);
       const multi = type === 'multiple_response' || (type === 'case_scenario' && question.type === 'MultipleResponse');
       const expected = multi ? answers.length >= 2 : answers.length === 1;
       if (!expected || new Set(answers).size !== answers.length || answers.some(key => !Object.prototype.hasOwnProperty.call(options, key))) errors.push('Số đáp án đúng không phù hợp với dạng câu hỏi');
       answers.forEach(key => { if (!question.explanation.whyWrong_vi || question.explanation.whyWrong_vi[key]) errors.push(`Đáp án đúng ${key} không được có lý do sai`); });
-      ['A', 'B', 'C', 'D'].filter(key => !answers.includes(key)).forEach(key => {
+      optionKeys.filter(key => !answers.includes(key)).forEach(key => {
         required(question.explanation.whyWrong_vi && question.explanation.whyWrong_vi[key], `Lý do lựa chọn ${key} sai`);
       });
     }
@@ -1617,7 +1671,8 @@ class PMPApp {
     if (choiceTypes.includes(type)) {
       question.options = {};
       question.options_vi = {};
-      ['A', 'B', 'C', 'D'].forEach(key => {
+      Array.from(form.querySelectorAll('[data-choice-key]')).forEach(row => {
+        const key = row.dataset.choiceKey;
         question.options[key] = read(`option${key}En`);
         question.options_vi[key] = read(`option${key}Vi`);
         if (!correctAnswers.includes(key)) {
@@ -3896,8 +3951,8 @@ class PMPApp {
           if (!["MCQ", "MultipleResponse", "Dropdown", "Matching", "EnhancedMatching", "Hotspot"].includes(type)) {
             errors.push(`[${i}] ${q.id||'?'}: type "${type}" chưa được hỗ trợ`);
           } else if (type === "MCQ") {
-            if (!q.options || Object.keys(q.options).length !== 4)
-              errors.push(`[${i}] ${q.id||'?'}: cần đúng 4 options (A, B, C, D)`);
+            if (!q.options || Object.keys(q.options).length < 2)
+              errors.push(`[${i}] ${q.id||'?'}: cần ít nhất 2 options`);
             if (!q.options || !q.options[q.correctAnswer])
               errors.push(`[${i}] ${q.id||'?'}: correctAnswer "${q.correctAnswer}" không có trong options`);
           } else if (type === "MultipleResponse") {
