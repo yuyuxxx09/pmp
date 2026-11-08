@@ -2281,27 +2281,94 @@ class PMPApp {
     const scanQuestion = wrongAnswers.length
       ? questions.get(wrongAnswers[wrongAnswers.length - 1].qId)
       : qs[0];
-    const scanSource = scanQuestion
-      ? [scanQuestion.question, ...Object.values(scanQuestion.options || {}), scanQuestion.explanation.correct_vi, scanQuestion.explanation.correct_en]
-        .join(' ').toLowerCase()
+    const scanText = scanQuestion
+      ? `${scanQuestion.scenario || ''} ${scanQuestion.question || ''}`.toLowerCase()
       : '';
-    const scanTerms = scanQuestion && (scanQuestion.glossary || []).filter(term =>
-      term.en.split(/[\/\s-]+/).some(word => word.length > 3 && scanSource.includes(word.toLowerCase()))
-    ).slice(0, 4);
-    const questionClues = scanQuestion ? [
-      ['FIRST', 'trước tiên'], ['NEXT', 'tiếp theo'], ['BEST', 'tốt nhất'],
-      ['MOST', 'nhất'], ['EXCEPT', 'ngoại trừ'], ['NOT', 'không']
-    ].filter(([word]) => new RegExp(`\\b${word}\\b`, 'i').test(scanQuestion.question)) : [];
+    const escapeRegExp = value => String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const matchesScanText = value => {
+      const phrase = String(value || '').trim();
+      return phrase && new RegExp(`(^|[^a-z0-9])${escapeRegExp(phrase.toLowerCase())}($|[^a-z0-9])`).test(scanText);
+    };
+    const scanVocabulary = [
+      { en: 'transitioning', vi: 'đang chuyển đổi' },
+      { en: 'predictive approach', vi: 'phương pháp dự đoán / theo kế hoạch' },
+      { en: 'predictive', vi: 'theo kế hoạch (predictive)' },
+      { en: 'agile approach', vi: 'cách tiếp cận linh hoạt' },
+      { en: 'agile', vi: 'linh hoạt (Agile)' },
+      { en: 'obstacles', vi: 'trở ngại' },
+      { en: 'obstacle', vi: 'trở ngại' },
+      { en: 'stakeholder', vi: 'bên liên quan' },
+      { en: 'conflict', vi: 'xung đột' },
+      { en: 'risk', vi: 'rủi ro' },
+      { en: 'change request', vi: 'yêu cầu thay đổi' },
+      { en: 'root cause', vi: 'nguyên nhân gốc' },
+      { en: 'team', vi: 'nhóm dự án' }
+    ];
+    const matchedTerms = new Map();
+    (scanQuestion && scanQuestion.glossary || []).forEach(term => {
+      if (term.en && matchesScanText(term.en)) matchedTerms.set(term.en.toLowerCase(), { en: term.en, vi: term.vi });
+    });
+    scanVocabulary.forEach(term => {
+      if (matchesScanText(term.en) && !Array.from(matchedTerms.keys()).some(key =>
+        key === term.en || key.includes(term.en) || term.en.includes(key)
+      )) matchedTerms.set(term.en, term);
+    });
+    const scanTerms = Array.from(matchedTerms.values()).slice(0, 5);
+    const taggedKeywords = scanQuestion && (scanQuestion.keywords || [])
+      .filter(keyword => matchesScanText(keyword))
+      .filter(keyword => !scanTerms.some(term => term.en.toLowerCase() === String(keyword).toLowerCase()))
+      .slice(0, 3) || [];
+    const questionClues = [];
+    if (scanQuestion) {
+      const definitions = [
+        { phrase: 'WHICH TWO', pattern: /\bwhich\s+two\b/i, meaning: 'cần chọn đúng hai đáp án' },
+        { phrase: 'WHICH THREE', pattern: /\bwhich\s+three\b/i, meaning: 'cần chọn đúng ba đáp án' },
+        { phrase: 'MOST LIKELY', pattern: /\bmost\s+likely\b/i, meaning: 'có khả năng xảy ra nhất' },
+        { phrase: 'LEAST LIKELY', pattern: /\bleast\s+likely\b/i, meaning: 'ít có khả năng xảy ra nhất' },
+        { phrase: 'MOST APPROPRIATE', pattern: /\bmost\s+appropriate\b/i, meaning: 'phù hợp nhất' },
+        { phrase: 'MOST EFFECTIVE', pattern: /\bmost\s+effective\b/i, meaning: 'hiệu quả nhất' },
+        { phrase: 'FIRST', pattern: /\bfirst\b/i, meaning: 'đầu tiên' },
+        { phrase: 'NEXT', pattern: /\bnext\b/i, meaning: 'tiếp theo' },
+        { phrase: 'BEST', pattern: /\bbest\b/i, meaning: 'tốt nhất' },
+        { phrase: 'MOST', pattern: /\bmost\b/i, meaning: 'nhất' },
+        { phrase: 'EXCEPT', pattern: /\bexcept\b/i, meaning: 'ngoại trừ' },
+        { phrase: 'NOT', pattern: /\bnot\b/i, meaning: 'không' }
+      ];
+      const matchedRanges = [];
+      definitions.forEach(({ phrase, pattern, meaning }) => {
+        const match = pattern.exec(scanQuestion.question);
+        if (!match) return;
+        const range = [match.index, match.index + match[0].length];
+        if (matchedRanges.some(([start, end]) => range[0] < end && range[1] > start)) return;
+        matchedRanges.push(range);
+        questionClues.push([phrase, meaning]);
+      });
+    }
+    const asksForCount = questionClues.find(([word]) => /^WHICH (TWO|THREE)$/.test(word));
+    const asksLikelihood = questionClues.some(([word]) => /LIKELY$/.test(word));
+    const asksSequence = questionClues.some(([word]) => ['FIRST', 'NEXT'].includes(word));
+    const asksNegative = questionClues.some(([word]) => ['EXCEPT', 'NOT'].includes(word));
+    const scanAdvice = [
+      asksForCount ? `Gạch chân số đáp án cần chọn (${asksForCount[0].toLowerCase().replace('which ', '')}); chỉ chọn đủ số lượng đó.` : '',
+      asksLikelihood ? 'Câu hỏi hỏi điều có khả năng xảy ra, không nhất thiết hỏi hành động PM nên làm.' : '',
+      asksSequence ? 'Từ chỉ thứ tự yêu cầu chọn bước đúng trước/sau; đừng nhảy thẳng đến giải pháp cuối.' : '',
+      asksNegative ? 'Đề có phủ định: tìm lựa chọn KHÔNG phù hợp / ngoại trừ.' : ''
+    ].filter(Boolean);
     document.getElementById('keyword-scanning').innerHTML = scanQuestion
       ? `<div class="insight-card" style="margin:0; background:#f8fafc;">
-          <strong>🔎 Quét keyword trong câu</strong>
+          <strong>🔎 Đọc đề theo dấu hiệu và từ khóa</strong>
           <p style="margin-top:.35rem;">${escapeHtml(scanQuestion.question)}</p>
           <p class="insight-meta" style="margin-top:.2rem;">${escapeHtml(scanQuestion.question_vi || 'Chưa có bản dịch câu hỏi.')}</p>
-          <div style="margin-top:.4rem;">${questionClues.map(([word, translation]) =>
-            `<span class="tag tag-process">${word} = ${translation}</span>`
-          ).join(' ')} ${scanTerms && scanTerms.length ? scanTerms.map(term =>
-            `<span class="tag tag-people" title="${escapeAttr(term.vi)}">${escapeHtml(term.en)} = ${escapeHtml(term.vi)}</span>`
-          ).join(' ') : ''}</div>
+          <div style="margin-top:.65rem;"><strong>1. Câu hỏi đang yêu cầu</strong><div style="margin-top:.3rem;">${questionClues.length
+            ? questionClues.map(([word, translation]) => `<span class="tag tag-process">${escapeHtml(word)} = ${escapeHtml(translation)}</span>`).join(' ')
+            : '<span class="insight-meta">Đọc kỹ phần câu hỏi cuối để xác định yêu cầu cụ thể.</span>'}</div></div>
+          <div style="margin-top:.55rem;"><strong>2. Từ khóa nội dung</strong><div style="margin-top:.3rem;">${scanTerms.length || taggedKeywords.length
+            ? `${scanTerms.map(term => `<span class="tag tag-people">${escapeHtml(term.en)}${term.vi ? ` = ${escapeHtml(term.vi)}` : ''}</span>`).join(' ')} ${taggedKeywords.map(keyword => `<span class="tag tag-people">${escapeHtml(keyword)}</span>`).join(' ')}`
+            : '<span class="insight-meta">Chưa có thuật ngữ được gắn cho câu này; hãy tập trung vào chủ thể, tình huống và điều đề đang hỏi.</span>'}</div></div>
+          ${scanAdvice.length ? `<div style="margin-top:.55rem;"><strong>3. Cách áp dụng:</strong> ${scanAdvice.map(escapeHtml).join(' ')}</div>` : ''}
+          ${scanQuestion.explanation && scanQuestion.explanation.pmp_mindset_vi
+            ? `<div class="insight-meta" style="margin-top:.55rem;"><strong>PMP Mindset:</strong> ${escapeHtml(scanQuestion.explanation.pmp_mindset_vi)}</div>` : ''}
+          <p class="insight-meta" style="margin-top:.55rem;">Từ khóa giúp định hướng cách đọc, không bảo đảm đoán đúng đáp án nếu chưa xét tình huống và từng lựa chọn.</p>
         </div>`
       : '';
   }
