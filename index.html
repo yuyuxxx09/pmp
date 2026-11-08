@@ -123,9 +123,6 @@
     .palette-btn.flagged { background: #fef08a; border-color: var(--warning); }
     
     .exp-panel { background: #fafafa; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; margin-top: 1rem; }
-    .exp-toggle { display: flex; gap: .25rem; margin-bottom: .75rem; }
-    .exp-toggle button { padding: .25rem .5rem; font-size: .8rem; border: 1px solid var(--border); background: #fff; border-radius: 4px; cursor: pointer; }
-    .exp-toggle button.active { background: var(--primary); color: #fff; border-color: var(--primary); }
     .kw { background: var(--kw-bg); padding: .1rem .3rem; border-radius: 3px; font-weight: 600; cursor: pointer; border-bottom: 1.5px dotted #ca8a04; display: inline-block; }
     .kw:hover { background: #fde047; }
     .modal-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
@@ -133,9 +130,18 @@
     .modal-content { background: #fff; border-radius: var(--radius); max-width: 500px; width: 100%; padding: 1.5rem; box-shadow: 0 20px 25px -5px rgba(0,0,0,.2); max-height: 90vh; overflow-y: auto; }
     .modal-header { font-size: 1.2rem; font-weight: 700; margin-bottom: .75rem; display: flex; justify-content: space-between; align-items: center; }
     .modal-close-x { border: none; background: none; font-size: 1.5rem; cursor: pointer; }
-    .confidence-group { display: flex; gap: .5rem; margin-top: .75rem; }
-    .conf-btn { flex: 1; padding: .4rem; font-size: .85rem; border: 1px solid var(--border); background: #fff; border-radius: 6px; cursor: pointer; text-align: center; }
-    .conf-btn.selected { background: #e2e8f0; font-weight: 700; border-color: #94a3b8; }
+    .question-form { display: grid; gap: 1rem; }
+    .question-form label { display: block; font-weight: 600; margin-bottom: .3rem; }
+    .question-form input[type="text"], .question-form textarea, .question-form select {
+      width: 100%; padding: .65rem; border: 1px solid var(--border); border-radius: 6px; font: inherit;
+    }
+    .question-form textarea { min-height: 84px; resize: vertical; }
+    .question-form fieldset { border: 1px solid var(--border); border-radius: 8px; padding: 1rem; min-width: 0; }
+    .question-form legend { font-weight: 700; padding: 0 .35rem; }
+    .question-form .option-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-top: .75rem; }
+    .question-form .correct-answer-choice { display: inline-flex; align-items: center; gap: .35rem; margin: .5rem .75rem 0 0; }
+    .question-form .correct-answer-choice label { margin: 0; }
+    @media (max-width: 600px) { .question-form .option-row { grid-template-columns: 1fr; } }
     .chart-container { width: 100%; overflow-x: auto; margin: 1rem 0; }
     svg { display: block; max-width: 100%; height: auto; }
     .timer-badge { font-weight: 700; font-family: monospace; font-size: 1.1rem; padding: .3rem .6rem; border-radius: 6px; background: #e2e8f0; min-width: 80px; text-align: center; }
@@ -216,6 +222,7 @@
     <nav class="nav-links" id="primary-navigation" aria-label="Điều hướng chính">
       <a href="#dashboard" class="nav-btn" id="nav-dashboard">📊 Dashboard</a>
       <a href="#practice" class="nav-btn" id="nav-practice">📝 Practice</a>
+      <a href="#add-question" class="nav-btn" id="nav-add-question">➕ Thêm câu hỏi</a>
       <a href="#exam" class="nav-btn" id="nav-exam">⏱️ Exam</a>
       <a href="#review" class="nav-btn" id="nav-review">📑 Review</a>
       <a href="#gap" class="nav-btn" id="nav-gap">🎯 Gap Analysis</a>
@@ -303,6 +310,54 @@
     </div>
   </section>
 
+  <!-- ADD QUESTION -->
+  <section id="add-question" class="page">
+    <div class="card">
+      <h2>➕ Thêm câu hỏi mới</h2>
+      <p class="insight-meta" style="margin:.35rem 0 1rem;">Câu hỏi được lưu trong ngân hàng trên trình duyệt này (localStorage: <code>pmp_questions</code>). Các trường song ngữ và giải thích đều cần được điền.</p>
+      <form id="add-question-form" class="question-form">
+        <div class="grid-2">
+          <div><label for="new-question-en">Câu hỏi (English)</label><textarea id="new-question-en" name="question_en" required></textarea></div>
+          <div><label for="new-question-vi">Câu hỏi (Tiếng Việt)</label><textarea id="new-question-vi" name="question_vi" required></textarea></div>
+        </div>
+        <div class="grid-2">
+          <div><label for="new-question-domain">Domain</label>
+            <select id="new-question-domain" name="domain" required>
+              <option value="People">People</option><option value="Process" selected>Process</option><option value="BusinessEnvironment">Business Environment</option>
+            </select>
+          </div>
+          <div><label for="new-question-task">Task / Chủ đề</label><input id="new-question-task" name="task" type="text" required placeholder="Ví dụ: Task 1: Manage conflict"></div>
+        </div>
+        <fieldset>
+          <legend>4 lựa chọn (English &amp; Tiếng Việt)</legend>
+          <div class="option-row"><div><label for="new-option-A-en">Option A (English)</label><input id="new-option-A-en" name="optionAEn" type="text" required></div><div><label for="new-option-A-vi">Option A (Tiếng Việt)</label><input id="new-option-A-vi" name="optionAVi" type="text" required></div></div>
+          <div class="option-row"><div><label for="new-option-B-en">Option B (English)</label><input id="new-option-B-en" name="optionBEn" type="text" required></div><div><label for="new-option-B-vi">Option B (Tiếng Việt)</label><input id="new-option-B-vi" name="optionBVi" type="text" required></div></div>
+          <div class="option-row"><div><label for="new-option-C-en">Option C (English)</label><input id="new-option-C-en" name="optionCEn" type="text" required></div><div><label for="new-option-C-vi">Option C (Tiếng Việt)</label><input id="new-option-C-vi" name="optionCVi" type="text" required></div></div>
+          <div class="option-row"><div><label for="new-option-D-en">Option D (English)</label><input id="new-option-D-en" name="optionDEn" type="text" required></div><div><label for="new-option-D-vi">Option D (Tiếng Việt)</label><input id="new-option-D-vi" name="optionDVi" type="text" required></div></div>
+          <div style="margin-top:1rem;"><strong>Chọn đáp án đúng</strong><div>
+            <span class="correct-answer-choice"><input id="new-correct-A" type="radio" name="correctAnswer" value="A"><label for="new-correct-A">A</label></span>
+            <span class="correct-answer-choice"><input id="new-correct-B" type="radio" name="correctAnswer" value="B"><label for="new-correct-B">B</label></span>
+            <span class="correct-answer-choice"><input id="new-correct-C" type="radio" name="correctAnswer" value="C"><label for="new-correct-C">C</label></span>
+            <span class="correct-answer-choice"><input id="new-correct-D" type="radio" name="correctAnswer" value="D" checked><label for="new-correct-D">D</label></span>
+          </div></div>
+        </fieldset>
+        <div class="grid-2">
+          <div><label for="new-explanation-vi">Giải thích đáp án đúng (Tiếng Việt)</label><textarea id="new-explanation-vi" name="correct_vi" required></textarea></div>
+          <div><label for="new-explanation-en">Giải thích đáp án đúng (English)</label><textarea id="new-explanation-en" name="correct_en" required></textarea></div>
+        </div>
+        <fieldset>
+          <legend>Tại sao các lựa chọn còn lại sai? (Tiếng Việt)</legend>
+          <div id="why-wrong-A" class="wrong-reason-field"><label for="new-why-wrong-A">Lựa chọn A sai vì</label><textarea id="new-why-wrong-A" name="whyWrongA"></textarea></div>
+          <div id="why-wrong-B" class="wrong-reason-field"><label for="new-why-wrong-B">Lựa chọn B sai vì</label><textarea id="new-why-wrong-B" name="whyWrongB"></textarea></div>
+          <div id="why-wrong-C" class="wrong-reason-field"><label for="new-why-wrong-C">Lựa chọn C sai vì</label><textarea id="new-why-wrong-C" name="whyWrongC"></textarea></div>
+          <div id="why-wrong-D" class="wrong-reason-field"><label for="new-why-wrong-D">Lựa chọn D sai vì</label><textarea id="new-why-wrong-D" name="whyWrongD"></textarea></div>
+        </fieldset>
+        <div><label for="new-pmp-mindset">PMP Mindset (Tiếng Việt)</label><textarea id="new-pmp-mindset" name="pmp_mindset_vi" required placeholder="Pattern hoặc tư duy cốt lõi cần nhớ khi gặp dạng câu này"></textarea></div>
+        <div><button class="btn" type="submit">💾 Lưu câu hỏi</button></div>
+      </form>
+    </div>
+  </section>
+
   <!-- EXAM -->
   <section id="exam" class="page">
     <div class="card" style="margin-bottom:1rem;">
@@ -329,11 +384,6 @@
     <div class="card">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:.5rem; margin-bottom:1rem;">
         <h2>📑 Kết Quả & Xem Lại</h2>
-        <div class="exp-toggle">
-          <button data-action="review-lang" data-val="VI" class="rev-lang-btn">VI</button>
-          <button data-action="review-lang" data-val="EN" class="rev-lang-btn">EN</button>
-          <button data-action="review-lang" data-val="VI_EN" class="rev-lang-btn">VI+EN</button>
-        </div>
       </div>
       <div id="review-summary" style="margin:1rem 0;"></div>
       <div class="grid-2">
@@ -537,8 +587,15 @@ function normalizeQuestion(q) {
   q.keywords = Array.isArray(q.keywords) ? q.keywords : [];
   q.glossary = Array.isArray(q.glossary) ? q.glossary.filter(g => g && g.en) .map(g => ({en:String(g.en), vi:String(g.vi||''), example:String(g.example||''), source:String(g.source||'')})) : [];
   q.reference = q.reference || '';
-  q.explanation.correct_en = q.explanation.correct_en || '';
-  q.explanation.whyWrong_vi = q.explanation.whyWrong_vi || {};
+  const explanation = q.explanation && typeof q.explanation === 'object' && !Array.isArray(q.explanation) ? q.explanation : {};
+  q.explanation = {
+    ...explanation,
+    correct_vi: String(explanation.correct_vi || ''),
+    correct_en: String(explanation.correct_en || ''),
+    whyWrong_vi: explanation.whyWrong_vi && typeof explanation.whyWrong_vi === 'object' && !Array.isArray(explanation.whyWrong_vi)
+      ? explanation.whyWrong_vi : {},
+    pmp_mindset_vi: String(explanation.pmp_mindset_vi || '')
+  };
   return q;
 }
 
@@ -687,8 +744,6 @@ class PMPApp {
     this.lastSubmittedSession = null;
     this._pendingAnnotation = null;
     this._annotationActionPressed = false;
-    this.prefExpLang = this.getStorage('exp_lang') || 'VI';
-    this.reviewExpLang = this.getStorage('review_exp_lang') || 'VI';
     this._flashState = null;
     this.palettePage = 1; 
 
@@ -721,6 +776,18 @@ class PMPApp {
     const t = this.getStorage('translate_log');
     if (!t || !Array.isArray(t)) this.setStorage('translate_log', []);
     this.migrateBank();
+    if ((this.getStorage('question_schema_ver') || 0) < 1) {
+      const storedQuestions = this.getStorage('questions');
+      if (Array.isArray(storedQuestions)) {
+        const original = JSON.stringify(storedQuestions);
+        const normalized = storedQuestions.map(normalizeQuestion);
+        if (original !== JSON.stringify(normalized) && !this.setStorage('questions', normalized)) {
+          console.error('Không thể cập nhật ngân hàng câu hỏi sang schema mới.');
+          return;
+        }
+      }
+      this.setStorage('question_schema_ver', 1);
+    }
   }
 
   // Bản cũ chứa 25 câu giả (Q006–Q030, đáp án luôn là A, bản dịch sai). Gỡ chúng và dọn lịch sử liên quan.
@@ -747,7 +814,10 @@ class PMPApp {
     this.setStorage('bank_ver', 2);
   }
 
-  getQuestions() { const q = this.getStorage('questions'); return (Array.isArray(q) && q.length) ? q : EMBEDDED_QUESTIONS; }
+  getQuestions() {
+    const questions = this.getStorage('questions');
+    return (Array.isArray(questions) && questions.length ? questions : EMBEDDED_QUESTIONS).map(normalizeQuestion);
+  }
 
   saveCurrentExamState() { if (this.currentExam) this.setStorage('current_exam', this.currentExam); }
 
@@ -795,8 +865,7 @@ class PMPApp {
     return Object.values(byTask).map(stat => ({
       ...stat,
       questionIds: Array.from(stat.questionIds),
-      accuracy: stat.attempts ? Math.round((stat.attempts - stat.wrong) / stat.attempts * 100) : 0,
-      confidence: stat.attempts < 3 ? 'Sơ bộ' : 'Ổn định hơn'
+      accuracy: stat.attempts ? Math.round((stat.attempts - stat.wrong) / stat.attempts * 100) : 0
     })).filter(stat => stat.wrong > 0).sort((a, b) =>
       (a.accuracy - b.accuracy) || (b.wrong - a.wrong) || (b.attempts - a.attempts)
     );
@@ -868,7 +937,7 @@ class PMPApp {
     this.currentSession = {
       id: sessionId, mode: 'PRACTICE', practiceMode: mode, domain,
       startedAt: now, questions, currentIndex: 0, answers: {}, flags,
-      confidence: {}, usedTranslate: {}, currentQuestionStartedAt: now
+      usedTranslate: {}, currentQuestionStartedAt: now
     };
     const runs = this.getStorage('practice_runs') || [];
     runs.push({
@@ -879,7 +948,7 @@ class PMPApp {
     this.setStorage('current_practice', {
       id: sessionId, mode, domain, startedAt: now,
       qIds: questions.map(question => question.id), currentIndex: 0,
-      answers: {}, flags, confidence: {}, usedTranslate: {}, currentQuestionStartedAt: now
+      answers: {}, flags, usedTranslate: {}, currentQuestionStartedAt: now
     });
     this.trackEvent('practice_started', { sessionId, mode, questionCount: questions.length, domain });
     this.palettePage = 1;
@@ -976,7 +1045,7 @@ class PMPApp {
       if (sess.answers[q.id] && this._complete(q, sess.answers[q.id])) this.recordExamResponse(sess, q);
       this.saveCurrentExamState();
     }
-    else if (sess.answers[q.id] && this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+    else if (sess.answers[q.id] && this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id]);
     else this.saveCurrentPracticeState();
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
   }
@@ -1011,6 +1080,7 @@ class PMPApp {
 
     if (pageId === 'dashboard') this.renderDashboard();
     else if (pageId === 'practice') this.initPracticeSession(false);
+    else if (pageId === 'add-question') this.updateWrongReasonFields();
     else if (pageId === 'exam') this.checkOrInitExam();
     else if (pageId === 'review') this.renderReviewPage();
     else if (pageId === 'gap') this.renderGapAnalysis();
@@ -1055,6 +1125,16 @@ class PMPApp {
     if (qbankInput) {
       qbankInput.addEventListener('change', (e) => this.importQuestionBank(e));
     }
+    const addQuestionForm = document.getElementById('add-question-form');
+    if (addQuestionForm) {
+      addQuestionForm.addEventListener('change', event => {
+        if (event.target.name === 'correctAnswer') this.updateWrongReasonFields();
+      });
+      addQuestionForm.addEventListener('submit', event => {
+        event.preventDefault();
+        this.addQuestionFromForm(addQuestionForm);
+      });
+    }
     document.addEventListener('selectionchange', () => this.handleAnnotationSelectionChange());
 
     document.addEventListener('keydown', (e) => {
@@ -1091,7 +1171,6 @@ class PMPApp {
       else if (action === 'open-kw') this.openKwModal(el.dataset.term);
       else if (action === 'srs-know') this.updateSRS(el.dataset.qid, true);
       else if (action === 'srs-review') this.updateSRS(el.dataset.qid, false);
-      else if (action === 'review-lang') this.setReviewLang(el.dataset.val);
     });
 
     const pracFilter = document.getElementById('practice-filter-domain');
@@ -1117,6 +1196,108 @@ class PMPApp {
     window.addEventListener('beforeunload', (e) => {
       if (this.currentExam && this.currentExam.status === 'IN_PROGRESS') this.saveCurrentExamState();
     });
+  }
+
+  updateWrongReasonFields() {
+    const form = document.getElementById('add-question-form');
+    if (!form) return;
+    const correctAnswer = new FormData(form).get('correctAnswer');
+    ['A', 'B', 'C', 'D'].forEach(key => {
+      const field = document.getElementById(`why-wrong-${key}`);
+      const input = form.elements[`whyWrong${key}`];
+      const isCorrect = correctAnswer === key;
+      field.hidden = isCorrect;
+      input.required = !isCorrect;
+      if (isCorrect) input.value = '';
+    });
+  }
+
+  createQuestionId(questions) {
+    const usedIds = new Set(questions.map(question => String(question.id)));
+    let nextNumber = questions.reduce((max, question) => {
+      const match = String(question.id).match(/^Q(\d+)$/i);
+      return match ? Math.max(max, Number(match[1])) : max;
+    }, 0) + 1;
+    let id;
+    do {
+      id = `Q${String(nextNumber++).padStart(3, '0')}`;
+    } while (usedIds.has(id));
+    return id;
+  }
+
+  addQuestionFromForm(form) {
+    const values = new FormData(form);
+    const read = name => String(values.get(name) || '').trim();
+    const questions = this.getQuestions();
+    const correctAnswer = read('correctAnswer');
+    const options = {};
+    const optionsVi = {};
+    const whyWrong = {};
+    ['A', 'B', 'C', 'D'].forEach(key => {
+      options[key] = read(`option${key}En`);
+      optionsVi[key] = read(`option${key}Vi`);
+      if (key !== correctAnswer) whyWrong[key] = read(`whyWrong${key}`);
+    });
+    const requiredValues = [
+      read('question_en'), read('question_vi'), read('task'),
+      ...Object.values(options), ...Object.values(optionsVi),
+      read('correct_vi'), read('correct_en'), ...Object.values(whyWrong),
+      read('pmp_mindset_vi')
+    ];
+    if (!['A', 'B', 'C', 'D'].includes(correctAnswer) || requiredValues.some(value => !value)) {
+      this.showModal('Thiếu thông tin', '<p>Hãy điền đầy đủ nội dung song ngữ, giải thích cho đáp án đúng và từng lựa chọn sai trước khi lưu.</p>', [
+        { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+      ]);
+      return;
+    }
+
+    const question = normalizeQuestion({
+      id: this.createQuestionId(questions),
+      type: 'MCQ',
+      domain: read('domain'),
+      task: read('task'),
+      enabler: 'User-created',
+      methodology: 'Predictive',
+      difficulty: 'medium',
+      english_level: 'B1',
+      question: read('question_en'),
+      question_vi: read('question_vi'),
+      options,
+      options_vi: optionsVi,
+      correctAnswer,
+      explanation: {
+        correct_vi: read('correct_vi'),
+        correct_en: read('correct_en'),
+        whyWrong_vi: whyWrong,
+        pmp_mindset_vi: read('pmp_mindset_vi')
+      },
+      keywords: [],
+      glossary: [],
+      reference: ''
+    });
+
+    if (!this.setStorage('questions', [...questions, question])) {
+      this.showModal('Không thể lưu câu hỏi', '<p>Trình duyệt không lưu được ngân hàng câu hỏi (có thể hết dung lượng). Hãy xuất backup hoặc giải phóng dung lượng rồi thử lại.</p>', [
+        { text: 'Đóng', class: '', onClick: () => this.closeModal() }
+      ]);
+      return;
+    }
+
+    form.reset();
+    this.updateWrongReasonFields();
+    this.showModal('Đã lưu câu hỏi', `<p>Câu <strong>${escapeHtml(question.id)}</strong> đã được thêm vào ngân hàng <code>pmp_questions</code>. Câu hỏi sẽ xuất hiện khi bắt đầu lượt Practice mới.</p>`, [
+      { text: 'Luyện câu hỏi', class: '', onClick: () => {
+        this.closeModal();
+        document.getElementById('practice-filter-domain').value = 'ALL';
+        document.getElementById('practice-filter-mode').value = 'all';
+        this.initPracticeSession(true);
+        window.location.hash = '#practice';
+      } },
+      { text: 'Thêm câu khác', class: 'btn-secondary', onClick: () => {
+        this.closeModal();
+        document.getElementById('new-question-en').focus();
+      } }
+    ]);
   }
 
   /* ---- MODAL ---- */
@@ -1195,7 +1376,7 @@ class PMPApp {
     return all;
   }
 
-  savePracticeAnswer(q, selected, usedTranslate, confidence) {
+  savePracticeAnswer(q, selected, usedTranslate) {
     const log = this.getStorage('practice_log') || [];
     const sess = this.currentSession;
     if (!sess || !sess.id || !this._complete(q, selected)) return;
@@ -1204,7 +1385,7 @@ class PMPApp {
       qId: q.id, domain: q.domain, task: q.task, knowledge_area: q.knowledge_area || null, methodology: q.methodology,
       difficulty: q.difficulty, english_level: q.english_level,
       selected, correctAnswer: q.correctAnswer, isCorrect,
-      usedTranslate: !!usedTranslate, confidence: confidence || 'Sure',
+      usedTranslate: !!usedTranslate,
       timestamp: Date.now(), source: 'practice', sessionId: sess.id,
       runMode: sess.practiceMode || 'all',
       responseTimeMs: Math.max(0, Date.now() - (sess.currentQuestionStartedAt || Date.now()))
@@ -1221,10 +1402,10 @@ class PMPApp {
     if (isNewAttempt) {
       this.trackEvent('question_answered', {
         sessionId: sess.id, qId: q.id, mode: sess.practiceMode || 'all',
-        isCorrect, usedTranslate: !!usedTranslate, confidence: confidence || 'Sure',
+        isCorrect, usedTranslate: !!usedTranslate,
         responseTimeMs: entry.responseTimeMs
       });
-      this.updateQuestionSRS(q.id, isCorrect, confidence);
+      this.updateQuestionSRS(q.id, isCorrect);
     }
 
     const runs = this.getStorage('practice_runs') || [];
@@ -1242,7 +1423,7 @@ class PMPApp {
     this.saveCurrentPracticeState();
   }
 
-  updateQuestionSRS(qId, isCorrect, confidence) {
+  updateQuestionSRS(qId, isCorrect) {
     const srs = this.getStorage('srs') || {};
     const current = srs[qId] || { interval: 0, repetitions: 0, lapses: 0 };
     if (!isCorrect) {
@@ -1255,7 +1436,6 @@ class PMPApp {
       const repetition = Math.min((current.repetitions || 0) + 1, intervals.length);
       current.repetitions = repetition;
       current.interval = intervals[repetition - 1];
-      if (confidence === 'Guess' || confidence === 'Unsure') current.interval = Math.min(current.interval, 1);
       const next = new Date();
       next.setDate(next.getDate() + current.interval);
       current.nextReview = todayISO(next);
@@ -1272,7 +1452,7 @@ class PMPApp {
       id: sess.id, mode: sess.practiceMode || 'all', domain: sess.domain,
       startedAt: sess.startedAt || Date.now(),
       qIds: sess.questions.map(question => question.id), currentIndex: sess.currentIndex,
-      answers: sess.answers, flags: sess.flags, confidence: sess.confidence,
+      answers: sess.answers, flags: sess.flags,
       usedTranslate: sess.usedTranslate, currentQuestionStartedAt: sess.currentQuestionStartedAt
     });
   }
@@ -1390,7 +1570,7 @@ class PMPApp {
 
     const weak = m.weaknesses.slice(0, 3);
     document.getElementById('top-weak-topics').innerHTML = weak.length
-      ? weak.map(stat => `<div style="display:flex; justify-content:space-between; gap:.5rem; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>⚠️ ${escapeHtml(stat.domain)} · ${escapeHtml(stat.taxonomy)}: ${escapeHtml(stat.task)}<small class="insight-meta" style="display:block;">${stat.confidence}: ${stat.attempts} lượt · ${stat.questionIds.length} câu</small></span><strong style="color:var(--danger);">${100 - stat.accuracy}% sai</strong></div>`).join('')
+      ? weak.map(stat => `<div style="display:flex; justify-content:space-between; gap:.5rem; padding:.4rem 0; border-bottom:1px dashed var(--border);"><span>⚠️ ${escapeHtml(stat.domain)} · ${escapeHtml(stat.taxonomy)}: ${escapeHtml(stat.task)}<small class="insight-meta" style="display:block;">${stat.attempts} lượt · ${stat.questionIds.length} câu</small></span><strong style="color:var(--danger);">${100 - stat.accuracy}% sai</strong></div>`).join('')
       : '<span style="color:var(--text-muted);">Chưa có đủ dữ liệu để xác định điểm yếu. Hãy bắt đầu bằng bài luyện ngắn.</span>';
 
     this.renderVocabWidget();
@@ -1617,7 +1797,7 @@ class PMPApp {
           startedAt: saved.startedAt, questions,
           currentIndex: Math.min(saved.currentIndex || 0, questions.length - 1),
           answers: savedAnswers, flags: saved.flags || {},
-          confidence: saved.confidence || {}, usedTranslate: saved.usedTranslate || {},
+          usedTranslate: saved.usedTranslate || {},
           currentQuestionStartedAt: Date.now()
         };
         this.palettePage = 1;
@@ -1994,6 +2174,18 @@ class PMPApp {
     </section>`;
   }
 
+  renderExplanationDetails(q) {
+    const explanation = q.explanation || {};
+    const whyWrong = Object.entries(explanation.whyWrong_vi || {})
+      .filter(([key, text]) => /^[A-D]$/.test(key) && String(text || '').trim());
+    return `
+      <div style="margin-bottom:.75rem;"><strong>[VI] Đáp án đúng:</strong> ${explanation.correct_vi ? sanitizeRich(explanation.correct_vi) : '<span class="insight-meta">Chưa có giải thích tiếng Việt.</span>'}</div>
+      <div data-note-scope="explanation-en" style="margin-bottom:.75rem; font-style:italic;"><strong>[EN] Correct answer:</strong> ${explanation.correct_en ? escapeHtml(explanation.correct_en) : '<span class="insight-meta">English explanation not provided.</span>'}</div>
+      ${whyWrong.length ? `<div style="margin-bottom:.75rem;"><strong>Vì sao các lựa chọn khác sai:</strong><ul style="margin:.35rem 0 0 1.25rem;">${whyWrong.map(([key, text]) => `<li><strong>${key}:</strong> ${escapeHtml(text)}</li>`).join('')}</ul></div>` : ''}
+      ${explanation.pmp_mindset_vi ? `<div style="padding:.65rem; background:var(--info-bg); border-radius:6px;"><strong>🧠 PMP Mindset:</strong> ${escapeHtml(explanation.pmp_mindset_vi)}</div>` : ''}
+    `;
+  }
+
   addQuestionAnnotation() {
     const pending = this._pendingAnnotation;
     const session = this.getActiveSession();
@@ -2241,32 +2433,15 @@ class PMPApp {
     `;
 
     if (!isExam && isAnswered) {
-      const conf = sess.confidence[q.id] || '';
       if (qType !== 'MCQ') {
         const okNow = isAnswerCorrect(q, selected);
         h += `<div class="card" style="background:${okNow?'var(--success-bg)':'var(--danger-bg)'}; font-weight:600;">${okNow ? '✅ Chính xác!' : '❌ Chưa đúng. Đáp án: ' + escapeHtml(q.correctAnswer)}</div>`;
       }
       h += `<div class="card" style="background:#f8fafc; border-left:4px solid var(--primary); margin-top:1rem;">
-        <div style="font-size:.9rem; margin-bottom:.5rem; font-weight:600;">Độ tự tin:</div>
-        <div class="confidence-group">
-          <div class="conf-btn ${conf==='Sure'?'selected':''}" onclick="app.setConfidence('Sure')">💪 Sure</div>
-          <div class="conf-btn ${conf==='Unsure'?'selected':''}" onclick="app.setConfidence('Unsure')">🤔 Unsure</div>
-          <div class="conf-btn ${conf==='Guess'?'selected':''}" onclick="app.setConfidence('Guess')">🎲 Guess</div>
-        </div>
-      </div>
-      <div class="exp-panel">
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <h4 style="color:var(--primary);">💡 Giải Thích</h4>
-          <div class="exp-toggle">
-            <button class="${this.prefExpLang==='VI'?'active':''}" onclick="app.setExpLang('VI')">VI</button>
-            <button class="${this.prefExpLang==='EN'?'active':''}" onclick="app.setExpLang('EN')">EN</button>
-            <button class="${this.prefExpLang==='VI_EN'?'active':''}" onclick="app.setExpLang('VI_EN')">VI+EN</button>
-          </div>
-        </div>
-        <div style="margin-top:.75rem;">
-          ${(this.prefExpLang==='VI'||this.prefExpLang==='VI_EN') ? `<div style="margin-bottom:.75rem;"><strong>[VI]:</strong> ${sanitizeRich(q.explanation.correct_vi)}</div>` : ''}
-          ${(this.prefExpLang==='EN'||this.prefExpLang==='VI_EN') ? `<div style="margin-bottom:.75rem; font-style:italic;"><strong>[EN]:</strong> <span data-note-scope="explanation-en">${escapeHtml(q.explanation.correct_en)}</span></div>` : ''}
-          <div style="font-size:.85rem; color:var(--text-muted);">📌 ${escapeHtml(q.reference)}</div>
+        <div class="exp-panel" style="margin-top:0;">
+          <h4 style="color:var(--primary); margin-bottom:.75rem;">💡 Giải thích · Song ngữ</h4>
+          ${this.renderExplanationDetails(q)}
+          ${q.reference ? `<div style="font-size:.85rem; color:var(--text-muted); margin-top:.75rem;">📌 ${escapeHtml(q.reference)}</div>` : ''}
         </div>
       </div>`;
     }
@@ -2377,7 +2552,7 @@ class PMPApp {
       this.recordExamResponse(sess, q);
       this.saveCurrentExamState();
     }
-    else this.savePracticeAnswer(q, k, !!sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+    else this.savePracticeAnswer(q, k, !!sess.usedTranslate[q.id]);
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
   }
 
@@ -2437,23 +2612,11 @@ class PMPApp {
     if (sess.mode === 'EXAM') this.saveCurrentExamState();
     else {
       const q = sess.questions[sess.currentIndex];
-      if (this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], sess.usedTranslate[q.id], sess.confidence[q.id] || 'Sure');
+      if (this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], sess.usedTranslate[q.id]);
       else this.saveCurrentPracticeState();
     }
     this.renderQuestionCard(sess.mode === 'EXAM' ? 'exam-card-container' : 'practice-card-container');
   }
-
-  setConfidence(level) {
-    const sess = this.getActiveSession();
-    if (!sess || sess.mode === 'EXAM') return;
-    const q = sess.questions[sess.currentIndex];
-    sess.confidence[q.id] = level;
-    if (this._complete(q, sess.answers[q.id])) this.savePracticeAnswer(q, sess.answers[q.id], !!sess.usedTranslate[q.id], level);
-    else this.saveCurrentPracticeState();
-    this.renderQuestionCard('practice-card-container');
-  }
-
-  setExpLang(lang) { this.prefExpLang = lang; this.setStorage('exp_lang', lang); this.renderQuestionCard('practice-card-container'); }
 
   navQuestion(dir) {
     const sess = this.getActiveSession();
@@ -2528,12 +2691,12 @@ class PMPApp {
         const sel = sess.answers[q.id];
         const ok = isAnswerCorrect(q, sel);
         if (ok) correct++;
-        if (!ok) this.updateQuestionSRS(q.id, false, 'Unsure');
+        if (!ok) this.updateQuestionSRS(q.id, false);
         return {
           qId: q.id, domain: q.domain, task: q.task, knowledge_area: q.knowledge_area || null, methodology: q.methodology,
           difficulty: q.difficulty, english_level: q.english_level,
           selected: sel || '—', correctAnswer: q.correctAnswer, isCorrect: ok,
-          usedTranslate: !!sess.usedTranslate[q.id], confidence: (sess.confidence && sess.confidence[q.id]) || 'Sure',
+          usedTranslate: !!sess.usedTranslate[q.id],
           flagged: !!sess.flags[q.id], responseTimeMs: (sess.responseTimes || {})[q.id] || null,
           timestamp: Date.now(), source: 'mock_exam'
         };
@@ -2589,8 +2752,6 @@ class PMPApp {
         <p class="insight-meta">Điểm của bộ câu hỏi này, không phải kết quả PASS/FAIL hay dự báo điểm thi PMI.</p>
       </div>`;
 
-    document.querySelectorAll('.rev-lang-btn').forEach(b => b.classList.toggle('active', b.dataset.val === this.reviewExpLang));
-
     const qs = this.getQuestions();
     const qMap = {};
     qs.forEach(q => qMap[q.id] = q);
@@ -2614,12 +2775,6 @@ class PMPApp {
     document.getElementById('review-list').innerHTML = sess.answers.map((ans, idx) => {
       const q = qMap[ans.qId];
       if (!q) return '';
-      const showVi = this.reviewExpLang === 'VI' || this.reviewExpLang === 'VI_EN';
-      const showEn = this.reviewExpLang === 'EN' || this.reviewExpLang === 'VI_EN';
-      const whyWrong = (!ans.isCorrect && q.explanation.whyWrong_vi && q.explanation.whyWrong_vi[ans.selected]) 
-        ? q.explanation.whyWrong_vi[ans.selected] 
-        : '';
-        
       return `<div class="card" style="border-left:4px solid ${ans.isCorrect?'var(--success)':'var(--danger)'};">
         <div style="display:flex; justify-content:space-between; flex-wrap:wrap; margin-bottom:.5rem;">
           <strong>Câu ${idx+1}: ${q.id}</strong>
@@ -2630,10 +2785,9 @@ class PMPApp {
           Bạn chọn: <strong style="color:${ans.isCorrect?'var(--success)':'var(--danger)'}">${ans.selected||'—'}</strong> |
           Đáp án: <strong style="color:var(--success)">${q.correctAnswer}</strong>
         </div>
+        ${q.question_vi ? `<div class="q-text-vi">${escapeHtml(q.question_vi)}</div>` : ''}
         <div class="exp-panel">
-          ${showVi ? `<div><strong>[VI]:</strong> ${sanitizeRich(q.explanation.correct_vi)}</div>` : ''}
-          ${showEn ? `<div style="margin-top:.4rem; font-style:italic;"><strong>[EN]:</strong> ${escapeHtml(q.explanation.correct_en)}</div>` : ''}
-          ${whyWrong ? `<div style="color:var(--danger); margin-top:.4rem;"><strong>Vì sao sai:</strong> ${escapeHtml(whyWrong)}</div>` : ''}
+          ${this.renderExplanationDetails(q)}
         </div>
         <div style="margin-top:.75rem; display:flex; gap:.5rem;">
           <button class="btn btn-sm btn-outline" data-action="srs-know" data-qid="${q.id}">✓ Đã hiểu</button>
@@ -2645,12 +2799,6 @@ class PMPApp {
   }
 
   pickReviewSession(id) { this.reviewSessId = id; this.renderReviewPage(); }
-
-  setReviewLang(lang) {
-    this.reviewExpLang = lang;
-    this.setStorage('review_exp_lang', lang);
-    this.renderReviewPage();
-  }
 
   updateSRS(qId, understood) {
     const srs = this.getStorage('srs') || {};
@@ -2745,7 +2893,7 @@ class PMPApp {
       h += `<text x="0" y="${y+13}" font-size="10" fill="#334155">${escapeHtml(clipped)}</text>
         <rect x="400" y="${y}" width="180" height="16" rx="4" fill="#e2e8f0"/>
         <rect x="400" y="${y}" width="${width}" height="16" rx="4" fill="${stat.accuracy < 70 ? '#dc2626' : '#d97706'}"/>
-        <text x="400" y="${y+31}" font-size="10" fill="#64748b">${stat.wrong}/${stat.attempts} sai · ${stat.confidence}</text>`;
+        <text x="400" y="${y+31}" font-size="10" fill="#64748b">${stat.wrong}/${stat.attempts} sai</text>`;
     });
     h += '</svg>';
     document.getElementById('chart-gap-heatmap').innerHTML = h;
@@ -3049,6 +3197,9 @@ class PMPApp {
           if (!q.question_vi) errors.push(`[${i}] ${q.id||'?'}: thiếu question_vi`);
           if (!q.explanation || !q.explanation.correct_vi)
             errors.push(`[${i}] ${q.id||'?'}: thiếu explanation.correct_vi`);
+          if (q.explanation && q.explanation.whyWrong_vi != null &&
+              (typeof q.explanation.whyWrong_vi !== 'object' || Array.isArray(q.explanation.whyWrong_vi)))
+            errors.push(`[${i}] ${q.id||'?'}: explanation.whyWrong_vi phải là object`);
             
           const type = q.type || "MCQ";
           if (!["MCQ", "MultipleResponse", "Dropdown", "Matching"].includes(type)) {
